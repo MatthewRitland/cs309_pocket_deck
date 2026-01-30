@@ -38,6 +38,8 @@ import org.w3c.dom.Text;
 
  */
 
+/* This is a change to test git pull push */
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView messageText;   // define message textview variable

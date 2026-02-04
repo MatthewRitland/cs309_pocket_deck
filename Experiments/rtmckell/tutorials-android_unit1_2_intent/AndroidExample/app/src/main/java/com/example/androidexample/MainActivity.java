@@ -59,7 +59,11 @@ public class MainActivity extends AppCompatActivity {
             messageText.setText("Intent Example");
         } else {
             String number = extras.getString("NUM");  // this will come from LoginActivity
-            messageText.setText("The number was " + number);
+            String number_text = "The number was " + number;
+            if (number.equals("42")) {
+                number_text += "\n YOU WIN!!!";
+            }
+            messageText.setText(number_text);
         }
 
         /* click listener on counter button pressed */

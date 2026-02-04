@@ -11,9 +11,7 @@ import android.widget.TextView;
 public class CounterActivity extends AppCompatActivity {
 
     private TextView numberTxt; // define number textview variable
-    private Button increaseBtn, decreaseBtn; // define increase button variable
-    private Button backBtn;     // define back button variable
-
+    private Button increaseBtn, decreaseBtn, backBtn; // define button variables
     private int counter = 0;    // counter variable
 
     @Override
@@ -30,8 +28,24 @@ public class CounterActivity extends AppCompatActivity {
         /* when increase btn is pressed, counter++, reset number textview */
         increaseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
+
+            // Keeping interesting purposeful error. Do not mind!
             public void onClick(View v) {
-                numberTxt.setText(String.valueOf(++counter));
+
+                // Gets the next prime number (brute force)
+                while(true) {
+                    counter++;
+                    boolean is_prime = true;
+                    for(int i = 2; i <= Math.sqrt(counter); i++) {
+                        if(counter%i == 0) {
+                            is_prime = false;
+                            break;
+                        }
+                    }
+                    if (is_prime) break;
+                }
+
+                numberTxt.setText(String.valueOf(counter));
             }
         });
 
@@ -39,7 +53,8 @@ public class CounterActivity extends AppCompatActivity {
         decreaseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                numberTxt.setText(String.valueOf(--counter));
+                counter -= 5;
+                numberTxt.setText(String.valueOf(counter));
             }
         });
 

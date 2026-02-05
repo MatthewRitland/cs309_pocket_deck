@@ -20,6 +20,15 @@ public class PeopleController {
     // Springboot system.
     HashMap<String, Person> peopleList = new  HashMap<>();
 
+    /*
+    //hard-coded to view https://localhost:8080/people
+    public PeopleController() {
+        Person p = new Person("Tom", "Hanks", "Hollywood", "999");
+        peopleList.put("Tom", p);
+    }
+
+
+     */
     //CRUDL (create/read/update/delete/list)
     // use POST, GET, PUT, DELETE, GET methods for CRUDL
 
@@ -99,5 +108,28 @@ public class PeopleController {
         peopleList.remove(firstName);
         return peopleList;
     }
+
+
+
+    // should accept something like http://local/people?firstName=tom and update their info, but not override completely?
+    @PutMapping("/people")
+    public Person updateMatchedPerson(@RequestParam String firstName, @RequestBody Person p) {
+        peopleList.replace(firstName, p);
+        return peopleList.get(firstName);
+    }
+
+
+
 } // end of people controller
 
+
+// full CRUD API.
+/*
+C=Create, relates to POST
+R=Read, relates to GET
+U=Update, relates to PUT
+D=Delete, relates to DELETE
+
+
+
+ */

@@ -16,7 +16,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;         // define login button variable
     private Button signupButton;        // define signup button variable
 
-    private String[] userNames = new String[]{
+    static public String[] userNames = new String[]{
             "Admin",
             "Backup",
             "Username",
@@ -25,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
             "Jim"
     };
 
-    private String[] userPasswords = new String[]{
+    static public String[] userPasswords = new String[]{
             "1234",
             "Backup",
             "Password",

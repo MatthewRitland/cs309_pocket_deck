@@ -13,7 +13,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameEditText;  // define username edittext variable
     private EditText passwordEditText;  // define password edittext variable
     private Button loginButton;         // define login button variable
-    private Button signupButton;        // define signup button variable
+    private Button signupButton;// define signup button variable
+
+    private Button backButton;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,11 +23,20 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);            // link to Login activity XML
 
         /* initialize UI elements */
+        backButton = findViewById(R.id.backButton);
         usernameEditText = findViewById(R.id.login_username_edt);
         passwordEditText = findViewById(R.id.login_password_edt);
         loginButton = findViewById(R.id.login_login_btn);    // link to login button in the Login activity XML
         signupButton = findViewById(R.id.login_signup_btn);  // link to signup button in the Login activity XML
 
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(i);
+            }
+        });
         /* click listener on login button pressed */
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

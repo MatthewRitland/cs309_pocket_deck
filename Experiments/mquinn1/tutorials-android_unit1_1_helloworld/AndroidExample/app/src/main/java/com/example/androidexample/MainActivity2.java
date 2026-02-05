@@ -35,6 +35,10 @@ public class MainActivity2 extends AppCompatActivity {
                     startActivity(j);
                 }
             });
+
+
+
+           
             return insets;
         });
 

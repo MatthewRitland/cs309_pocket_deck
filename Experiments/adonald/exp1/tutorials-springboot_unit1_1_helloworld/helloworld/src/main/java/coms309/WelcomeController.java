@@ -19,7 +19,7 @@ class WelcomeController {
     //}
 
     @GetMapping("/name")
-    public String welcome2(@RequestParam String name) {
+    public String welcome2(@RequestParam("name") String name) {
         return "Hello and welcome to a website that is barely a website, " + name;
     }
 }

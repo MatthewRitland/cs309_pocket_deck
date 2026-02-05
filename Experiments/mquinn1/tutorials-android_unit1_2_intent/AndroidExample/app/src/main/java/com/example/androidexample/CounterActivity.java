@@ -65,6 +65,9 @@ public class CounterActivity extends AppCompatActivity {
                 Intent intent = new Intent(CounterActivity.this, MainActivity.class);
                 intent.putExtra("NUM", String.valueOf(counter));  // key-value to pass to the MainActivity
                 startActivity(intent);
+
+
+                
             }
         });
 

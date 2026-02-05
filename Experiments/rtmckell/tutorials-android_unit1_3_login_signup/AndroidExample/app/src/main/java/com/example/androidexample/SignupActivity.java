@@ -17,6 +17,15 @@ public class SignupActivity extends AppCompatActivity {
     private Button loginButton;         // define login button variable
     private Button signupButton;        // define signup button variable
 
+    private String[] existingNames = new String[]{
+            "Admin",
+            "Backup",
+            "Username",
+            "JohnDoe",
+            "JaneDoe",
+            "Jim"
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +58,13 @@ public class SignupActivity extends AppCompatActivity {
                 String username = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 String confirm = confirmEditText.getText().toString();
+
+                for (int i = 0; i < existingNames.length; i++) {
+                    if (username.equals(existingNames[i])) {
+                        Toast.makeText(getApplicationContext(), "A user with this name already exists in our database.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
 
                 if (password.equals(confirm)){
                     Toast.makeText(getApplicationContext(), "Signing up", Toast.LENGTH_LONG).show();

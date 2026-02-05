@@ -53,7 +53,7 @@ public class CounterActivity extends AppCompatActivity {
         decreaseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                counter -= 5;
+                counter -= 13;
                 numberTxt.setText(String.valueOf(counter));
             }
         });

@@ -2,10 +2,11 @@ package coms309.people;
 
 import org.springframework.web.bind.annotation.*;
 
-
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 
 /**
  * Controller used to showcase Create and Read from a LIST
@@ -20,6 +21,15 @@ public class PeopleController {
     // Springboot system.
     HashMap<String, Person> peopleList = new  HashMap<>();
 
+    /*
+    //hard-coded to view https://localhost:8080/people
+    public PeopleController() {
+        Person p = new Person("Tom", "Hanks", "Hollywood", "999");
+        peopleList.put("Tom", p);
+    }
+
+
+     */
     //CRUDL (create/read/update/delete/list)
     // use POST, GET, PUT, DELETE, GET methods for CRUDL
 
@@ -99,5 +109,36 @@ public class PeopleController {
         peopleList.remove(firstName);
         return peopleList;
     }
+
+
+
+    // should create a "random" person
+    @PostMapping("/people/rand")
+    public  String createRandPerson() {
+        Random rand = new Random();
+        String[] firstNameOptions = {"alice", "bob", "chuck", "derik", "elise"};
+        String[] lastNameOptions = {"wonderland", "builder", "norris", "man", "fur"};
+        String[] cityOptions = {"dallas", "new york", "hollywood", "taipei", "des moines"};
+        int randNum = rand.nextInt(5);
+
+        Person randPerson = new Person(firstNameOptions[randNum],lastNameOptions[randNum],cityOptions[randNum],"999");
+        peopleList.put(randPerson.getFirstName(), randPerson);
+        String s = "New Random person " + randPerson.getFirstName() + " Saved";
+        return s;
+    }
+
+
+
 } // end of people controller
 
+
+// full CRUD API.
+/*
+C=Create, relates to POST
+R=Read, relates to GET
+U=Update, relates to PUT
+D=Delete, relates to DELETE
+
+
+
+ */

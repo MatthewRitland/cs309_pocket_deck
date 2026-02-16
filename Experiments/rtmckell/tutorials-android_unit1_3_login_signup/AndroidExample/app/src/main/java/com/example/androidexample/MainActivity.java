@@ -61,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if(extras == null) {
             messageText.setText("Home Page");
-            usernameText.setVisibility(View.INVISIBLE);             // set username text invisible initially
+            usernameText.setText("You are not logged in.");
+            //usernameText.setVisibility(View.INVISIBLE);             // set username text invisible initially
         } else {
             messageText.setText("Welcome");
             usernameText.setText(extras.getString("USERNAME")); // this will come from LoginActivity

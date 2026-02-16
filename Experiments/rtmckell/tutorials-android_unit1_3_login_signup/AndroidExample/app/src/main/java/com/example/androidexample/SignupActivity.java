@@ -17,6 +17,15 @@ public class SignupActivity extends AppCompatActivity {
     private Button loginButton;         // define login button variable
     private Button signupButton;        // define signup button variable
 
+    private String[] existingNames = new String[]{
+            "Admin",
+            "Backup",
+            "Username",
+            "JohnDoe",
+            "JaneDoe",
+            "Jim"
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +59,29 @@ public class SignupActivity extends AppCompatActivity {
                 String password = passwordEditText.getText().toString();
                 String confirm = confirmEditText.getText().toString();
 
+                for (int i = 0; i < LoginActivity.userNames.length; i++) {
+                    if (username.equals(LoginActivity.userNames[i])) {
+                        Toast.makeText(getApplicationContext(), "A user with this name already exists in our database.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+
                 if (password.equals(confirm)){
                     Toast.makeText(getApplicationContext(), "Signing up", Toast.LENGTH_LONG).show();
+
+                    String[] newUsers = new String[LoginActivity.userNames.length+1];
+                    String[] newPasswords = new String[newUsers.length];
+
+                    for(int i = 0; i < LoginActivity.userNames.length; i++) {
+                        newUsers[i]=LoginActivity.userNames[i];
+                        newPasswords[i]=LoginActivity.userPasswords[i];
+                    }
+
+                    newUsers[newUsers.length - 1] = username;
+                    newPasswords[newUsers.length - 1] = password;
+
+                    LoginActivity.userNames = newUsers;
+                    LoginActivity.userPasswords = newPasswords;
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Password don't match", Toast.LENGTH_LONG).show();

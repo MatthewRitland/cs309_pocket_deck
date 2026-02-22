@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -13,10 +14,10 @@
         android:theme="@style/Theme.PocketDeck">
         <activity
             android:name=".LoginActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
-            android:name=".ui.login.SigninActivity"
-            android:exported="false"
+            android:name=".SignupActivity"
+            android:exported="true"
             android:label="@string/title_activity_signin" />
         <activity
             android:name=".MainActivity"

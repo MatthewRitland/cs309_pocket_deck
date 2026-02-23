@@ -28,6 +28,8 @@ public class User {
     private int id;
     private String name;
     private String emailId;
+    private String userName;
+    private String password;
     private boolean ifActive;
 
     /*
@@ -36,13 +38,12 @@ public class User {
      * in the database (more info : https://www.baeldung.com/jpa-cascade-types)
      * @JoinColumn defines the ownership of the foreign key i.e. the user table will have a field called laptop_id
      */
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "laptop_id")
-    private Laptop laptop;
 
-    public User(String name, String emailId) {
+    public User(String name, String emailId, String userName, String password) {
         this.name = name;
         this.emailId = emailId;
+        this.userName = userName;
+        this.password = password;
         this.ifActive = true;
     }
 
@@ -83,12 +84,19 @@ public class User {
         this.ifActive = ifActive;
     }
 
-    public Laptop getLaptop(){
-        return laptop;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setLaptop(Laptop laptop){
-        this.laptop = laptop;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
-    
+
+    public String getPassword () {
+        return password;
+    }
+
+    public void setPassword (String password) {
+        this.password = password;
+    }
 }

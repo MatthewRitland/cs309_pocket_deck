@@ -12,11 +12,6 @@ import jakarta.persistence.OneToOne;
  */
 
 
-/**
- * 
- * @author Matthew Ritland
- * 
- */ 
 
 @Entity
 public class User {
@@ -72,7 +67,7 @@ public class User {
 
     public String getPassword() { return password; }
 
-    public void setPassword() { this.password = password;}
+    public void setPassword(String password) { this.password = password;}
 
     public boolean getIsActive(){
         return ifActive;
@@ -86,6 +81,7 @@ public class User {
 
 
 /*
+ * ***CAN DELETE THIS COMMENT BLOCK AT ANY TIME***
  * BELOW IS IRRELEVANT AND WHAT WAS REMOVED FROM TUTORIAL, BUT LEFT HERE AS
  * AN EXAMPLE OF WHAT WAS DONE TO HELP LINK 1-1 RELATIONSHIP TABLES:
  *

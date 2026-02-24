@@ -12,6 +12,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     // returns true or false if email is taken/exists
     boolean existsByEmailId(String emailID);
+
+    // returns true or false if email is taken/exists
+    boolean existsByName(String name);
     @Transactional
     void deleteById(int id);
 }

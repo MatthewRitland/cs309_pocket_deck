@@ -42,9 +42,14 @@ public class UserController {
             return failure + " Missing email or password";
         }
 
+        // does this username already have an account?
+        if (userRepository.existsByName(user.getName())) {
+            return failure + "\nname already in use.";
+        }
+
         // does this email already have an account?
         if (userRepository.existsByEmailId(user.getEmailId())) {
-            return failure + " Email already in use.";
+            return failure + "\nEmail already in use.";
         }
 
         // otherwise will be unique and valid, so save the new user
@@ -65,8 +70,8 @@ public class UserController {
         user.setPassword(request.getPassword());
         user.setIfActive(request.getIsActive());
 
-        // save the user again
-        userRepository.save(request);
+        // save the user again (which is now updated)
+        userRepository.save(user);
         return userRepository.findById(id);
     }   
     

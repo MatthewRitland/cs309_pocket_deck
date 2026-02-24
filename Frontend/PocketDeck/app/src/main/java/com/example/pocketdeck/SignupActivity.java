@@ -36,15 +36,24 @@ public class SignupActivity extends AppCompatActivity{
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!passwordInput.getText().equals(confirmPasswordInput.getText())) {
+                String username = nameInput.getText().toString();
+                String password = passwordInput.getText().toString();
+                String confirm = confirmPasswordInput.getText().toString();
+
+                if (username.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
+                    // An input is empty
+                    Toast.makeText(getApplicationContext(), "Please fill out all input fields", Toast.LENGTH_LONG).show();
+                }
+
+                if (!password.equals(confirm)) {
                     // Does not match up, invalid.
-                    Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_LONG);
+                    Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_LONG).show();
                 } else {
                     // Check if user with username exists
                     // TEMP: Add call to check username
                     boolean user_exists = false;
                     if (user_exists) {
-                        Toast.makeText(getApplicationContext(), "A user with that username already exists", Toast.LENGTH_LONG);
+                        Toast.makeText(getApplicationContext(), "A user with that username already exists", Toast.LENGTH_LONG).show();
                         return;
                     }
 

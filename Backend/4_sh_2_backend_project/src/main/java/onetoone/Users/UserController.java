@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import onetoone.Laptops.Laptop;
-import onetoone.Laptops.LaptopRepository;
+
 
 /**
  * 
@@ -57,7 +56,7 @@ public class UserController {
         return userRepository.findById(id);
     }   
     
-    @GetMapping("/users/login")
+    @PostMapping("/users/login")
     String login (@RequestBody String userName, @RequestBody String password) {
         User user = userRepository.findByUserName(userName);
         if (user == null) {

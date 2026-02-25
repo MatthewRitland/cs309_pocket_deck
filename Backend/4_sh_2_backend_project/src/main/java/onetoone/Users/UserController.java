@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import onetoone.Laptops.Laptop;
-import onetoone.Laptops.LaptopRepository;
+
 
 /**
  * 
@@ -26,8 +25,6 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    LaptopRepository laptopRepository;
 
     private String success = "{\"message\":\"success\"}";
     private String failure = "{\"message\":\"failure\"}";
@@ -59,16 +56,16 @@ public class UserController {
         return userRepository.findById(id);
     }   
     
-    @PutMapping("/users/{userId}/laptops/{laptopId}")
-    String assignLaptopToUser(@PathVariable int userId,@PathVariable int laptopId){
-        User user = userRepository.findById(userId);
-        Laptop laptop = laptopRepository.findById(laptopId);
-        if(user == null || laptop == null)
+    @PostMapping("/login")
+    String login (@RequestBody String userName, @RequestBody String password) {
+        User user = userRepository.findByUserName(userName);
+        if (user == null) {
             return failure;
-        laptop.setUser(user);
-        user.setLaptop(laptop);
-        userRepository.save(user);
-        return success;
+        }
+        if (user.getPassword().equals(password)) {
+            return success;
+        }
+        return failure;
     }
 
     @DeleteMapping(path = "/users/{id}")

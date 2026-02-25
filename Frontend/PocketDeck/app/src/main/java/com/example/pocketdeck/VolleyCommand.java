@@ -25,6 +25,10 @@ import com.google.android.material.internal.EdgeToEdgeUtils;
 
 public class VolleyCommand {
 
+    //Feat: feature
+    //Fix: bug
+    //Refactor:
+    //Build:
     /*
     Creates one request queue to be used throughout the project
     and anywhere within it.

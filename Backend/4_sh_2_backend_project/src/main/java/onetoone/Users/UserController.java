@@ -56,7 +56,7 @@ public class UserController {
         return userRepository.findById(id);
     }   
     
-    @PostMapping("/users/login")
+    @PostMapping("/login")
     String login (@RequestBody String userName, @RequestBody String password) {
         User user = userRepository.findByUserName(userName);
         if (user == null) {

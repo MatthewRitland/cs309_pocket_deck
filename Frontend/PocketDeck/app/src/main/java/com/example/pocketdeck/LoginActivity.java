@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
+import org.json.JSONObject;
+import org.json.JSONException;
+import com.android.volley.toolbox.JsonObjectRequest;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -33,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button signupButton;
 
     private static final String URL_STRING_REQ = "http://10.0.2.2:3000/login"; // for macoon
+    // private static final String URL_STRING_REQ = "http://coms-3090-025.class.las.iastate.edu:8080/login"; // for backend
 
 
     // Alternative URLs for testing purposes
@@ -82,6 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, "Enter Username and Password!", Toast.LENGTH_SHORT).show();
             return;
         }
+
         // upon succesful login message and activity start
         StringRequest request = new StringRequest(Request.Method.POST, URL_STRING_REQ, new Response.Listener<String>() {
                     @Override
@@ -89,10 +93,28 @@ public class LoginActivity extends AppCompatActivity {
 
                         Log.d("Success", response); //log for debugging
 
-                        //Once you login then go to the main
-                        Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(i);
+                        //NEW ADDED FOR JSON
+                        try {
+                            //create the object and read the value returned
+                            JSONObject json = new JSONObject(response);
+
+                            String message = json.optString("message");
+                            boolean loginSuccess = json.optBoolean("success");
+
+                            //this happens if the login success is true
+                            if(loginSuccess){
+                                Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+                                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(i);
+                            } else {
+                                //if the backend says login failed
+                                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e){
+                            //if the backend doesnt send a json this will happen
+                            Log.e("JSON_ERROR", e.toString());
+                            Toast.makeText(LoginActivity.this, "No Server Response", Toast.LENGTH_SHORT).show();
+                        }
 
                     }
                 },
@@ -118,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
                 return params;
             }
         };
-
         // pass this to the VolleyCommand queue
         VolleyCommand.getInstance(this).addToRequestQueue(request);
     }

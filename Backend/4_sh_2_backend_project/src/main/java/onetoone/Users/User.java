@@ -19,13 +19,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String userName;
+    private String username;
     private String password;
 
-
-    // ---------temp, look in "UserStatus" for more info as to why (Keeps database from giving error) --------
-                                        private boolean if_active = false;
-    // ---------temp------------------------------------------------------------------------------------------
 
 
     // this is to show if the user is: ONLINE, IN_GAME, SPECTATING, AWAY or OFFLINE,
@@ -34,8 +30,8 @@ public class User {
     private UserStatus status;
 
 
-    public User(String userName, String password) {
-        this.userName = userName;
+    public User(String username, String password) {
+        this.username = username;
         this.password = password;
         this.status = UserStatus.OFFLINE;
 
@@ -54,12 +50,12 @@ public class User {
         this.id = id;
     }
 
-    public String getUserName(){
-        return userName;
+    public String getUsername(){
+        return username;
     }
 
-    public void setUserName(String userName){
-        this.userName = userName;
+    public void setUsername(String username){
+        this.username = username;
     }
 
     public String getPassword() { return password; }

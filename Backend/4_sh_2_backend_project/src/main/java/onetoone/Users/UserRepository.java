@@ -8,10 +8,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findById(int id);
 
     // fetch a user by the username
-    User findByUserName(String userName);
+    User findByUsername(String username);
 
     // returns true or false if username is taken/exists
-    boolean existsByUserName(String userName);
+    boolean existsByUsername(String username);
 
     @Transactional
     void deleteById(int id);

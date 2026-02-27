@@ -32,12 +32,12 @@ public class UserController {
     String createUser(@RequestBody User user) {
         // is it a valid request? (is overall request empty? stopped w/ user == null,
         // or username or password is missing.)
-        if (user == null || user.getUserName() == null || user.getPassword() == null) {
+        if (user == null || user.getUsername() == null || user.getPassword() == null) {
             return "{\"message\":\"failure, user doesn't exist, username is invalid, or password is invalid\"}";
         }
 
         // does this username already have an account?
-        if (userRepository.existsByUserName(user.getUserName())) {
+        if (userRepository.existsByUsername(user.getUsername())) {
             return "{\"message\":\"failure name already in use\" + \"}";
         }
         // since the user was passed here, and NOT created through the constructor,
@@ -61,7 +61,7 @@ public class UserController {
             return null;
 
         // updating the user
-        user.setUserName(request.getUserName());
+        user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
         user.setUserStatus(request.getUserStatus());
 
@@ -84,7 +84,7 @@ public class UserController {
     // austin
     @PostMapping("/login")
     loginMessage login(@RequestParam String username, @RequestParam String password) {
-        User user = userRepository.findByUserName(username);
+        User user = userRepository.findByUsername(username);
         if (user == null) {
             return new loginMessage(false, "Login failed");
         }

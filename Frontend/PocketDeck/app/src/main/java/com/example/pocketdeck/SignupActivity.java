@@ -155,7 +155,7 @@ public class SignupActivity extends AppCompatActivity{
         Map<String, String> params = new HashMap<String, String>();
 
         // TODO: check user conversion.
-        params.put("userName", username);
+        params.put("username", username);
         params.put("password", password);
 
         return params;

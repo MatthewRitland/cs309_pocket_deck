@@ -57,9 +57,9 @@ public class SignupActivity extends AppCompatActivity{
     }
 
     private void try_create_user() {
-        String username = nameInput.getText().toString();
-        String password = passwordInput.getText().toString();
-        String confirm = confirmPasswordInput.getText().toString();
+        String username = nameInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
+        String confirm = confirmPasswordInput.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
             // An input is empty
@@ -92,11 +92,11 @@ public class SignupActivity extends AppCompatActivity{
                             responseMessage = response.getString("message");
                             if (responseMessage.equals("success")) {
                                 // Successful creation
+                                Toast.makeText(getApplicationContext(), "User signup successful", Toast.LENGTH_SHORT).show();
+
                                 // TODO: Ensure the local system knows its logged in
                                 String user_id = response.getString("userId");
                                 // TODO: current_user_id = user_id; (doesn't exist yet)
-
-                                Toast.makeText(getApplicationContext(), "User signup successful", Toast.LENGTH_SHORT).show();
 
                                 Intent i = new Intent(SignupActivity.this, MainActivity.class);
                                 startActivity(i);
@@ -104,7 +104,7 @@ public class SignupActivity extends AppCompatActivity{
                                 Toast.makeText(getApplicationContext(), responseMessage, Toast.LENGTH_LONG).show();
                             }
                         } catch (JSONException jsonException) {
-                            Toast.makeText(getApplicationContext(), "jsonException error encountered with server response.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Server response invalid.", Toast.LENGTH_LONG).show();
                             return;
                         }
                     }

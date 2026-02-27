@@ -7,14 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UserRepository extends JpaRepository<User, Integer> {
     User findById(int id);
 
-    // fetch a user by the email id to see if they exist
-    User findByEmailId(String emailId);
+    // fetch a user by the username
+    User findByUserName(String userName);
 
-    // returns true or false if email is taken/exists
-    boolean existsByEmailId(String emailID);
+    // returns true or false if username is taken/exists
+    boolean existsByUserName(String userName);
 
-    // returns true or false if email is taken/exists
-    boolean existsByName(String name);
     @Transactional
     void deleteById(int id);
 }

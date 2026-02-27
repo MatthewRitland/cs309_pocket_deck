@@ -37,41 +37,42 @@ public class UserController {
     // sign up feature
     @PostMapping(path = "/signup")
     String createUser(@RequestBody User user){
-        // is it a valid request?
-        if (user == null || user.getEmailId() == null || user.getPassword() == null) {
-            return failure + " Missing email or password";
+        // is it a valid request? (is overall request empty? stopped w/ user == null,
+        // or username or password is missing.)
+        if (user == null || user.getUserName() == null || user.getPassword() == null) {
+            return failure + "username or password is blank or incorrectly formatted.";
         }
 
         // does this username already have an account?
-        if (userRepository.existsByName(user.getName())) {
+        if (userRepository.existsByUserName(user.getUserName())) {
             return failure + "\nname already in use.";
-        }
-
-        // does this email already have an account?
-        if (userRepository.existsByEmailId(user.getEmailId())) {
-            return failure + "\nEmail already in use.";
         }
 
         // otherwise will be unique and valid, so save the new user
         userRepository.save(user);
-        return success;
+
+        // return a success message, user is now in the database, return the id that user has
+        // so frontend can call it after creation.
+        return success + " with user id: " + user.getId();
     }
 
     @PutMapping("/users/{id}")
     User updateUser(@PathVariable int id, @RequestBody User request){
         User user = userRepository.findById(id);
+
         // check if user was found/exists
         if(user == null)
             return null;
 
         // updating the user
-        user.setName(request.getName());
-        user.setEmailId(request.getEmailId());
+        user.setUserName(request.getUserName());
         user.setPassword(request.getPassword());
-        user.setIfActive(request.getIsActive());
+        user.setIfActive(request.getIfActive());
 
         // save the user again (which is now updated)
         userRepository.save(user);
+
+        // stores
         return userRepository.findById(id);
     }   
     

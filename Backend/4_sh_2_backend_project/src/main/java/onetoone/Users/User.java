@@ -24,14 +24,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
-    private String emailId;
+    private String userName;
     private String password;
     private boolean ifActive;
 
-    public User(String name, String emailId, String password) {
-        this.name = name;
-        this.emailId = emailId;
+    public User(String userName, String password) {
+        this.userName = userName;
         this.password = password;
         this.ifActive = true;
     }
@@ -49,27 +47,19 @@ public class User {
         this.id = id;
     }
 
-    public String getName(){
-        return name;
+    public String getUserName(){
+        return userName;
     }
 
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public String getEmailId(){
-        return emailId;
-    }
-
-    public void setEmailId(String emailId){
-        this.emailId = emailId;
+    public void setUserName(String userName){
+        this.userName = userName;
     }
 
     public String getPassword() { return password; }
 
     public void setPassword(String password) { this.password = password;}
 
-    public boolean getIsActive(){
+    public boolean getIfActive(){
         return ifActive;
     }
 

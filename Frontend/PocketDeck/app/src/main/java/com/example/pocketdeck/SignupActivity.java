@@ -3,6 +3,7 @@ package com.example.pocketdeck;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +28,7 @@ public class SignupActivity extends AppCompatActivity{
     private Button continueButton, loginLinkButton;
 
     // HTTP request URLs
-    private static final String URL_USER_CREATE = "http://localhost:3001/signup"; // Temp Mockoon
+    private static final String URL_USER_CREATE = "http:///10.0.2.2:3001/signup"; // Temp Mockoon
 
     @Override
     protected void onCreate(Bundle savedInstancesState)
@@ -69,7 +70,7 @@ public class SignupActivity extends AppCompatActivity{
 
         if (!password.equals(confirm)) {
             // Does not match up, invalid.
-            Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
         } else {
             // Send request to create user
             JsonObjectRequest create_user_request = new JsonObjectRequest(
@@ -104,6 +105,7 @@ public class SignupActivity extends AppCompatActivity{
                         @Override
                         public void onErrorResponse(VolleyError volleyError) {
                             // Failed to create user account
+                            Log.d("WTF IS GOING ON!?!?!", volleyError.toString());
                             Toast.makeText(getApplicationContext(), "Response error", Toast.LENGTH_LONG).show();
                         }
                     }) {
@@ -125,7 +127,7 @@ public class SignupActivity extends AppCompatActivity{
                     return user_params;
                 }
             };
-
+            // Volley command.
             VolleyCommand.getInstance(this).addToRequestQueue(create_user_request);
         }
     }

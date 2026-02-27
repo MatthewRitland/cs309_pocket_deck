@@ -81,7 +81,7 @@ public class SignupActivity extends AppCompatActivity{
         JsonObjectRequest create_user_request = new JsonObjectRequest(
                 Request.Method.POST,
                 URL_USER_CREATE,
-                null,
+                new JSONObject(getUserMap(username, password)),
                 new Response.Listener<JSONObject>() {
 
                     @Override
@@ -115,21 +115,19 @@ public class SignupActivity extends AppCompatActivity{
                         Toast.makeText(getApplicationContext(), "Response error", Toast.LENGTH_LONG).show();
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
-
-                // TODO: Check if this JSON parameter is converted to a user.
-                params.put("userName", username);
-                params.put("password", password);
-
-                return params;
-            }
-        };
+        );
         // Volley command.
         VolleyCommand.getInstance(this).addToRequestQueue(create_user_request);
     }
 
+    private Map<String, String> getUserMap(String username, String password) {
+        Map<String, String> params = new HashMap<String, String>();
+
+        // TODO: Check if this JSON parameter is converted to a user.
+        params.put("userName", username);
+        params.put("password", password);
+
+        return params;
+    }
 
 }

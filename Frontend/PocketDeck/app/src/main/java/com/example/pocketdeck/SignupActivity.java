@@ -72,55 +72,60 @@ public class SignupActivity extends AppCompatActivity{
             // Does not match up, invalid.
             Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
         } else {
-            // Send request to create user
-            JsonObjectRequest create_user_request = new JsonObjectRequest(
-                    Request.Method.POST, URL_USER_CREATE, null,
-                    new Response.Listener<JSONObject>() {
-
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            // Do code here.
-                            String responseMessage = "";
-                            try {
-                                responseMessage = response.getString("message");
-                                if (responseMessage.equals("success")) {
-                                    // Successful creation
-                                    // cry();
-
-                                    // Ensure the local system knows its logged in
-                                    String user_id = response.getString("userId");
-                                    // current_user_id = user_id; (doesn't exist yet)
-
-                                    Toast.makeText(getApplicationContext(), "User signup successful", Toast.LENGTH_SHORT).show();
-
-                                    Intent i = new Intent(SignupActivity.this, MainActivity.class);
-                                    startActivity(i);
-                                }
-                            } catch (JSONException jsonException) {
-                                Toast.makeText(getApplicationContext(), "jsonException error encountered with server response.", Toast.LENGTH_LONG).show();
-                                return;
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-                            // Failed to create user account
-                            Toast.makeText(getApplicationContext(), "Response error", Toast.LENGTH_LONG).show();
-                        }
-                    }) {
-                @Override
-                protected Map<String, String> getParams() {
-                    Map<String, String> user_params = new HashMap<>();
-
-                    // TODO: Check if this JSON parameter is converted to a user.
-                    user_params.put("userName", username);
-                    user_params.put("password", password);
-
-                    return user_params;
-                }
-            };
-            // Volley command.
-            VolleyCommand.getInstance(this).addToRequestQueue(create_user_request);
+            // I am aware the following function name is dumb.
+            create_user_http();
         }
+    }
+
+    private void create_user_http() {
+        // Send request to create user
+        JsonObjectRequest create_user_request = new JsonObjectRequest(
+                Request.Method.POST,
+                URL_USER_CREATE,
+                null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // Do code here.
+                        String responseMessage = "";
+                        try {
+                            responseMessage = response.getString("message");
+                            if (responseMessage.equals("success")) {
+                                // Successful creation
+                                // TODO: Ensure the local system knows its logged in
+                                String user_id = response.getString("userId");
+                                // TODO: current_user_id = user_id; (doesn't exist yet)
+
+                                Toast.makeText(getApplicationContext(), "User signup successful", Toast.LENGTH_SHORT).show();
+                                
+                                Intent i = new Intent(SignupActivity.this, MainActivity.class);
+                                startActivity(i);
+                            }
+                        } catch (JSONException jsonException) {
+                            Toast.makeText(getApplicationContext(), "jsonException error encountered with server response.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                // Failed to create user account
+                Toast.makeText(getApplicationContext(), "Response error", Toast.LENGTH_LONG).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> user_params = new HashMap<String, String>();
+
+                // TODO: Check if this JSON parameter is converted to a user.
+                user_params.put("userName", username);
+                user_params.put("password", password);
+
+                return user_params;
+            }
+        };
+        // Volley command.
+        VolleyCommand.getInstance(this).addToRequestQueue(create_user_request);
     }
 }

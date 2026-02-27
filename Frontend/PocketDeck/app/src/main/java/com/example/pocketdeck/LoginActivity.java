@@ -35,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button signupButton;
 
     // private static final String URL_STRING_REQ = "http://10.0.2.2:3000/login"; // for macoon
-    private static final String URL_STRING_REQ = "http://coms-3090-025.class.las.iastate.edu:8080/users"; // for backend
+    private static final String URL_STRING_REQ = "http://coms-3090-025.class.las.iastate.edu:8080/login"; // for backend
 
 
     // Alternative URLs for testing purposes

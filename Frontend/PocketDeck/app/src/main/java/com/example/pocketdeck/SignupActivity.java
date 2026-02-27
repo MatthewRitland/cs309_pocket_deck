@@ -3,14 +3,12 @@ package com.example.pocketdeck;
 import android.content.Intent;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -45,7 +43,7 @@ public class SignupActivity extends AppCompatActivity{
         continueButton = findViewById(R.id.continueButton);
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { create_user_request(); }
+            public void onClick(View v) { try_create_user(); }
         });
 
         loginLinkButton = findViewById(R.id.loginLinkButton);
@@ -58,7 +56,7 @@ public class SignupActivity extends AppCompatActivity{
         });
     }
 
-    private void create_user_request() {
+    private void try_create_user() {
         String username = nameInput.getText().toString();
         String password = passwordInput.getText().toString();
         String confirm = confirmPasswordInput.getText().toString();
@@ -73,11 +71,11 @@ public class SignupActivity extends AppCompatActivity{
             Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
         } else {
             // I am aware the following function name is dumb.
-            create_user_http(username, password);
+            create_user_request(username, password);
         }
     }
 
-    private void create_user_http(String username, String password) {
+    private void create_user_request(String username, String password) {
         // Send request to create user
         JsonObjectRequest create_user_request = new JsonObjectRequest(
                 Request.Method.POST,
@@ -101,6 +99,8 @@ public class SignupActivity extends AppCompatActivity{
 
                                 Intent i = new Intent(SignupActivity.this, MainActivity.class);
                                 startActivity(i);
+                            } else {
+                                Toast.makeText(getApplicationContext(), responseMessage, Toast.LENGTH_LONG).show();
                             }
                         } catch (JSONException jsonException) {
                             Toast.makeText(getApplicationContext(), "jsonException error encountered with server response.", Toast.LENGTH_LONG).show();
@@ -108,24 +108,27 @@ public class SignupActivity extends AppCompatActivity{
                         }
                     }
                 }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                // Failed to create user account
-                Toast.makeText(getApplicationContext(), "Response error", Toast.LENGTH_LONG).show();
-            }
-        }) {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        // Failed to create user account
+                        Toast.makeText(getApplicationContext(), "Response error", Toast.LENGTH_LONG).show();
+                    }
+                }
+        ) {
             @Override
             protected Map<String, String> getParams() {
-                Map<String, String> user_params = new HashMap<String, String>();
+                Map<String, String> params = new HashMap<String, String>();
 
                 // TODO: Check if this JSON parameter is converted to a user.
-                user_params.put("userName", username);
-                user_params.put("password", password);
+                params.put("userName", username);
+                params.put("password", password);
 
-                return user_params;
+                return params;
             }
         };
         // Volley command.
         VolleyCommand.getInstance(this).addToRequestQueue(create_user_request);
     }
+
+
 }

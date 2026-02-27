@@ -73,11 +73,11 @@ public class SignupActivity extends AppCompatActivity{
             Toast.makeText(getApplicationContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
         } else {
             // I am aware the following function name is dumb.
-            create_user_http();
+            create_user_http(username, password);
         }
     }
 
-    private void create_user_http() {
+    private void create_user_http(String username, String password) {
         // Send request to create user
         JsonObjectRequest create_user_request = new JsonObjectRequest(
                 Request.Method.POST,
@@ -98,7 +98,7 @@ public class SignupActivity extends AppCompatActivity{
                                 // TODO: current_user_id = user_id; (doesn't exist yet)
 
                                 Toast.makeText(getApplicationContext(), "User signup successful", Toast.LENGTH_SHORT).show();
-                                
+
                                 Intent i = new Intent(SignupActivity.this, MainActivity.class);
                                 startActivity(i);
                             }

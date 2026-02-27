@@ -9,11 +9,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import onetoone.Users.User;
 import onetoone.Users.UserRepository;
 
-/**
- * 
- * @author Vivek Bengre
- * 
- */ 
 
 @SpringBootApplication
 @EnableJpaRepositories

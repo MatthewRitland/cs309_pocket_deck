@@ -40,20 +40,23 @@ public class UserController {
         // is it a valid request? (is overall request empty? stopped w/ user == null,
         // or username or password is missing.)
         if (user == null || user.getUserName() == null || user.getPassword() == null) {
-            return failure + "username or password is blank or incorrectly formatted.";
+            return "{\"message\":\"failure, user doesn't exist, username is invalid, or password is invalid\"}";
         }
 
         // does this username already have an account?
         if (userRepository.existsByUserName(user.getUserName())) {
             return failure + "\nname already in use.";
         }
+        // since the user was passed here, and NOT created through the constructor,
+        // need to assign the status here before saving it to the DB
+        user.setUserStatus(UserStatus.OFFLINE);
 
         // otherwise will be unique and valid, so save the new user
         userRepository.save(user);
 
         // return a success message, user is now in the database, return the id that user has
         // so frontend can call it after creation.
-        return success + " with user id: " + user.getId();
+        return "{\"message\":\"success\", \"userId\":" + user.getId() + "}" ;
     }
 
     @PutMapping("/users/{id}")
@@ -67,7 +70,7 @@ public class UserController {
         // updating the user
         user.setUserName(request.getUserName());
         user.setPassword(request.getPassword());
-        user.setIfActive(request.getIfActive());
+        user.setUserStatus(request.getUserStatus());
 
         // save the user again (which is now updated)
         userRepository.save(user);

@@ -1,9 +1,6 @@
 package onetoone.Users;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 /*
 import jakarta.persistence.CascadeType;
@@ -26,12 +23,23 @@ public class User {
     private int id;
     private String userName;
     private String password;
-    private boolean ifActive;
+
+
+    // ---------temp, look in "UserStatus" for more info as to why (Keeps database from giving error) --------
+                                        private boolean if_active = false;
+    // ---------temp------------------------------------------------------------------------------------------
+
+
+    // this is to show if the user is: ONLINE, IN_GAME, SPECTATING, AWAY or OFFLINE,
+    // as declared in the UserStatus.java file (public enum UserStatus)
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
 
     public User(String userName, String password) {
         this.userName = userName;
         this.password = password;
-        this.ifActive = true;
+        this.status = UserStatus.OFFLINE;
     }
 
     public User() {
@@ -59,13 +67,9 @@ public class User {
 
     public void setPassword(String password) { this.password = password;}
 
-    public boolean getIfActive(){
-        return ifActive;
-    }
+    public UserStatus getUserStatus() {return status;}
 
-    public void setIfActive(boolean ifActive){
-        this.ifActive = ifActive;
-    }
+    public void setUserStatus(UserStatus status) {this.status = status;}
 
 }
 

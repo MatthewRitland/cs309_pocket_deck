@@ -6,11 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
-/**
- * 
- * @author Vivek Bengre
- * 
- */ 
 
 @RestController
 public class UserController {
@@ -23,35 +18,73 @@ public class UserController {
     private String failure = "{\"message\":\"failure\"}";
 
     @GetMapping(path = "/users")
-    List<User> getAllUsers(){
+    List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     @GetMapping(path = "/users/{id}")
-    User getUserById( @PathVariable int id){
+    User getUserById(@PathVariable int id) {
         return userRepository.findById(id);
     }
 
-    @PostMapping(path = "/users")
-    String createUser(@RequestBody User user){
-        if (user == null)
-            return failure;
+    // sign up feature
+    @PostMapping(path = "/signup")
+    String createUser(@RequestBody User user) {
+        // is it a valid request? (is overall request empty? stopped w/ user == null,
+        // or username or password is missing.)
+        if (user == null || user.getUsername() == null || user.getPassword() == null) {
+            return "{\"message\":\"failure, user doesn't exist, username is invalid, or password is invalid\"}";
+        }
+
+        // does this username already have an account?
+        if (userRepository.existsByUsername(user.getUsername())) {
+            return "{\"message\":\"failure name already in use\" + \"}";
+        }
+        // since the user was passed here, and NOT created through the constructor,
+        // need to assign the status here before saving it to the DB
+        user.setUserStatus(UserStatus.OFFLINE);
+
+        // otherwise will be unique and valid, so save the new user
         userRepository.save(user);
-        return success;
+
+        // return a success message, user is now in the database, return the id that user has
+        // so frontend can call it after creation.
+        return "{\"message\":\"success\", \"userId\":" + user.getId() + "}";
     }
 
     @PutMapping("/users/{id}")
-    User updateUser(@PathVariable int id, @RequestBody User request){
+    User updateUser(@PathVariable int id, @RequestBody User request) {
         User user = userRepository.findById(id);
-        if(user == null)
+
+        // check if user was found/exists
+        if (user == null)
             return null;
-        userRepository.save(request);
+
+        // updating the user
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setUserStatus(request.getUserStatus());
+
+        // save the user again (which is now updated)
+        userRepository.save(user);
+
+        // stores
         return userRepository.findById(id);
-    }   
-    
+    }
+
+
+    @DeleteMapping(path = "/users/{id}")
+        // delete the user that matches the id
+    String deleteUser(@PathVariable int id) {
+        userRepository.deleteById(id);
+        return success;
+    }
+
+
+    // austin
     @PostMapping("/login")
-    loginMessage login (@RequestParam String username, @RequestParam String password) {
-        User user = userRepository.findByUserName(username);
+    loginMessage login(@RequestParam String username, @RequestParam String password) {
+        User user = userRepository.findByUsername(username);
         if (user == null) {
             return new loginMessage(false, "Login failed");
         }
@@ -77,11 +110,5 @@ public class UserController {
         public String getMessage() {
             return message;
         }
-    }
-
-    @DeleteMapping(path = "/users/{id}")
-    String deleteUser(@PathVariable int id){
-        userRepository.deleteById(id);
-        return success;
     }
 }

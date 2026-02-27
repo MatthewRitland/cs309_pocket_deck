@@ -16,15 +16,15 @@
         <EditText
             android:id="@+id/nameInput"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
             android:ems="10"
-            android:inputType="text"
-            android:text="Name" />
+            android:hint="Username"
+            android:inputType="text" />
 
         <EditText
             android:id="@+id/passwordInput"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
             android:ems="10"
             android:hint="Password"
             android:inputType="textPassword" />
@@ -32,7 +32,7 @@
         <EditText
             android:id="@+id/confirmPasswordInput"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="65dp"
             android:ems="10"
             android:hint="Confirm Password"
             android:inputType="textPassword" />
@@ -42,5 +42,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Sign-up" />
+
+        <Button
+            android:id="@+id/loginLinkButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Back to Login" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

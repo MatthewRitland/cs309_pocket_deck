@@ -50,8 +50,8 @@ public class UserController {
     }   
     
     @PostMapping("/login")
-    loginMessage login (@RequestParam String userName, @RequestParam String password) {
-        User user = userRepository.findByUserName(userName);
+    loginMessage login (@RequestParam String username, @RequestParam String password) {
+        User user = userRepository.findByUserName(username);
         if (user == null) {
             return new loginMessage(false, "Login failed");
         }

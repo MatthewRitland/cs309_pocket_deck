@@ -26,7 +26,9 @@ public class SignupActivity extends AppCompatActivity{
     private Button continueButton, loginLinkButton;
 
     // HTTP request URLs
-    private static final String URL_USER_CREATE = "http:///10.0.2.2:3001/signup"; // Temp URL, Mackoon
+    //private static final String URL_USER_CREATE = "http:///10.0.2.2:3001/signup"; // Temp URL, Mockoon
+    // Server HTTP URL for Signup.
+    private static final String URL_USER_CREATE = "http://coms-3090-025.class.las.iastate.edu:8080/signup";
 
     @Override
     protected void onCreate(Bundle savedInstancesState)

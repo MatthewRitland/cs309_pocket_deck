@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+
 import onetoone.Users.User;
 import onetoone.Users.UserRepository;
 
@@ -28,6 +29,8 @@ class Main {
     @Bean
     CommandLineRunner initUser(UserRepository userRepository) {
         return args -> {
+            // CODE BElOW DOESN'T REALLY MATTER, JUST FOR BACKEND DEV TESTING
+            //matthew
             /* Testing: creating users works
             User user1 = new User("JohnNew", "johnnew@somemail.com", "123");
             User user2 = new User("JaneNew", "janenew@somemail.com", "456");
@@ -46,6 +49,14 @@ class Main {
             System.out.println("There are now " + userRepository.count() + " users");
 
              */
+
+            // austin
+            //User user1 = new User("John", "john@somemail.com", "JMan", "Password");
+            //User user2 = new User("Jane", "jane@somemail.com", "name", "12345");
+            //User user3 = new User("Justin", "justin@somemail.com", "user", "98765");
+            //userRepository.save(user1);
+            //userRepository.save(user2);
+            //userRepository.save(user3);
 
         };
     }

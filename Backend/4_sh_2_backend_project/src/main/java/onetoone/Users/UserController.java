@@ -3,13 +3,7 @@ package onetoone.Users;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 
@@ -20,23 +14,22 @@ public class UserController {
     UserRepository userRepository;
 
 
-
     private String success = "{\"message\":\"success\"}";
     private String failure = "{\"message\":\"failure\"}";
 
     @GetMapping(path = "/users")
-    List<User> getAllUsers(){
+    List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     @GetMapping(path = "/users/{id}")
-    User getUserById( @PathVariable int id){
+    User getUserById(@PathVariable int id) {
         return userRepository.findById(id);
     }
 
     // sign up feature
     @PostMapping(path = "/signup")
-    String createUser(@RequestBody User user){
+    String createUser(@RequestBody User user) {
         // is it a valid request? (is overall request empty? stopped w/ user == null,
         // or username or password is missing.)
         if (user == null || user.getUserName() == null || user.getPassword() == null) {
@@ -45,7 +38,7 @@ public class UserController {
 
         // does this username already have an account?
         if (userRepository.existsByUserName(user.getUserName())) {
-            return failure + "\nname already in use.";
+            return "{\"message\":\"failure name already in use\" + \"}";
         }
         // since the user was passed here, and NOT created through the constructor,
         // need to assign the status here before saving it to the DB
@@ -56,15 +49,15 @@ public class UserController {
 
         // return a success message, user is now in the database, return the id that user has
         // so frontend can call it after creation.
-        return "{\"message\":\"success\", \"userId\":" + user.getId() + "}" ;
+        return "{\"message\":\"success\", \"userId\":" + user.getId() + "}";
     }
 
     @PutMapping("/users/{id}")
-    User updateUser(@PathVariable int id, @RequestBody User request){
+    User updateUser(@PathVariable int id, @RequestBody User request) {
         User user = userRepository.findById(id);
 
         // check if user was found/exists
-        if(user == null)
+        if (user == null)
             return null;
 
         // updating the user
@@ -77,40 +70,45 @@ public class UserController {
 
         // stores
         return userRepository.findById(id);
-    }   
-    
+    }
 
 
     @DeleteMapping(path = "/users/{id}")
-    // delete the user that matches the id
-    String deleteUser(@PathVariable int id){
+        // delete the user that matches the id
+    String deleteUser(@PathVariable int id) {
         userRepository.deleteById(id);
         return success;
     }
-}
 
-/*
-***CAN DELETE THIS COMMENT BLOCK AT ANY TIME***
-LEFT OVER STUFF FROM TUTORIAL, BUT SERVES AS A GOOD EXAMPLE OF HOW TO IMPLEMENT SOMETHING THAT WOULD
-HAVE HAD A RELATIONSHIP.
-import onetoone.Laptops.Laptop;
-import onetoone.Laptops.LaptopRepository;
 
-public class UserController {
-
-    @Autowired
-    LaptopRepository laptopRepository;
-}
-
-@PutMapping("/users/{userId}/laptops/{laptopId}")
-    String assignLaptopToUser(@PathVariable int userId,@PathVariable int laptopId){
-        User user = userRepository.findById(userId);
-        Laptop laptop = laptopRepository.findById(laptopId);
-        if(user == null || laptop == null)
-            return failure;
-        laptop.setUser(user);
-        user.setLaptop(laptop);
-        userRepository.save(user);
-        return success;
+    // austin
+    @PostMapping("/login")
+    loginMessage login(@RequestParam String username, @RequestParam String password) {
+        User user = userRepository.findByUserName(username);
+        if (user == null) {
+            return new loginMessage(false, "Login failed");
+        }
+        if (user.getPassword().equals(password)) {
+            return new loginMessage(true, "Login successful");
+        }
+        return new loginMessage(false, "Login failed");
     }
- */
+
+    static class loginMessage {
+        boolean success;
+        String message;
+
+        public loginMessage(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
+
+        public boolean getSuccess() {
+            return success;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+}

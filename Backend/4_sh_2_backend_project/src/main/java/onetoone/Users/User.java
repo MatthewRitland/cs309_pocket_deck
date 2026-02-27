@@ -8,8 +8,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
  */
 
-
-
 @Entity
 public class User {
 
@@ -40,6 +38,7 @@ public class User {
         this.userName = userName;
         this.password = password;
         this.status = UserStatus.OFFLINE;
+
     }
 
     public User() {
@@ -72,18 +71,3 @@ public class User {
     public void setUserStatus(UserStatus status) {this.status = status;}
 
 }
-
-
-/*
- * ***CAN DELETE THIS COMMENT BLOCK AT ANY TIME***
- * BELOW IS IRRELEVANT AND WHAT WAS REMOVED FROM TUTORIAL, BUT LEFT HERE AS
- * AN EXAMPLE OF WHAT WAS DONE TO HELP LINK 1-1 RELATIONSHIP TABLES:
- *
- * @OneToOne creates a relation between the current entity/table(Laptop) with the entity/table defined below it(User)
- * cascade is responsible propagating all changes, even to children of the class Eg: changes made to laptop within a user object will be reflected
- * in the database (more info : https://www.baeldung.com/jpa-cascade-types)
- * @JoinColumn defines the ownership of the foreign key i.e. the user table will have a field called laptop_id
- * @OneToOne(cascade = CascadeType.ALL)
- * @JoinColumn(name = "laptop_id")
- * private Laptop laptop;
-*/

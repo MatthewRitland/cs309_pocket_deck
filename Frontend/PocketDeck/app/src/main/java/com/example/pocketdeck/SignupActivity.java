@@ -105,17 +105,9 @@ public class SignupActivity extends AppCompatActivity{
                         @Override
                         public void onErrorResponse(VolleyError volleyError) {
                             // Failed to create user account
-                            Log.d("WTF IS GOING ON!?!?!", volleyError.toString());
                             Toast.makeText(getApplicationContext(), "Response error", Toast.LENGTH_LONG).show();
                         }
                     }) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    // Empty header
-                    Map<String, String> headers = new HashMap<>();
-                    return headers;
-                }
-
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> user_params = new HashMap<>();

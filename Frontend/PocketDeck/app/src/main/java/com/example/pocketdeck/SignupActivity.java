@@ -64,6 +64,7 @@ public class SignupActivity extends AppCompatActivity{
         if (username.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
             // An input is empty
             Toast.makeText(getApplicationContext(), "Please fill out all input fields", Toast.LENGTH_LONG).show();
+            return;
         }
 
         if (!password.equals(confirm)) {

@@ -33,20 +33,23 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        /*
+
         gameHistoryButton = findViewById(R.id.gameHistoryButton);
-        accountButton = findViewById(R.id.accountButton);
-        settingsButton = findViewById(R.id.settingsButton);
 
 
         gameHistoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, GameHistory.class);
+                Intent i = new Intent(MainActivity.this, SignupActivity.class);
                 startActivity(i);
             }
         });
 
+        /*
+
+        gameHistoryButton = findViewById(R.id.gameHistoryButton);
+        accountButton = findViewById(R.id.accountButton);
+        settingsButton = findViewById(R.id.settingsButton);
         accountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

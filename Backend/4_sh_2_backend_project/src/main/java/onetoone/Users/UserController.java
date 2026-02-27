@@ -3,14 +3,7 @@ package onetoone.Users;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -57,15 +50,33 @@ public class UserController {
     }   
     
     @PostMapping("/login")
-    String login (@RequestBody String userName, @RequestBody String password) {
-        User user = userRepository.findByUserName(userName);
+    loginMessage login (@RequestParam String username, @RequestParam String password) {
+        User user = userRepository.findByUserName(username);
         if (user == null) {
-            return failure;
+            return new loginMessage(false, "Login failed");
         }
         if (user.getPassword().equals(password)) {
+            return new loginMessage(true, "Login successful");
+        }
+        return new loginMessage(false, "Login failed");
+    }
+
+    static class loginMessage {
+        boolean success;
+        String message;
+
+        public loginMessage(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
+
+        public boolean getSuccess() {
             return success;
         }
-        return failure;
+
+        public String getMessage() {
+            return message;
+        }
     }
 
     @DeleteMapping(path = "/users/{id}")

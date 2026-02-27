@@ -34,12 +34,12 @@ class Main {
     @Bean
     CommandLineRunner initUser(UserRepository userRepository) {
         return args -> {
-            User user1 = new User("John", "john@somemail.com", "JMan", "Password");
-            User user2 = new User("Jane", "jane@somemail.com", "name", "12345");
-            User user3 = new User("Justin", "justin@somemail.com", "user", "98765");
-            userRepository.save(user1);
-            userRepository.save(user2);
-            userRepository.save(user3);
+            //User user1 = new User("John", "john@somemail.com", "JMan", "Password");
+            //User user2 = new User("Jane", "jane@somemail.com", "name", "12345");
+            //User user3 = new User("Justin", "justin@somemail.com", "user", "98765");
+            //userRepository.save(user1);
+            //userRepository.save(user2);
+            //userRepository.save(user3);
 
         };
     }

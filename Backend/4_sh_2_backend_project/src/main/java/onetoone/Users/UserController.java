@@ -50,15 +50,33 @@ public class UserController {
     }   
     
     @PostMapping("/login")
-    String login (@RequestParam String userName, @RequestParam String password) {
+    loginMessage login (@RequestParam String userName, @RequestParam String password) {
         User user = userRepository.findByUserName(userName);
         if (user == null) {
-            return failure;
+            return new loginMessage(false, "Login failed");
         }
         if (user.getPassword().equals(password)) {
+            return new loginMessage(true, "Login successful");
+        }
+        return new loginMessage(false, "Login failed");
+    }
+
+    static class loginMessage {
+        boolean success;
+        String message;
+
+        public loginMessage(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
+
+        public boolean getSuccess() {
             return success;
         }
-        return failure;
+
+        public String getMessage() {
+            return message;
+        }
     }
 
     @DeleteMapping(path = "/users/{id}")

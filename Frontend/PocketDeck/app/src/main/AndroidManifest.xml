@@ -15,6 +15,12 @@
         android:theme="@style/Theme.PocketDeck"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".GameModes"
+            android:exported="false" />
+        <activity
+            android:name=".GamePlayScreen"
+            android:exported="false" />
+        <activity
             android:name=".AccountSettings"
             android:exported="false" />
         <activity
@@ -23,10 +29,6 @@
         <activity
             android:name=".GameHistory"
             android:exported="false" />
-        <activity
-            android:name=".GameHisory"
-            android:exported="false"
-            android:theme="@style/Theme.PocketDeck" />
         <activity
             android:name=".LoginActivity"
             android:exported="true" />

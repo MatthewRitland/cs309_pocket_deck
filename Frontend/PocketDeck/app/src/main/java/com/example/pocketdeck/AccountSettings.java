@@ -100,10 +100,4 @@ public class AccountSettings extends AppCompatActivity {
         // All inputs are (technically) valid.
         return InputResult.VALID;
     }
-
-    private class passwordBox {
-        private String currentPassword;
-        private String newPassword;
-        private String confirmPassword;
-    }
 }

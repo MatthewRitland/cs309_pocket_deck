@@ -42,10 +42,6 @@ public class CardGame {
         return turnTimeLimit;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public void setGameName(String gameName) {
         this.gameName = gameName;
     }

@@ -1,7 +1,11 @@
 package com.example.pocketdeck;
 
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -19,19 +23,54 @@ public class AccountSettings extends AppCompatActivity {
     private TextView userIdLabel;
 
     // Buttons
-    private Button confirmButton, backButton, logoutButton;
-    private Button inputRevealButton, idRevealButton;
+    private Button confirmButton, backButton, logoutButton, deleteButton;
+    private CheckBox inputRevealButton, idRevealButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_account_settings);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+            // -- GET INPUTS -- //
+
+        // Username and User-ID
+        usernameInput = findViewById(R.id.accSett_username);
+        userIdLabel = findViewById(R.id.accSett_userIdLabel);
+        idRevealButton = findViewById(R.id.accSett_idReveal);
+
+        // Toggle button functionality
+        userIdLabel.setInputType(0x81);
+        idRevealButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Toggle password visibility
+                if (idRevealButton.isChecked()) {
+                    userIdLabel.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                } else {
+                    userIdLabel.setInputType(0x81);
+                }
+            }
+        });
+
+        // Password buttons and fields
+        currentPasswordInput = findViewById(R.id.currentPasswordInput);
+        newPasswordInput = findViewById(R.id.newPasswordInput);
+        confirmPasswordInput = findViewById(R.id.confirmNewPasswordInput);
+
+        // Account logout and deletion
+        logoutButton = findViewById(R.id.logoutButton);
+        deleteButton = findViewById(R.id.deleteUserButton);
+
+        // Navigation buttons
+        confirmButton = findViewById(R.id.confirmAccountSettingsButton);
+        backButton = findViewById(R.id.discardAccountSettingsButton);
 
         updateDisplay();
     }

@@ -34,11 +34,11 @@
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/settingsTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/musicToggle"
+        app:layout_constraintEnd_toStartOf="@id/musicSwitch"
         android:layout_marginTop="28dp"/>
 
     <Switch
-        android:id="@+id/musicToggle"
+        android:id="@+id/musicSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBaseline_toBaselineOf="@id/music"
@@ -72,11 +72,11 @@
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/volumeBar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/switchSfx"
+        app:layout_constraintEnd_toStartOf="@id/soundEffectsSwitch"
         android:layout_marginTop="24dp"/>
 
     <Switch
-        android:id="@+id/switchSfx"
+        android:id="@+id/soundEffectsSwitch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBaseline_toBaselineOf="@id/effectsTitle"

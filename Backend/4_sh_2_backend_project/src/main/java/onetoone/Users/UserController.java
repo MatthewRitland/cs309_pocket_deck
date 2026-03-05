@@ -2,9 +2,11 @@ package onetoone.Users;
 
 import java.util.List;
 
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController
@@ -24,21 +26,25 @@ public class UserController {
 
     @GetMapping(path = "/users/{id}")
     User getUserById(@PathVariable int id) {
-        return userRepository.findById(id);
+        User user = userRepository.findById(id);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        return user;
     }
 
     // sign up feature
     @PostMapping(path = "/signup")
-    String createUser(@RequestBody User user) {
+    User createUser(@RequestBody User user) {
         // is it a valid request? (is overall request empty? stopped w/ user == null,
         // or username or password is missing.)
         if (user == null || user.getUsername() == null || user.getPassword() == null) {
-            return "{\"message\":\"failure, user doesn't exist, username is invalid, or password is invalid\"}";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username or password is invalid");
         }
 
         // does this username already have an account?
         if (userRepository.existsByUsername(user.getUsername())) {
-            return "{\"message\":\"failure name already in use\" + \"}";
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already in use");
         }
         // since the user was passed here, and NOT created through the constructor,
         // need to assign the status here before saving it to the DB
@@ -49,27 +55,33 @@ public class UserController {
 
         // return a success message, user is now in the database, return the id that user has
         // so frontend can call it after creation.
-        return "{\"message\":\"success\", \"userId\":" + user.getId() + "}";
+        return user;
     }
 
     @PutMapping("/users/{id}")
     User updateUser(@PathVariable int id, @RequestBody User request) {
         User user = userRepository.findById(id);
 
-        // check if user was found/exists
-        if (user == null)
-            return null;
+        // check if user was found by id, and if not throw an exception. (don't want to update a non-existent user)
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        else if (userRepository.existsByUsername(request.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already in use");
+        }
 
         // updating the user
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
-        user.setUserStatus(request.getUserStatus());
+        if (request.getUserStatus() != null) {
+            user.setUserStatus(request.getUserStatus());
+        }
 
-        // save the user again (which is now updated)
+        // save the user to the database
         userRepository.save(user);
 
-        // stores
-        return userRepository.findById(id);
+        // finally, return the updated user object to frontend
+        return user;
     }
 
 
@@ -81,19 +93,24 @@ public class UserController {
     }
 
 
-    // austin
+    // austin (edited 03/04 by matthew to return user object to frontend)
     @PostMapping("/login")
-    loginMessage login(@RequestParam String username, @RequestParam String password) {
-        User user = userRepository.findByUsername(username);
+    User login(@RequestBody User request) {
+        User user = userRepository.findByUsername(request.getUsername());
         if (user == null) {
-            return new loginMessage(false, "Login failed");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
         }
-        if (user.getPassword().equals(password)) {
-            return new loginMessage(true, "Login successful");
+
+        // make sure that password is correct, throw an exception  otherwise.
+        else if (!user.getPassword().equals(request.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
         }
-        return new loginMessage(false, "Login failed");
+
+        // otherwise, login successful, and return the user object to the frontend
+        return user;
     }
 
+    /*
     static class loginMessage {
         boolean success;
         String message;
@@ -111,4 +128,5 @@ public class UserController {
             return message;
         }
     }
+    */
 }

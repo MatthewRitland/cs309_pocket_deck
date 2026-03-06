@@ -1,6 +1,12 @@
 package com.example.pocketdeck;
 
+/**
+ * Class for handling the logic of the Signup screen.
+ * @author Raine McKellar with some code snippets by Mack Quinn
+ */
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.view.View;
@@ -23,7 +29,6 @@ import java.util.Map;
 public class SignupActivity extends AppCompatActivity{
 
     private EditText nameInput, passwordInput, confirmPasswordInput;
-    private Button continueButton, loginLinkButton;
 
     // HTTP request URLs
     //private static final String URL_USER_CREATE = "http:///10.0.2.2:3001/signup"; // Temp URL, Mockoon
@@ -44,14 +49,14 @@ public class SignupActivity extends AppCompatActivity{
         // Get Buttons
 
         // Confirmation
-        continueButton = findViewById(R.id.continueButton);
+        Button continueButton = findViewById(R.id.continueButton);
         continueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { try_create_user(); }
         });
 
         // Link to login page
-        loginLinkButton = findViewById(R.id.loginLinkButton);
+        Button loginLinkButton = findViewById(R.id.loginLinkButton);
         loginLinkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,10 +122,25 @@ public class SignupActivity extends AppCompatActivity{
                                 // Successful creation (print toast first to ensure user is aware of creation)
                                 Toast.makeText(getApplicationContext(), "User signup successful", Toast.LENGTH_SHORT).show();
 
-                                // TODO: Ensure the local system knows its logged in
                                 // Attempt to fetch user_id from response
-                                String user_id = response.getString("userId");
-                                // TODO: current_user_id = user_id; (doesn't exist yet)
+
+                                if (response.has("user")) {
+                                    JSONObject user_object = response.getJSONObject("user");
+                                    ApplyUserObject(user_object);
+
+                                } else {
+                                    // Legacy code for compatibility
+
+                                    int user_id = response.getInt("userId");
+                                    SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+
+                                    preferences.edit().putBoolean("isLoggedIn", true).apply();
+                                    preferences.edit().putInt("userID", user_id).apply();
+                                    preferences.edit().putBoolean("isLoggedIn", true).apply();
+                                    preferences.edit().putString("username", username).apply();
+                                    preferences.edit().putString("status", "DEBUG_STATUS").apply();
+
+                                }
 
                                 // Switch screen over to main.
                                 Intent i = new Intent(SignupActivity.this, MainActivity.class);
@@ -163,4 +183,22 @@ public class SignupActivity extends AppCompatActivity{
         return params;
     }
 
+    /**
+     * Code to apply the shared preferences for signing in with a user object, most
+     * code has been copied over from Mack's implementation in the LoginActivity.
+     * @param user The user JSON object, formatted as returned by the server.
+     * @throws JSONException Thrown when a parameter expected is missing from the user object.
+     */
+    private void ApplyUserObject(JSONObject user) throws JSONException{
+        int userID = user.getInt("id");
+        String uname = user.getString("username");
+        String status = user.getString("userStatus");
+
+        SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+
+        preferences.edit().putBoolean("isLoggedIn", true).apply();
+        preferences.edit().putInt("userID", userID).apply();
+        preferences.edit().putString("username", uname).apply();
+        preferences.edit().putString("status", status).apply();
+    }
 }

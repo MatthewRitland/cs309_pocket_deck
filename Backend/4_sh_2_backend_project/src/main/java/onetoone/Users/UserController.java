@@ -107,6 +107,8 @@ public class UserController {
         }
 
         // otherwise, login successful, and return the user object to the frontend
+        user.setUserStatus(UserStatus.ONLINE);
+        userRepository.save(user);
         return user;
     }
 

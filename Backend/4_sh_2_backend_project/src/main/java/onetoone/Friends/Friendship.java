@@ -5,8 +5,14 @@ import onetoone.Users.User;
 
 import java.time.LocalDate;
 
+/* DO NOT THINK OF THIS AS A PERSON, THINK OF IT AS THE SOCIAL CONSTRUCT, i.e. WHAT A 'FRIENDSHIP' IS!
+
+
+*/
+
+
 @Entity
-public class Friend {
+public class Friendship {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,17 +28,17 @@ public class Friend {
     private LocalDate dateBefriended;
 
     @Enumerated(EnumType.STRING)
-    FriendStatus friendStatus;
+    FriendshipStatus friendshipStatus;
 
-    public Friend(User requester, User receiver) {
+    public Friendship(User requester, User receiver) {
         this.requester = requester;
         this.receiver = receiver;
-        this.friendStatus = FriendStatus.PENDING; // won't be reached if empty constructor is used
+        this.friendshipStatus = FriendshipStatus.PENDING; // won't be reached if empty constructor is used
         this.dateBefriended = LocalDate.now();
     }
 
 
-    public Friend() {
+    public Friendship() {
     }
 
 
@@ -66,11 +72,11 @@ public class Friend {
     }
 
 
-    public FriendStatus getFriendStatus() {
-        return this.friendStatus;
+    public FriendshipStatus getFriendStatus() {
+        return this.friendshipStatus;
     }
-    public void setFriendStatus(FriendStatus friendStatus) {
-        this.friendStatus = friendStatus;
+    public void setFriendStatus(FriendshipStatus friendshipStatus) {
+        this.friendshipStatus = friendshipStatus;
     }
 
 

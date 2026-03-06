@@ -1,6 +1,6 @@
 package onetoone.Friends;
 
-public enum FriendStatus {
+public enum FriendshipStatus {
     STRANGER,
     PENDING,
     FRIEND,

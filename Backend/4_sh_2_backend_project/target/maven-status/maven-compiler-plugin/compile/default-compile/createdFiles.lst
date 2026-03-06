@@ -1,6 +1,5 @@
-onetoone\Main.class
-onetoone\Users\UserController$loginMessage.class
 onetoone\Users\UserController.class
 onetoone\Users\UserRepository.class
+onetoone\Main.class
 onetoone\Users\User.class
 onetoone\Users\UserStatus.class

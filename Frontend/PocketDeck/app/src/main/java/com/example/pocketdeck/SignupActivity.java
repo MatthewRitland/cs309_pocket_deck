@@ -116,42 +116,25 @@ public class SignupActivity extends AppCompatActivity{
                         // Try-catch for json exceptions from reading response.
                         try {
                             // Fetch response message
-                            String responseMessage = response.getString("message");
+                            //String responseMessage = response.getString("message");
                             // Check for success message (May need rework later)
-                            if (responseMessage.equals("success")) {
-                                // Successful creation (print toast first to ensure user is aware of creation)
-                                Toast.makeText(getApplicationContext(), "User signup successful", Toast.LENGTH_SHORT).show();
 
-                                // Attempt to fetch user_id from response
+                            // Successful creation (print toast first to ensure user is aware of creation)
+                            Toast.makeText(getApplicationContext(), "User signup successful", Toast.LENGTH_SHORT).show();
 
-                                if (response.has("user")) {
-                                    JSONObject user_object = response.getJSONObject("user");
-                                    ApplyUserObject(user_object);
+                            // Attempt to fetch user_id from response
 
-                                } else {
-                                    // Legacy code for compatibility
+                            //if (response.has("user")) {
+                                //JSONObject user_object = response.getJSONObject("user");
+                            ApplyUserObject(response);
 
-                                    int user_id = response.getInt("userId");
-                                    SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+                            // Switch screen over to main.
+                            Intent i = new Intent(SignupActivity.this, MainActivity.class);
+                            startActivity(i);
 
-                                    preferences.edit().putBoolean("isLoggedIn", true).apply();
-                                    preferences.edit().putInt("userID", user_id).apply();
-                                    preferences.edit().putBoolean("isLoggedIn", true).apply();
-                                    preferences.edit().putString("username", username).apply();
-                                    preferences.edit().putString("status", "DEBUG_STATUS").apply();
-
-                                }
-
-                                // Switch screen over to main.
-                                Intent i = new Intent(SignupActivity.this, MainActivity.class);
-                                startActivity(i);
-                            } else {
-                                // Throws the response message as a Toast.
-                                Toast.makeText(getApplicationContext(), responseMessage, Toast.LENGTH_LONG).show();
-                            }
                         } catch (JSONException jsonException) {
                             // Respond to JSONException. Currently just a generic message.
-                            Toast.makeText(getApplicationContext(), "Server response invalid.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Server response invalid. " + jsonException.toString(), Toast.LENGTH_LONG).show();
                             return;
                         }
                     }

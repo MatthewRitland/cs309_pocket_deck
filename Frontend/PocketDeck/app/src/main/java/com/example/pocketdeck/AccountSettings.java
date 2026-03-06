@@ -100,11 +100,22 @@ public class AccountSettings extends AppCompatActivity {
         updateDisplay();
     }
 
+    String currentUsername = "";
+    int userId = -1;
+    int currentPortrait = 0;
+
     /**
      * Updates the components of the page to represent current user settings.
      */
     private void updateDisplay() {
         // Update all the components to represent present user settings.
+        SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+        currentUsername = preferences.getString("username", "DEBUG_USERNAME");
+        userId = preferences.getInt("userID", -1);
+
+        usernameInput.setText(currentUsername);
+        userIdLabel.setText(Integer.toString(userId));
+        // Change picture selection
     }
 
     private boolean confirmChoices() {
@@ -166,7 +177,7 @@ public class AccountSettings extends AppCompatActivity {
                 // Confirmed deletion.
                 // Send request to delete user to server
                 SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
-                int userId = preferences.getInt("userID", -1);
+                //int userId = preferences.getInt("userID", -1);
                 if (userId == -1) {
                     Toast.makeText(getApplicationContext(), "Couldn't retrieve userId.", Toast.LENGTH_SHORT).show();
                     return;

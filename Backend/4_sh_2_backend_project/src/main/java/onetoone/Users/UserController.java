@@ -88,8 +88,14 @@ public class UserController {
     @DeleteMapping(path = "/users/{id}")
         // delete the user that matches the id
     String deleteUser(@PathVariable int id) {
+        if (userRepository.findById(id) == null) {
+            return failure;
+        }
         userRepository.deleteById(id);
-        return success;
+        if (userRepository.findById(id) == null) {
+            return success;
+        }
+        return failure;
     }
 
 

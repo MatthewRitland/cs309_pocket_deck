@@ -1,3 +1,6 @@
+// Author Mack Quinn
+// Uses snippets from Raine McKellar
+
 package com.example.pocketdeck;
 
 import android.content.Intent;
@@ -65,7 +68,9 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginRequest(); // call to activity to go to try to log in
+                String username = usernameText.getText().toString().trim();
+                String password = passwordText.getText().toString().trim();
+                loginRequest(username, password); // call to activity to go to try to log in
             }
         });
 
@@ -86,11 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     //to send login request to the backend
-    private void loginRequest () {
-
-        // these get the text entered by the user
-        final String username = usernameText.getText().toString().trim();
-        final String password = passwordText.getText().toString().trim();
+    private void loginRequest (String username, String password) {
 
         // make sure theres something entered
         if(username.isEmpty() || password.isEmpty()){
@@ -98,80 +99,58 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // upon succesful login message and activity start
-        StringRequest request = new StringRequest(Request.Method.POST, URL_STRING_REQ, new Response.Listener<String>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,URL_STRING_REQ,new JSONObject(getUserMap(username, password)), new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
-
-                        Log.d("Success", response); //log for debugging
-
-                        //NEW ADDED FOR JSON
+                    public void onResponse(JSONObject response) {
                         try {
-//                            //create the object and read the value returned
-//                            JSONObject json = new JSONObject(response);
-//
-//                            String message = json.optString("message");
-//                            boolean loginSuccess = json.optBoolean("success");
-//
-//                            //this happens if the login success is true
-//                            //EDIT: crate a flag using SharedPreferences to save login data even when the app is closed
-//                            if(loginSuccess){
-                            //Create json object to store all user info in the shared preferences
-                            JSONObject userInfo = new JSONObject(response);
+                            ApplyUserObject(response);
 
-                            int userID = userInfo.optInt("id");
-                            String uname = userInfo.optString("username");
-                            String status = userInfo.optString("userStatus");
-                            //create a shared preference that saves data to "userLoggedIn". MODE_Private means that
-                            //only the app can use this.
-                            //Look at this for more info. https://www.geeksforgeeks.org/android/shared-preferences-in-android-with-examples/
-                            //I used this page and some others to figure this out
-                            //Save the flag here when you sign in so that I can use it in main for the play button logic
-                            SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
-                            preferences.edit().putBoolean("isLoggedIn", true).apply();
-                            preferences.edit().putInt("userID", userID).apply();
-                            preferences.edit().putString("username", uname).apply();
-                            preferences.edit().putString("status", status).apply();
-
+                            // success message to screen
                             Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
 
                             Intent i = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(i);
-//                            } else {
-//                                //if the backend says login failed
-//                                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
-//                            }
-                        } catch (JSONException e){
-                            //if the backend doesnt send a json this will happen
+
+                        } catch (Exception e) {
+                            // response exists but cannot be read
                             Log.e("JSON_ERROR", e.toString());
                             Toast.makeText(LoginActivity.this, "No Server Response", Toast.LENGTH_SHORT).show();
                         }
-
                     }
                 },
-                // Log in failure
-                // **THIS IS NOT INCORRECT USERNAME AND PASSWORD**
+
+                // if  request fails
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
-                        Log.e("LOGIN_ERROR", error.toString()); //error response on login
+                        Log.e("LOGIN_ERROR", error.toString());
                         Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
-
                     }
                 }
-        ) {
+        );
 
-            @Override
-            protected Map<String, String> getParams() {
-                // Parameters for the data sent to the server
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("username", username);
-                params.put("password", password);
-                return params;
-            }
-        };
-        // pass this to the VolleyCommand queue
-        VolleyCommand.getInstance(this).addToRequestQueue(request);
+        // login message and activity start
+        VolleyCommand.getInstance(LoginActivity.this).addToRequestQueue(jsonObjectRequest);
+
+    }
+    private Map<String, String> getUserMap(String username, String password) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("username", username);
+        params.put("password", password);
+
+        return params;
+    }
+
+    private void ApplyUserObject(JSONObject user) throws JSONException{
+        int userID = user.getInt("id");
+        String uname = user.getString("username");
+        String status = user.getString("userStatus");
+
+        SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+
+        preferences.edit().putBoolean("isLoggedIn", true).apply();
+        preferences.edit().putInt("userID", userID).apply();
+        preferences.edit().putString("username", uname).apply();
+        preferences.edit().putString("status", status).apply();
     }
 }

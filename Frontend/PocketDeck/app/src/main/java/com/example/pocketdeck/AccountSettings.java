@@ -31,7 +31,7 @@ import org.json.JSONObject;
 public class AccountSettings extends AppCompatActivity {
 
     // URLs
-    private static final String URL_USER_DELETE = "http:///10.0.2.2:3001/users/";
+    private static final String URL_USER_DELETE = "http://coms-3090-025.class.las.iastate.edu:8080/users/";
 
     // Text Input and Display
     private EditText usernameInput;
@@ -169,12 +169,10 @@ public class AccountSettings extends AppCompatActivity {
                 int userId = preferences.getInt("userID", -1);
                 if (userId == -1) {
                     Toast.makeText(getApplicationContext(), "Couldn't retrieve userId.", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 JsonObjectRequest deleteRequest;
-
-                // Clear dialog
-                dialog.dismiss();
 
                 deleteRequest = new JsonObjectRequest(
                         Request.Method.DELETE,
@@ -199,6 +197,8 @@ public class AccountSettings extends AppCompatActivity {
                                         // Send user to Sign-up
                                         Intent i = new Intent(AccountSettings.this, SignupActivity.class);
                                         startActivity(i);
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "INVALID RESPONSE " + response.getString("message"), Toast.LENGTH_LONG).show();
                                     }
                                 }
                                 catch (Exception e) {
@@ -213,8 +213,15 @@ public class AccountSettings extends AppCompatActivity {
                             }
                         }
                 );
+                VolleyCommand.getInstance(AccountSettings.this).addToRequestQueue(deleteRequest);
+
+                // Clear dialog
+                dialog.dismiss();
             }
+
         });
+
+
 
         // Cancel button
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -38,12 +38,12 @@ public class LoginActivity extends AppCompatActivity {
     private Button backButton;
 
     // private static final String URL_STRING_REQ = "http://10.0.2.2:3000/login"; // for macoon
-    //private static final String URL_STRING_REQ = "http://coms-3090-025.class.las.iastate.edu:8080/login"; // for backend
-    //private static final String URL_USER_ID = "http://coms-3090-025.class.las.iastate.edu:8080/user/{username}";
+    private static final String URL_STRING_REQ = "http://coms-3090-025.class.las.iastate.edu:8080/login"; // for backend
+    // private static final String URL_USER_ID = "http://coms-3090-025.class.las.iastate.edu:8080/users/{username}";
 
     // Alternative URLs for testing purposes
     // public static final String URL_STRING_REQ = "https://2aa87adf-ff7c-45c8-89bc-f3fbfaa16d15.mock.pstmn.io/users/1";
-    public static final String URL_STRING_REQ = "http://10.0.2.2:8080/users/1";
+    // public static final String URL_STRING_REQ = "http://10.0.2.2:8080/users/1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

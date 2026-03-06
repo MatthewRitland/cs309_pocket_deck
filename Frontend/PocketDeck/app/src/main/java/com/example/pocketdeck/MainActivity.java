@@ -1,6 +1,7 @@
 package com.example.pocketdeck;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,31 +19,19 @@ public class MainActivity extends AppCompatActivity {
     private Button gameHistoryButton;
     private Button accountButton;
     private Button settingsButton;
+    private Button playButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.main_menu);
-
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.expandingMenu); // this is the expanding menu top left
         setSupportActionBar(toolbar);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
-        });
-
-
-        gameHistoryButton = findViewById(R.id.gameHistoryButton);
-
-
-        gameHistoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, SignupActivity.class);
-                startActivity(i);
-            }
         });
 
         /*
@@ -66,8 +55,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         */
-    }
+        playButton = findViewById(R.id.playButton);
 
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //open the file named userLoggedInCheck to check login status from LoginActivity
+                SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+                //isLoggedIn is stored in the file and if it doesnt exist set it to false.
+                boolean loggedIn = preferences.getBoolean("isLoggedIn", false);
+
+                // if logged in go to the gameplay screen if not then
+                if(loggedIn) {
+                    Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
+                    startActivity(i);
+                } else {
+                    Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(i);
+                }
+            }
+        });
+
+    }
     // This will access the XML to put the menu top right
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

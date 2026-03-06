@@ -1,6 +1,7 @@
 package com.example.pocketdeck;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -35,8 +36,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button signupButton;
 
     // private static final String URL_STRING_REQ = "http://10.0.2.2:3000/login"; // for macoon
-    private static final String URL_STRING_REQ = "http://coms-3090-025.class.las.iastate.edu:8080/users"; // for backend
-
+    private static final String URL_STRING_REQ = "http://coms-3090-025.class.las.iastate.edu:8080/login"; // for backend
+    private static final String URL_USER_ID = "http://coms-3090-025.class.las.iastate.edu:8080/user/{username}";
 
     // Alternative URLs for testing purposes
     // public static final String URL_STRING_REQ = "https://2aa87adf-ff7c-45c8-89bc-f3fbfaa16d15.mock.pstmn.io/users/1";
@@ -102,8 +103,27 @@ public class LoginActivity extends AppCompatActivity {
                             boolean loginSuccess = json.optBoolean("success");
 
                             //this happens if the login success is true
+                            //EDIT: crate a flag using SharedPreferences to save login data even when the app is closed
                             if(loginSuccess){
+                                //Create json object to store all user info in the shared preferences
+                                JSONObject userInfo = json.getJSONObject("user");
+
+                                int userID = userInfo.getInt("id");
+                                String uname = userInfo.getString("username");
+                                String status = userInfo.getString("userStatus");
+                                //create a shared preference that saves data to "userLoggedIn". MODE_Private means that
+                                //only the app can use this.
+                                //Look at this for more info. https://www.geeksforgeeks.org/android/shared-preferences-in-android-with-examples/
+                                //I used this page and some others to figure this out
+                                //Save the flag here when you sign in so that I can use it in main for the play button logic
+                                SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+                                preferences.edit().putBoolean("isLoggedIn", true).apply();
+                                preferences.edit().putInt("userID", userID).apply();
+                                preferences.edit().putString("username", uname).apply();
+                                preferences.edit().putString("status", status).apply();
+
                                 Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+
                                 Intent i = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(i);
                             } else {

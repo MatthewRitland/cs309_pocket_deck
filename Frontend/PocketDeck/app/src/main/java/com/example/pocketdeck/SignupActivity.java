@@ -132,6 +132,13 @@ public class SignupActivity extends AppCompatActivity{
                                     // Legacy code for compatibility
 
                                     int user_id = response.getInt("userId");
+                                    SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+
+                                    preferences.edit().putBoolean("isLoggedIn", true).apply();
+                                    preferences.edit().putInt("userID", user_id).apply();
+                                    preferences.edit().putBoolean("isLoggedIn", true).apply();
+                                    preferences.edit().putString("username", username).apply();
+                                    preferences.edit().putString("status", "DEBUG_STATUS").apply();
 
                                 }
 

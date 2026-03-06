@@ -1,5 +1,8 @@
 package com.example.pocketdeck;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -8,14 +11,27 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONObject;
+
 public class AccountSettings extends AppCompatActivity {
+
+    // URLs
+    private static final String URL_USER_DELETE = "http:///10.0.2.2:3001/users/";
 
     // Text Input and Display
     private EditText usernameInput;
@@ -23,7 +39,7 @@ public class AccountSettings extends AppCompatActivity {
     private TextView userIdLabel;
 
     // Buttons
-    private Button confirmButton, backButton, logoutButton, deleteButton;
+    private Button confirmButton, backButton;
     private CheckBox inputRevealButton, idRevealButton;
 
     @Override
@@ -65,8 +81,17 @@ public class AccountSettings extends AppCompatActivity {
         confirmPasswordInput = findViewById(R.id.confirmNewPasswordInput);
 
         // Account logout and deletion
-        logoutButton = findViewById(R.id.logoutButton);
-        deleteButton = findViewById(R.id.deleteUserButton);
+        Button logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { logOutUser(); }
+        });
+
+        Button deleteButton = findViewById(R.id.deleteUserButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { deleteUserAccount(); }
+        });
 
         // Navigation buttons
         confirmButton = findViewById(R.id.confirmAccountSettingsButton);
@@ -87,6 +112,120 @@ public class AccountSettings extends AppCompatActivity {
 
         // Do communication
         return false;
+    }
+
+    private void logOutUser() {
+        // Pop up to confirm
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Are you sure you want to log out?");
+        builder.setCancelable(false);
+
+        builder.setPositiveButton("Log out", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Clear properties
+                SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+
+                preferences.edit().putBoolean("isLoggedIn", false).apply();
+                preferences.edit().remove("userID").apply();
+                preferences.edit().remove("username").apply();
+                preferences.edit().remove("status").apply();
+
+                // Clear dialog
+                dialog.dismiss();
+
+                // Send to Login
+                Intent i = new Intent(AccountSettings.this, LoginActivity.class);
+                startActivity(i);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Clear dialog
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog logoutAlert = builder.create();
+        logoutAlert.show();
+    }
+
+    private void deleteUserAccount() {
+        // Pop up to confirm
+        AlertDialog.Builder builder = new AlertDialog.Builder(AccountSettings.this);
+        builder.setTitle("Are you sure you want to delete your account?");
+        builder.setMessage("Any data from your account CANNOT be recovered afterwards.");
+        builder.setCancelable(false);
+
+        // Confirm button
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Confirmed deletion.
+                // Send request to delete user to server
+                SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+                int userId = preferences.getInt("userID", -1);
+                if (userId == -1) {
+                    Toast.makeText(getApplicationContext(), "Couldn't retrieve userId.", Toast.LENGTH_SHORT).show();
+                }
+
+                JsonObjectRequest deleteRequest;
+
+                // Clear dialog
+                dialog.dismiss();
+
+                deleteRequest = new JsonObjectRequest(
+                        Request.Method.DELETE,
+                        URL_USER_DELETE + Integer.toString(userId),
+                        null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                // Deleted
+                                try {
+                                    if (response.getString("message").equals("success")) {
+                                        Toast.makeText(getApplicationContext(), "User deleted successfully", Toast.LENGTH_LONG).show();
+                                        // Clear properties
+                                        // TODO: ADD CALL TO USER_UTILITIES.
+                                        SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+
+                                        preferences.edit().putBoolean("isLoggedIn", false).apply();
+                                        preferences.edit().remove("userID").apply();
+                                        preferences.edit().remove("username").apply();
+                                        preferences.edit().remove("status").apply();
+
+                                        // Send user to Sign-up
+                                        Intent i = new Intent(AccountSettings.this, SignupActivity.class);
+                                        startActivity(i);
+                                    }
+                                }
+                                catch (Exception e) {
+                                    Toast.makeText(getApplicationContext(), "Server response invalid.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(getApplicationContext(), "Error in deletion: " + error.toString(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                );
+            }
+        });
+
+        // Cancel button
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog deletionAlert = builder.create();
+        deletionAlert.show();
     }
 
     enum InputResult {

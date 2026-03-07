@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -24,14 +23,16 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class AccountSettings extends AppCompatActivity {
 
     // URLs
-    private static final String URL_USER_DELETE = "http://coms-3090-025.class.las.iastate.edu:8080/users/";
+    private static final String URL_USER_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/users/";
 
     // Text Input and Display
     private EditText usernameInput;
@@ -39,7 +40,6 @@ public class AccountSettings extends AppCompatActivity {
     private TextView userIdLabel;
 
     // Buttons
-    private Button confirmButton, backButton;
     private CheckBox inputRevealButton, idRevealButton;
 
     @Override
@@ -94,8 +94,23 @@ public class AccountSettings extends AppCompatActivity {
         });
 
         // Navigation buttons
-        confirmButton = findViewById(R.id.confirmAccountSettingsButton);
-        backButton = findViewById(R.id.discardAccountSettingsButton);
+        Button confirmButton = findViewById(R.id.confirmAccountSettingsButton);
+        Button backButton = findViewById(R.id.discardAccountSettingsButton);
+
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confirmChoices();
+            }
+        });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateDisplay();
+                Intent i = new Intent(AccountSettings.this, MainActivity.class);
+                startActivity(i);
+            }
+        });
 
         updateDisplay();
     }
@@ -115,14 +130,104 @@ public class AccountSettings extends AppCompatActivity {
 
         usernameInput.setText(currentUsername);
         userIdLabel.setText(Integer.toString(userId));
+
+        currentPasswordInput.setText("");
+        newPasswordInput.setText("");
+        confirmPasswordInput.setText("");
         // Change picture selection
     }
 
-    private boolean confirmChoices() {
+    private void confirmChoices() {
         // Do checks
 
-        // Do communication
-        return false;
+        JsonObjectRequest userRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                URL_USER_PATH + Integer.toString(userId),
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // On retrieval
+                        try {
+                            String updatedUsername = usernameInput.getText().toString();
+                            String updatedPassword = response.getString("password");
+
+                            String currentPassword = currentPasswordInput.getText().toString().trim();
+                            String newPassword = newPasswordInput.getText().toString().trim();
+                            String confirmPassword = confirmPasswordInput.getText().toString().trim();
+                            //InputResult validInput = validPasswordInput(currentPassword, newPassword, confirmPassword);
+
+                            // Password Checks
+                            if (!currentPassword.isEmpty() || !newPassword.isEmpty()) {
+                                if (!newPassword.equals(confirmPassword)) {
+                                    Toast.makeText(getApplicationContext(), "The new password and confirmation password must match.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                } else {
+                                    if (currentPassword.equals(updatedPassword)) {
+                                        updatedPassword = newPassword;
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Password is incorrect.", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                }
+                            }
+
+                            if (updatedUsername.isEmpty()) {
+                                Toast.makeText(getApplicationContext(), "New username cannot be blank.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            HashMap<String, String> final_user = new HashMap<String, String>();
+                            final_user.put("username", updatedUsername);
+                            final_user.put("password", updatedPassword);
+                            JSONObject jsonUpdatedUser = new JSONObject(final_user);
+                            sendUpdatedUser(jsonUpdatedUser);
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(), "JSON parsing error: " + e.toString(), Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // On failed
+                        Toast.makeText(getApplicationContext(), "Error in fetching user data: " + error.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+
+        VolleyCommand.getInstance(AccountSettings.this).addToRequestQueue(userRequest);
+    }
+
+    private void sendUpdatedUser(JSONObject userObject) {
+        JsonObjectRequest userUpdate = new JsonObjectRequest(
+                Request.Method.PUT,
+                URL_USER_PATH + Integer.toString(userId),
+                userObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Toast.makeText(getApplicationContext(), "Changes have been sent over", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(AccountSettings.this, MainActivity.class);
+                        startActivity(i);
+                        try {
+                            String uname = userObject.getString("username");
+                            SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+                            preferences.edit().putString("username", uname).apply();
+                        }
+                        catch(Exception e) { }
+                        updateDisplay();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getApplicationContext(), "Issue sending updated data over. " + error.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+
+        VolleyCommand.getInstance(AccountSettings.this).addToRequestQueue(userUpdate);
     }
 
     private void logOutUser() {
@@ -187,7 +292,7 @@ public class AccountSettings extends AppCompatActivity {
 
                 deleteRequest = new JsonObjectRequest(
                         Request.Method.DELETE,
-                        URL_USER_DELETE + Integer.toString(userId),
+                        URL_USER_PATH + Integer.toString(userId),
                         null,
                         new Response.Listener<JSONObject>() {
                             @Override
@@ -244,56 +349,5 @@ public class AccountSettings extends AppCompatActivity {
 
         AlertDialog deletionAlert = builder.create();
         deletionAlert.show();
-    }
-
-    enum InputResult {
-        VALID,
-        INVALID,
-        BLANK
-    }
-
-    private boolean handlePassword() {
-        String currentPassword = currentPasswordInput.getText().toString().trim();
-        String newPassword = newPasswordInput.getText().toString().trim();
-        String confirmPassword = confirmPasswordInput.getText().toString().trim();
-        InputResult validInput = validPasswordInput(currentPassword, newPassword, confirmPassword);
-
-        if (validInput == InputResult.INVALID) {
-            // TODO: Invalid password toast
-            return false;
-        }
-
-        if (validInput == InputResult.VALID) {
-            if (currentPassword.equals(newPassword)) {
-                // TODO : Toast
-                return false;
-            }
-            // TODO: Send new password request to server
-            // TODO: Get user_id
-        }
-
-        return true;
-    }
-
-    /**
-     * Checks the new password fields for whether or not the password should be changed.
-     * @return The checks result, either that input is BLANK, INVALID in some way or VALID
-     */
-    private InputResult validPasswordInput(String currentPassword, String newPassword, String confirmPassword) {
-        // All inputs are BLANK, password should not be changed.
-        if (currentPassword.isEmpty() && newPassword.isEmpty() && confirmPassword.isEmpty()) {
-            return InputResult.BLANK;
-        }
-
-        // Any but not all inputs are blank, password changing input is INVALID.
-        if (currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
-            return InputResult.INVALID;
-        }
-
-        // Confirmation field doesn't match the new password, input INVALID.
-        if (!newPassword.equals(confirmPassword)) return InputResult.INVALID;
-
-        // All inputs are (technically) valid.
-        return InputResult.VALID;
     }
 }

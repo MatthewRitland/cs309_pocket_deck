@@ -184,4 +184,9 @@ public class SignupActivity extends AppCompatActivity{
         preferences.edit().putString("username", uname).apply();
         preferences.edit().putString("status", status).apply();
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MusicPlayer.musicPref(this);
+    }
 }

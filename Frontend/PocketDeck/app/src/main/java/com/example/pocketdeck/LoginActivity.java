@@ -146,11 +146,16 @@ public class LoginActivity extends AppCompatActivity {
         String uname = user.getString("username");
         String status = user.getString("userStatus");
 
-        SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("userPreferences", MODE_PRIVATE);
 
         preferences.edit().putBoolean("isLoggedIn", true).apply();
         preferences.edit().putInt("userID", userID).apply();
         preferences.edit().putString("username", uname).apply();
         preferences.edit().putString("status", status).apply();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MusicPlayer.musicPref(this);
     }
 }

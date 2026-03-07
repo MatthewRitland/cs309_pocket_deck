@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //open the file named userLoggedInCheck to check login status from LoginActivity
-                SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
+                SharedPreferences preferences = getSharedPreferences("userPreferences", MODE_PRIVATE);
                 //isLoggedIn is stored in the file and if it doesnt exist set it to false.
                 boolean loggedIn = preferences.getBoolean("isLoggedIn", false);
 
@@ -106,5 +106,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MusicPlayer.musicPref(this);
     }
 }

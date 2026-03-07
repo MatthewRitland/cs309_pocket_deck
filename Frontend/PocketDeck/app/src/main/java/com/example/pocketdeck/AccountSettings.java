@@ -350,4 +350,9 @@ public class AccountSettings extends AppCompatActivity {
         AlertDialog deletionAlert = builder.create();
         deletionAlert.show();
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MusicPlayer.musicPref(this);
+    }
 }

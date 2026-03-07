@@ -21,4 +21,9 @@ public class GameHistory extends AppCompatActivity {
             return insets;
         });
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MusicPlayer.musicPref(this);
+    }
 }

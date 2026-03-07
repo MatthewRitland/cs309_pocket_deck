@@ -1,6 +1,7 @@
 package com.example.pocketdeck;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
@@ -10,7 +11,6 @@ import android.widget.SeekBar;
 import android.widget.Switch;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -46,18 +46,20 @@ public class Settings extends AppCompatActivity {
         volumeControl.setProgress(75);
         //create the music player. music is stored in raw on android studio
 
+        //access the users saved settings from preferences
+        SharedPreferences preferences = getSharedPreferences("userPreferences", MODE_PRIVATE);
+        musicSwitch.setChecked(preferences.getBoolean("musicOn", true));
+        volumeControl.setProgress(preferences.getInt("volume", 75));
 
         //switch listener so it can turn on and off with the settings button
         musicSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(@NonNull CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //if swtich is on then play. if no tthen turn off
-                if(isChecked) {
-                    MusicPlayer.startMusic(Settings.this);
-                } else {
-                    MusicPlayer.pauseMusic();
-                }
-
+                //this check is now done in MusicPlayer.java
+                preferences.edit().putBoolean("musicOn", isChecked).apply();
+                MusicPlayer.startMusic(Settings.this);
+                MusicPlayer.pauseMusic();
             }
         });
 
@@ -65,6 +67,7 @@ public class Settings extends AppCompatActivity {
         volumeControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar volumeBar, int userVolume, boolean fromUser) {
+                preferences.edit().putInt("volume", userVolume).apply();
                 MusicPlayer.Volume(userVolume);
             }
 
@@ -87,5 +90,10 @@ public class Settings extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MusicPlayer.musicPref(this);
     }
 }

@@ -5,12 +5,7 @@ import onetoone.Users.User;
 
 import java.time.LocalDate;
 
-/* DO NOT THINK OF THIS AS A PERSON, THINK OF IT AS THE SOCIAL CONSTRUCT, i.e. WHAT A 'FRIENDSHIP' IS!
-
-
-*/
-
-
+/* DO NOT THINK OF THIS AS A PERSON, THINK OF IT AS THE SOCIAL CONSTRUCT, i.e. WHAT A 'FRIENDSHIP' IS!*/
 @Entity
 public class Friendship {
 
@@ -18,11 +13,14 @@ public class Friendship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // Friend users User, but User doesn't use Friend (I think???)
+    // joincolumn specifies there is a foreign key, and allows me to define that the key CAN NOT be null,
+    // since there must be at least 2 entities (users) for a relationship/friendship
     @ManyToOne
+    @JoinColumn(nullable = false)
     private User requester;
 
     @ManyToOne
+    @JoinColumn(nullable = false)
     private User receiver;
 
     private LocalDate dateBefriended;
@@ -34,7 +32,6 @@ public class Friendship {
         this.requester = requester;
         this.receiver = receiver;
         this.friendshipStatus = FriendshipStatus.PENDING; // won't be reached if empty constructor is used
-        this.dateBefriended = LocalDate.now();
     }
 
 
@@ -72,12 +69,11 @@ public class Friendship {
     }
 
 
-    public FriendshipStatus getFriendStatus() {
+    public FriendshipStatus getFriendshipStatus() {
         return this.friendshipStatus;
     }
-    public void setFriendStatus(FriendshipStatus friendshipStatus) {
+
+    public void setFriendshipStatus(FriendshipStatus friendshipStatus) {
         this.friendshipStatus = friendshipStatus;
     }
-
-
 }

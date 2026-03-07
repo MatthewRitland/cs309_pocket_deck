@@ -1,5 +1,7 @@
 package onetoone;
 
+import onetoone.Friends.Friendship;
+import onetoone.Friends.FriendshipRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,7 +29,7 @@ class Main {
      * As mentioned in User.java just associating the Laptop object with the User will save it into the database because of the CascadeType
      */
     @Bean
-    CommandLineRunner initUser(UserRepository userRepository) {
+    CommandLineRunner initUser(UserRepository userRepository, FriendshipRepository friendshipRepository) {
         return args -> {
             // CODE BElOW DOESN'T REALLY MATTER, JUST FOR BACKEND DEV TESTING
             //matthew
@@ -59,6 +61,7 @@ class Main {
             //userRepository.save(user3);
 
         };
+
     }
 
 }

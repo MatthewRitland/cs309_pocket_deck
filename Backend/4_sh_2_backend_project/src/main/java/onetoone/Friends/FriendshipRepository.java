@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface FriendshipRepository extends JpaRepository<User, Integer> {
+public interface FriendshipRepository extends JpaRepository<Friendship, Integer> {
     Friendship findById(int id);
 
     // find all of the requests that were sent by one user
@@ -20,7 +20,7 @@ public interface FriendshipRepository extends JpaRepository<User, Integer> {
 
     // find a 'Friendship' that exists between requester and receiver Users
     Friendship findByRequesterIdAndReceiverId(int requesterId, int receiverId);
-    
+
     @Transactional
     void deleteById(int id);
 

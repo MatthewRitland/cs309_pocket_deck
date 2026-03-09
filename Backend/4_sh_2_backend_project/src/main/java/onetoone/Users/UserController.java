@@ -66,7 +66,8 @@ public class UserController {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
-        else if (userRepository.existsByUsername(request.getUsername())) {
+        // if username already exists for a user with a separate id, then throw an exception
+        else if (userRepository.existsByUsernameAndIdNot(request.getUsername(), id)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already in use");
         }
 

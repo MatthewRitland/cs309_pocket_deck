@@ -6,7 +6,6 @@ package com.example.pocketdeck;
  */
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.view.View;
@@ -34,12 +33,15 @@ public class SignupActivity extends AppCompatActivity{
     //private static final String URL_USER_CREATE = "http:///10.0.2.2:3001/signup"; // Temp URL, Mockoon
     // Server HTTP URL for Signup.
     private static final String URL_USER_CREATE = "http://coms-3090-025.class.las.iastate.edu:8080/signup";
+    private UserUtilities userUtils;
 
     @Override
     protected void onCreate(Bundle savedInstancesState)
     {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_signup);
+
+        userUtils = new UserUtilities(SignupActivity.this);
 
         // Get text inputs
         nameInput = findViewById(R.id.nameInput);
@@ -108,7 +110,7 @@ public class SignupActivity extends AppCompatActivity{
         JsonObjectRequest create_user_request = new JsonObjectRequest(
                 Request.Method.POST,
                 URL_USER_CREATE,
-                new JSONObject(getUserMap(username, password)),
+                new JSONObject(userUtils.getUserMap(username, password)),
                 new Response.Listener<JSONObject>() {
                     // Handler for server response to username and password request.
                     @Override
@@ -126,7 +128,7 @@ public class SignupActivity extends AppCompatActivity{
 
                             //if (response.has("user")) {
                                 //JSONObject user_object = response.getJSONObject("user");
-                            ApplyUserObject(response);
+                            userUtils.applyUserObject(response);
 
                             // Switch screen over to main.
                             Intent i = new Intent(SignupActivity.this, MainActivity.class);
@@ -150,40 +152,6 @@ public class SignupActivity extends AppCompatActivity{
         VolleyCommand.getInstance(this).addToRequestQueue(create_user_request);
     }
 
-    /**
-     * Encodes the username and password for the sign-in API in a Map.
-     * @param username The desired username
-     * @param password The desired password
-     * @return HashMap of the username and password.
-     */
-    private Map<String, String> getUserMap(String username, String password) {
-        Map<String, String> params = new HashMap<String, String>();
-
-        // TODO: check user conversion.
-        params.put("username", username);
-        params.put("password", password);
-
-        return params;
-    }
-
-    /**
-     * Code to apply the shared preferences for signing in with a user object, most
-     * code has been copied over from Mack's implementation in the LoginActivity.
-     * @param user The user JSON object, formatted as returned by the server.
-     * @throws JSONException Thrown when a parameter expected is missing from the user object.
-     */
-    private void ApplyUserObject(JSONObject user) throws JSONException{
-        int userID = user.getInt("id");
-        String uname = user.getString("username");
-        String status = user.getString("userStatus");
-
-        SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
-
-        preferences.edit().putBoolean("isLoggedIn", true).apply();
-        preferences.edit().putInt("userID", userID).apply();
-        preferences.edit().putString("username", uname).apply();
-        preferences.edit().putString("status", status).apply();
-    }
     @Override
     protected void onResume() {
         super.onResume();

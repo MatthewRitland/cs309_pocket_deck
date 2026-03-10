@@ -4,7 +4,6 @@
 package com.example.pocketdeck;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -99,11 +98,14 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,URL_STRING_REQ,new JSONObject(getUserMap(username, password)), new Response.Listener<JSONObject>() {
+        UserUtilities userUtils = new UserUtilities(LoginActivity.this);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,URL_STRING_REQ,new JSONObject(userUtils.getUserMap(username, password)), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            ApplyUserObject(response);
+                            //UserUtilities userUtils = new UserUtilities(LoginActivity.this);
+                            userUtils.applyUserObject(response);
 
                             // success message to screen
                             Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
@@ -133,26 +135,7 @@ public class LoginActivity extends AppCompatActivity {
         VolleyCommand.getInstance(LoginActivity.this).addToRequestQueue(jsonObjectRequest);
 
     }
-    private Map<String, String> getUserMap(String username, String password) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("username", username);
-        params.put("password", password);
 
-        return params;
-    }
-
-    private void ApplyUserObject(JSONObject user) throws JSONException{
-        int userID = user.getInt("id");
-        String uname = user.getString("username");
-        String status = user.getString("userStatus");
-
-        SharedPreferences preferences = getSharedPreferences("userPreferences", MODE_PRIVATE);
-
-        preferences.edit().putBoolean("isLoggedIn", true).apply();
-        preferences.edit().putInt("userID", userID).apply();
-        preferences.edit().putString("username", uname).apply();
-        preferences.edit().putString("status", status).apply();
-    }
     @Override
     protected void onResume() {
         super.onResume();

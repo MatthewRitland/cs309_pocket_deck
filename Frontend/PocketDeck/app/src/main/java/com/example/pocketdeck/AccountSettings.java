@@ -2,7 +2,6 @@ package com.example.pocketdeck;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -39,6 +38,8 @@ public class AccountSettings extends AppCompatActivity {
     private EditText currentPasswordInput, newPasswordInput, confirmPasswordInput;
     private TextView userIdLabel;
 
+    private UserUtilities userUtils;
+
     // Buttons
     private CheckBox inputRevealButton, idRevealButton;
 
@@ -53,6 +54,8 @@ public class AccountSettings extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        userUtils = new UserUtilities(AccountSettings.this);
 
             // -- GET INPUTS -- //
 
@@ -124,9 +127,8 @@ public class AccountSettings extends AppCompatActivity {
      */
     private void updateDisplay() {
         // Update all the components to represent present user settings.
-        SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
-        currentUsername = preferences.getString("username", "DEBUG_USERNAME");
-        userId = preferences.getInt("userID", -1);
+        currentUsername = userUtils.getSavedUsername();
+        userId = userUtils.getSavedId();
 
         usernameInput.setText(currentUsername);
         userIdLabel.setText(Integer.toString(userId));
@@ -212,8 +214,7 @@ public class AccountSettings extends AppCompatActivity {
                         startActivity(i);
                         try {
                             String uname = userObject.getString("username");
-                            SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
-                            preferences.edit().putString("username", uname).apply();
+                            userUtils.applyUsername(uname);
                         }
                         catch(Exception e) { }
                         updateDisplay();
@@ -240,12 +241,7 @@ public class AccountSettings extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Clear properties
-                SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
-
-                preferences.edit().putBoolean("isLoggedIn", false).apply();
-                preferences.edit().remove("userID").apply();
-                preferences.edit().remove("username").apply();
-                preferences.edit().remove("status").apply();
+                userUtils.logoutUser();
 
                 // Clear dialog
                 dialog.dismiss();
@@ -281,8 +277,6 @@ public class AccountSettings extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 // Confirmed deletion.
                 // Send request to delete user to server
-                SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
-                //int userId = preferences.getInt("userID", -1);
                 if (userId == -1) {
                     Toast.makeText(getApplicationContext(), "Couldn't retrieve userId.", Toast.LENGTH_SHORT).show();
                     return;
@@ -302,13 +296,9 @@ public class AccountSettings extends AppCompatActivity {
                                     if (response.getString("message").equals("success")) {
                                         Toast.makeText(getApplicationContext(), "User deleted successfully", Toast.LENGTH_LONG).show();
                                         // Clear properties
-                                        // TODO: ADD CALL TO USER_UTILITIES.
-                                        SharedPreferences preferences = getSharedPreferences("userLoggedInCheck", MODE_PRIVATE);
 
-                                        preferences.edit().putBoolean("isLoggedIn", false).apply();
-                                        preferences.edit().remove("userID").apply();
-                                        preferences.edit().remove("username").apply();
-                                        preferences.edit().remove("status").apply();
+                                        UserUtilities userUtils = new UserUtilities(AccountSettings.this);
+                                        userUtils.logoutUser();
 
                                         // Send user to Sign-up
                                         Intent i = new Intent(AccountSettings.this, SignupActivity.class);

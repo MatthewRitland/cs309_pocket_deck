@@ -4,16 +4,28 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONObject;
+
 /**
  * @author Raine McKellar
  */
 
 public class FriendsScreen extends AppCompatActivity {
 
+    private UserUtilities userUtils;
+    static final String URL_FRIENDS_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/friendships/";
+
     @Override
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_friends);
+
+        userUtils = new UserUtilities(FriendsScreen.this);
     }
 
     /**
@@ -21,39 +33,114 @@ public class FriendsScreen extends AppCompatActivity {
      * @param requestId User ID of the requested friend.
      */
     private void sendFriendRequest(int requestId) {
-        // TODO: CODE
+        String newPath = URL_FRIENDS_PATH + "request/" + userUtils.getSavedId() + "/" + requestId;
+
+        JsonObjectRequest requestSend = new JsonObjectRequest(
+                Request.Method.POST,
+                newPath,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // TODO: Handle response object (Friend object)
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle errors.
+                    }
+                }
+        );
+
+        VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestSend);
     }
 
     /**
-     * Accept a friend request from a requested of the specified ID. (Update?)
-     * @param requesterId User ID of the requester.
+     * Accept a friend request with the ID friendshipId (Update)
+     * @param friendshipId ID of the friendship connection.
      */
-    private void acceptRequest(int requesterId) {
+    private void acceptRequest(int friendshipId) {
+        String newPath = URL_FRIENDS_PATH + "accept/" + friendshipId;
 
+        JsonObjectRequest requestAccept = new JsonObjectRequest(
+                Request.Method.PUT,
+                newPath,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // TODO: Handle response
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle errors
+                    }
+                }
+        );
+
+        VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestAccept);
     }
 
     /**
-     * Reject a friend request from a requester of the specified ID. (Update?)
-     * @param requesterId User ID of the requester.
+     * Removes the friendship with the specified ID. (Delete)
+     * @param friendshipId ID of the friendship connection.
      */
-    private void rejectRequest(int requesterId) {
+    private void removeFriend(int friendshipId) {
+        String friendshipPath = URL_FRIENDS_PATH + friendshipId;
 
-    }
+        JsonObjectRequest requestDelete = new JsonObjectRequest(
+                Request.Method.DELETE,
+                friendshipPath,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // TODO : Handle response
+                            // 10.0.0.2
+                            // Bessey 228
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO : Handle error
+                    }
+                }
+        );
 
-    /**
-     * Removes the friend with the specified ID. (Delete)
-     * @param friendId User ID of the friend to be removed.
-     */
-    private void removeFriend(int friendId) {
-
+        VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestDelete);
     }
 
     /**
      * Get a list of the users friends in the form of User IDs. (Get)
      * @return Array of friends user ids
      */
-    private int[] getFriends() {
+    private int[] getRelationships() {
         // TODO: CODE
+        String friendshipPath = URL_FRIENDS_PATH + "received/" + userUtils.getSavedId();
+
+        JsonObjectRequest getFriendsRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                friendshipPath,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // TODO: Handle responses
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle Errors
+                    }
+                }
+        );
+
         return new int[]{1};
     }
 

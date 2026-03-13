@@ -1,6 +1,7 @@
 package onetoone.GameHistory;
 
-public enum GameHistoryStatus {
+public enum GameHistoryResult {
+    IN_PROGRESS,
     VICTORY,
     DRAW,
     DEFEAT

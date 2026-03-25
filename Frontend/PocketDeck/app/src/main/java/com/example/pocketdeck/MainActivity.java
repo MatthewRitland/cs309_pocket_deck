@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     private Button settingsButton;
     private Button playButton;
 
+    private Button modeButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +38,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         MusicPlayer.startMusic(this);
+
+        modeButton = findViewById(R.id.modeButton);
+
+        modeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, GameModes.class);
+                startActivity(i);
+            }
+        });
         /*
 
         gameHistoryButton = findViewById(R.id.gameHistoryButton);

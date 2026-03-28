@@ -10,14 +10,14 @@ import java.util.Date;
 @Data // @Data uses lambok that makes getters and setters
 public class ChatMessageData {
     private String sender;
-    private String action;
+    private MessageAction action; // will be SEND, LEAVE... is the action the user wants inside of a @OnMessage
     private String messageContent;
     //may be useful for thread/forwarding messages? revisit
 
 
 
     /*
-    Field 'sender' may have Lombok @Getter -> lambok already included it then?
+    Field 'sender' may have Lombok @Getter -> lambok already included    it then?
     public String getSender() {
         return this.sender;
     }

@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -24,8 +25,10 @@ public class ChatSocket {
 
   // cannot autowire static directly (instead we do it by the below
   // method
-	private static MessageRepository msgRepo; 
+	private static MessageRepository msgRepo;
 
+	// declared here so don't have to
+	private static ObjectMapper objectMapper; // VERY helpful for converting JSON strings into java objects!!
 	/*
    * Grabs the MessageRepository singleton from the Spring Application
    * Context.  This works because of the @Controller annotation on this
@@ -38,6 +41,12 @@ public class ChatSocket {
 		msgRepo = repo;  // we are setting the static variable
 	}
 
+
+	// do something similar (@controller AND static declaration allows this)
+	@Autowired
+	public void setObjectMapper(ObjectMapper mapper) {
+		objectMapper = mapper; // set the static variable
+	}
 	// Store all socket session and their corresponding username.
 	private static Map<Session, String> sessionUsernameMap = new Hashtable<>();
 	private static Map<String, Session> usernameSessionMap = new Hashtable<>();
@@ -64,27 +73,57 @@ public class ChatSocket {
 
 
 	@OnMessage
-	public void onMessage(Session session, String message) throws IOException {
+	// DOES NOT DEAL WITH FAULTY INPUT YET!!!
+	public void onMessage(Session session, String recievedJSON) throws IOException {
 
 		// Handle new messages
-		logger.info("Entered into Message: Got Message:" + message);
+		logger.info("Entered into Message: Got Message:" + recievedJSON);
 		String username = sessionUsernameMap.get(session);
 
+		// use objectMapper to convert from JSON string to object (from jackson)
+		ChatMessageData payload = objectMapper.readValue(recievedJSON, ChatMessageData.class);
+
+
+		switch(payload.getAction()) {
+			case SEND:
+				String messageContent = payload.getMessageContent();
+				//todo: will need to change from simple broadcast to real-time message delivery
+				broadcast(username + ": " + messageContent);
+				msgRepo.save(new Message(username, messageContent));
+				break;
+
+			case ADD_USER:
+				//todo: will do this later, should add a user to a thread/groupchat
+
+				break;
+
+			case LEAVE:
+				//todo: will implement later, for when a user wants to leave a specific groupchat, NOT THE WHOLE CONNECTION
+
+				break;
+
+			default:
+				logger.warn("Unspecified action was recieved!!");
+		}
+
+		/*
     // Direct message to a user using the format "@username <message>"
-		if (message.startsWith("@")) {
-			String destUsername = message.split(" ")[0].substring(1); 
+		if (recievedJSON.startsWith("@")) {
+			String destUsername = recievedJSON.split(" ")[0].substring(1);
 
       // send the message to the sender and receiver
-			sendMessageToPArticularUser(destUsername, "[DM] " + username + ": " + message);
-			sendMessageToPArticularUser(username, "[DM] " + username + ": " + message);
+			sendMessageToPArticularUser(destUsername, "[DM] " + username + ": " + recievedJSON);
+			sendMessageToPArticularUser(username, "[DM] " + username + ": " + recievedJSON);
 
 		} 
     else { // broadcast
-			broadcast(username + ": " + message);
+			broadcast(username + ": " + recievedJSON);
 		}
 
 		// Saving chat history to repository
-		msgRepo.save(new Message(username, message));
+		msgRepo.save(new Message(username, recievedJSON));
+
+		 */
 	}
 
 

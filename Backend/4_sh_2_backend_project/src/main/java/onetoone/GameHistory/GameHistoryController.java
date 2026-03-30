@@ -25,7 +25,7 @@ public class GameHistoryController {
 
 
 
-    @PostMapping(path = "users/gamehistory/{userId}")
+    @PostMapping(path = "/users/gamehistory/{userId}")
     GameHistory createGameRecord(@PathVariable int userId) {
         User user = userRepository.findById(userId);
 
@@ -38,7 +38,7 @@ public class GameHistoryController {
     }
 
 
-    @GetMapping(path = "users/gamehistory/{userId}") //same path, but different request/operation
+    @GetMapping(path = "/users/gamehistory/{userId}") //same path, but different request/operation
     List<GameHistory> getGameRecords(@PathVariable int userId) {
         User user = userRepository.findById(userId);
 
@@ -49,7 +49,7 @@ public class GameHistoryController {
     }
 
 
-    @GetMapping(path = "users/specific/gamehistory/{userId}/{gameHistoryId}")
+    @GetMapping(path = "/users/specific/gamehistory/{userId}/{gameHistoryId}")
     GameHistory getGameRecord(@PathVariable int userId, @PathVariable int gameHistoryId) {
         User user = userRepository.findById(userId);
 
@@ -60,7 +60,7 @@ public class GameHistoryController {
     }
 
 
-    @PutMapping(path = "users/gamehistory/update/{userId}/{gameHistoryId}")
+    @PutMapping(path = "/users/gamehistory/update/{userId}/{gameHistoryId}")
     GameHistory updateGameRecord(@PathVariable int userId, @PathVariable int gameHistoryId,
                                  @RequestBody GameHistory updateRequest) {
 

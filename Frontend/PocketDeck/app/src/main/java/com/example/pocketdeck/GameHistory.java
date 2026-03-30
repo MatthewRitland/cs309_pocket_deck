@@ -68,7 +68,6 @@ public class GameHistory extends AppCompatActivity {
                             try {
                                 JSONObject obj = response.getJSONObject(i);
 
-                                // extract values from JSON
                                 int id = obj.optInt("id");
                                 String result = obj.optString("gameResult", "N/A");
                                 String started = obj.optString("timeGameStarted", "N/A");

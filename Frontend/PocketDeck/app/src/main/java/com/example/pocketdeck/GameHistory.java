@@ -100,14 +100,15 @@ public class GameHistory extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-
-                        //historyText.setText("Failed to load game history.");
+                        historyText.setText("Failed to load game history.");
                         //for debugging
+                        /*
                         if (error.networkResponse != null) {
                             historyText.setText("Error code: " + error.networkResponse.statusCode);
                         } else {
                             historyText.setText(error.toString());
                         }
+                         */
                     }
                 }
         );

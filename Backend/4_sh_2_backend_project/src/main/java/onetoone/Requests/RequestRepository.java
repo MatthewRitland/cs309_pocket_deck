@@ -11,5 +11,5 @@ public interface RequestRepository extends JpaRepository<Request, Integer>{
     @Transactional
     void deleteById(int id);
 
-    List<Request> findByRequestedId (int id);
+    Request findByRequestedIdAndRequesterId (int requestedId, int requesterId);
 }

@@ -20,6 +20,10 @@ public class Request {
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
 
+    public int getId(){
+        return id;
+    }
+
     public User getRequester() {
         return requester;
     }

@@ -55,7 +55,8 @@ public class RequestSocket {
         String username = sessionUsernameMap.get(session);
         if (message.startsWith("invite")) {
             try {
-                usernameSessionMap.get(message.substring(6)).getBasicRemote().sendText(username +
+                logger.info(message.substring(7));
+                usernameSessionMap.get(message.substring(7)).getBasicRemote().sendText(username +
                         " invites you to a game");
             }
             catch (IOException e) {
@@ -64,20 +65,20 @@ public class RequestSocket {
             }
             Request request = new Request();
             request.setRequester(userRepo.findByUsername(username));
-            request.setRequested(userRepo.findByUsername(message.substring(6)));
+            request.setRequested(userRepo.findByUsername(message.substring(7)));
             request.setStatus(RequestStatus.PENDING);
             requestRepo.save(request);
         }
         if (message.startsWith("accept")) {
             User requested = userRepo.findByUsername(username);
-            User requester = userRepo.findByUsername(message.substring(6));
+            User requester = userRepo.findByUsername(message.substring(7));
             Request req = requestRepo.findByRequestedIdAndRequesterId(requested.getId(), requester.getId());
             req.setStatus(RequestStatus.ACCEPTED);
             requestRepo.save(req);
         }
         if (message.startsWith("reject")) {
             User requested = userRepo.findByUsername(username);
-            User requester = userRepo.findByUsername(message.substring(6));
+            User requester = userRepo.findByUsername(message.substring(7));
             Request req = requestRepo.findByRequestedIdAndRequesterId(requested.getId(), requester.getId());
             req.setStatus(RequestStatus.REJECTED);
             requestRepo.save(req);

@@ -17,8 +17,8 @@ public class RequestController {
         return requestRepo.findAll();
     }
     @GetMapping("/request/requested/{id}")
-    List<Request> getRequestsByRequested (@PathVariable int id) {
-        return requestRepo.findByRequestedId(id);
+    Request getRequestsByRequestedAndRequester (@PathVariable int requestedId, @PathVariable int requesterId) {
+        return requestRepo.findByRequestedIdAndRequesterId(requestedId, requesterId);
     }
 
     @GetMapping("/request/{id}")

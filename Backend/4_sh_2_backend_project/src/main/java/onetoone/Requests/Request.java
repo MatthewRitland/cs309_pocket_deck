@@ -9,7 +9,7 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(nullable = false)
     private User requester;
 

@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.stereotype.Controller;
 
 @Controller
+@ServerEndpoint(value = "/request/{username}")
 public class RequestSocket {
 
     private static RequestRepository requestRepo;

@@ -21,6 +21,7 @@ public class MessagingView extends AppCompatActivity {
         setContentView(R.layout.activity_messaging);
         messageView = findViewById(R.id.MessagesView);
 
+
         List<Message> messages = new ArrayList<Message>();
         // Demo lines
         messages.add(new Message("Demo User","I am speaking presently"));

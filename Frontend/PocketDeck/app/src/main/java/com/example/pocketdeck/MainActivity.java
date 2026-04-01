@@ -117,6 +117,11 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(MainActivity.this, Settings.class);
             startActivity(i);
         }
+
+        if (id == R.id.nav_messaging) {
+            Intent i = new Intent(MainActivity.this, MessagingView.class);
+            startActivity(i);
+        }
         return super.onOptionsItemSelected(item);
     }
 

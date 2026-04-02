@@ -1,5 +1,11 @@
 package onetoone.GameHistory;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import onetoone.Friends.Friendship;
 import onetoone.Friends.FriendshipRepository;
 import onetoone.Users.User;
@@ -25,8 +31,17 @@ public class GameHistoryController {
 
 
 
+    @Operation(summary = "Creates a user's game history record", description = "Creates and stores a user's game history record belonging to the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfuly created game history record",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = GameHistory.class))
+                    }),
+            @ApiResponse(responseCode = "400", description = "given user was null",
+                    content = @Content),
+    })
     @PostMapping(path = "users/gamehistory/{userId}")
-    GameHistory createGameRecord(@PathVariable int userId) {
+    GameHistory createGameRecord(@Parameter(description = "id of user the created game record belongs to")@PathVariable int userId) {
         User user = userRepository.findById(userId);
 
         if(user == null) {
@@ -38,8 +53,17 @@ public class GameHistoryController {
     }
 
 
+    @Operation(summary = "Gets a list of game history records of a user", description = "Returns a complete list of a user' game history records from the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfuly returned a list of a user's game history records",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = GameHistory.class))
+                    }),
+            @ApiResponse(responseCode = "400", description = "given user was null",
+                    content = @Content),
+    })
     @GetMapping(path = "users/gamehistory/{userId}") //same path, but different request/operation
-    List<GameHistory> getGameRecords(@PathVariable int userId) {
+    List<GameHistory> getGameRecords(@Parameter(description = "user id that the game record belongs to")@PathVariable int userId) {
         User user = userRepository.findById(userId);
 
         if(user == null) {
@@ -49,8 +73,18 @@ public class GameHistoryController {
     }
 
 
+    @Operation(summary = "Gets a single game history record of a user", description = "Returns a user's complete game history record from the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfuly returned a user's single game history record",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = GameHistory.class))
+                    }),
+            @ApiResponse(responseCode = "400", description = "given user was null",
+                    content = @Content),
+    })
     @GetMapping(path = "users/specific/gamehistory/{userId}/{gameHistoryId}")
-    GameHistory getGameRecord(@PathVariable int userId, @PathVariable int gameHistoryId) {
+    GameHistory getGameRecord(@Parameter(description = "user id that the game record belongs to")@PathVariable int userId,
+                              @Parameter(description = "game record id that will be read")@PathVariable int gameHistoryId) {
         User user = userRepository.findById(userId);
 
         if(user == null) {
@@ -60,9 +94,21 @@ public class GameHistoryController {
     }
 
 
+    @Operation(summary = "Updates a specific game history record of a user", description = "Updates the game history record for that user")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfuly updated a user's single game history record",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = GameHistory.class))
+                    }),
+            @ApiResponse(responseCode = "400", description = "given user or given game record was null",
+                    content = @Content),
+            @ApiResponse(responseCode = "403", description = "given game record does not belong to the user",
+                    content = @Content),
+    })
     @PutMapping(path = "users/gamehistory/update/{userId}/{gameHistoryId}")
-    GameHistory updateGameRecord(@PathVariable int userId, @PathVariable int gameHistoryId,
-                                 @RequestBody GameHistory updateRequest) {
+    GameHistory updateGameRecord(@Parameter(description = "user id that the game record belongs to")@PathVariable int userId,
+                                 @Parameter(description = "game record id that will be updated")@PathVariable int gameHistoryId,
+                                 @Parameter(description = "new game record id that will replace the old one")@RequestBody GameHistory updateRequest) {
 
         User user = userRepository.findById(userId);
 
@@ -91,8 +137,16 @@ public class GameHistoryController {
         return gameHistoryRepository.save(record);
     }
 
+
+    @Operation(summary = "Deletes a game history record", description = "Removes a game history record from the database by its id")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfuly deleted game history record",
+                    content = { @Content(mediaType = "text/plain")}),
+            @ApiResponse(responseCode = "404", description = "game record by that id not found",
+                    content = @Content),
+    })
     @DeleteMapping(path="/users/gamehistory/{gameHistoryId}")
-    String removeFriendship(@PathVariable int gameHistoryId) {
+    String deleteGameHistory(@Parameter(description = "id of gameHistory record to delete")@PathVariable int gameHistoryId) {
         GameHistory record = gameHistoryRepository.findById(gameHistoryId);
 
         // if game record not found, throw not found excpetion

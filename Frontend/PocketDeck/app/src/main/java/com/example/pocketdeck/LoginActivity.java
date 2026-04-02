@@ -1,5 +1,8 @@
 // Author Mack Quinn
 // Uses snippets from Raine McKellar
+/**
+ * @author Mack Quinn
+ */
 
 package com.example.pocketdeck;
 
@@ -47,6 +50,13 @@ public class LoginActivity extends AppCompatActivity {
     // public static final String URL_STRING_REQ = "https://2aa87adf-ff7c-45c8-89bc-f3fbfaa16d15.mock.pstmn.io/users/1";
     // public static final String URL_STRING_REQ = "http://10.0.2.2:8080/users/1";
 
+    /**
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +100,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     //to send login request to the backend
+
+    /**
+     *
+     * @param username
+     * @param password
+     */
     private void loginRequest (String username, String password) {
 
         // make sure theres something entered
@@ -132,6 +148,7 @@ public class LoginActivity extends AppCompatActivity {
         );
 
         // login message and activity start
+
         VolleyCommand.getInstance(LoginActivity.this).addToRequestQueue(jsonObjectRequest);
 
     }

@@ -40,8 +40,9 @@ public class GameHistoryController {
             @ApiResponse(responseCode = "400", description = "given user was null",
                     content = @Content),
     })
-    @PostMapping(path = "users/gamehistory/{userId}")
+    @PostMapping(path = "/users/gamehistory/{userId}")
     GameHistory createGameRecord(@Parameter(description = "id of user the created game record belongs to")@PathVariable int userId) {
+
         User user = userRepository.findById(userId);
 
         if(user == null) {
@@ -62,8 +63,9 @@ public class GameHistoryController {
             @ApiResponse(responseCode = "400", description = "given user was null",
                     content = @Content),
     })
-    @GetMapping(path = "users/gamehistory/{userId}") //same path, but different request/operation
+    @GetMapping(path = "/users/gamehistory/{userId}") //same path, but different request/operation
     List<GameHistory> getGameRecords(@Parameter(description = "user id that the game record belongs to")@PathVariable int userId) {
+
         User user = userRepository.findById(userId);
 
         if(user == null) {
@@ -82,9 +84,10 @@ public class GameHistoryController {
             @ApiResponse(responseCode = "400", description = "given user was null",
                     content = @Content),
     })
-    @GetMapping(path = "users/specific/gamehistory/{userId}/{gameHistoryId}")
+    @GetMapping(path = "/users/specific/gamehistory/{userId}/{gameHistoryId}")
     GameHistory getGameRecord(@Parameter(description = "user id that the game record belongs to")@PathVariable int userId,
                               @Parameter(description = "game record id that will be read")@PathVariable int gameHistoryId) {
+
         User user = userRepository.findById(userId);
 
         if(user == null) {
@@ -105,10 +108,11 @@ public class GameHistoryController {
             @ApiResponse(responseCode = "403", description = "given game record does not belong to the user",
                     content = @Content),
     })
-    @PutMapping(path = "users/gamehistory/update/{userId}/{gameHistoryId}")
+    @PutMapping(path = "/users/gamehistory/update/{userId}/{gameHistoryId}")
     GameHistory updateGameRecord(@Parameter(description = "user id that the game record belongs to")@PathVariable int userId,
                                  @Parameter(description = "game record id that will be updated")@PathVariable int gameHistoryId,
                                  @Parameter(description = "new game record id that will replace the old one")@RequestBody GameHistory updateRequest) {
+
 
         User user = userRepository.findById(userId);
 

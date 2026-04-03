@@ -22,6 +22,8 @@ public class MessagingView extends AppCompatActivity{
     private EditText messageTextbox;
     private Button messageButton;
     private UserUtilities userUtils;
+    // Message Group ID
+    private String messageGroupId;
 
     private static String WebsocketURL = "";
 
@@ -41,7 +43,7 @@ public class MessagingView extends AppCompatActivity{
         messageAdapter = new MessageViewAdapter(messages);
         messageView.setAdapter(messageAdapter);
         /* Websocket Connection */
-        
+
 
         // Adding messages upon entering
         messageButton.setOnClickListener(new View.OnClickListener(){
@@ -58,8 +60,8 @@ public class MessagingView extends AppCompatActivity{
                 String username = userUtils.getSavedUsername();
 
                 Message userMessage = new Message(username, messageText);
+                // TODO: Change out for server communication
                 addMessage(userMessage);
-
             }
         });
     }

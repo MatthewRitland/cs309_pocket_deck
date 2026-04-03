@@ -89,7 +89,7 @@ replay_pid*
 # Built application files
 *.ap_
 *.aab
-
+target/
 
 # Files for the ART/Dalvik VM
 *.dex

@@ -1,18 +1,8 @@
-package com.cs309.websocket3.chat;
+package onetoone.Chat;
+
+import jakarta.persistence.*;
 
 import java.util.Date;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-
-import lombok.Data; // removed, (I think?) it's not practice to mix @Entity and @Data->from lombok
 
 @Entity
 @Table(name = "messages")

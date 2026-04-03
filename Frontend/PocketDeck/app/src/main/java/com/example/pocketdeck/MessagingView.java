@@ -80,7 +80,7 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
         // TODO : Code
         /* Load previous messages from this group */
     }
-    
+
     @Override
     public void onWebSocketMessage(String message) {
         // Run on UI

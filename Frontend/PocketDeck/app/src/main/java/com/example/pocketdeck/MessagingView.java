@@ -15,12 +15,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessagingView extends AppCompatActivity {
+public class MessagingView extends AppCompatActivity{
 
     private RecyclerView messageView;
+    private MessageViewAdapter messageAdapter;
     private EditText messageTextbox;
     private Button messageButton;
     private UserUtilities userUtils;
+
+    private static String WebsocketURL = "";
 
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
@@ -35,12 +38,12 @@ public class MessagingView extends AppCompatActivity {
         //messages.add(new Message("System","New user joined"));
         messageView.setLayoutManager(new LinearLayoutManager(this));
 
-        MessageViewAdapter messageAdapter = new MessageViewAdapter(messages);
+        messageAdapter = new MessageViewAdapter(messages);
         messageView.setAdapter(messageAdapter);
-        // Get messages array from server / websocket
-        // Update display
+        /* Websocket Connection */
+        
 
-        // Adding messages on entering
+        // Adding messages upon entering
         messageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -62,11 +65,8 @@ public class MessagingView extends AppCompatActivity {
     }
 
     public void addMessage(Message newMessage) {
-        // Hacky code, likely to break if anything changes
-        // Try to change it to be better.
-        MessageViewAdapter adapter = (MessageViewAdapter)messageView.getAdapter();
-        assert adapter != null;
-        adapter.addNewMessage(newMessage);
-        messageView.scrollToPosition(adapter.getItemCount() - 1);
+        messageAdapter.addNewMessage(newMessage);
+        // Scroll to bottom
+        messageView.scrollToPosition(messageAdapter.getItemCount() - 1);
     }
 }

@@ -27,7 +27,7 @@ public class UserController {
 
     @Operation(summary = "Lists all users", description = "Returns a complete list of all users from the database")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly returned list",
+            @ApiResponse(responseCode = "200", description = "Successfully returned list",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class))
             }),
@@ -39,7 +39,7 @@ public class UserController {
 
     @Operation(summary = "Lists a single user", description = "Returns a complete user from the database")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly returned user",
+            @ApiResponse(responseCode = "200", description = "Successfully returned user",
                 content = { @Content(mediaType = "application/json",
                         schema = @Schema(implementation = User.class))
             }),
@@ -57,7 +57,7 @@ public class UserController {
 
     @Operation(summary = "Creates a user", description = "Creates and stores a newly created user to the database")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly created user",
+            @ApiResponse(responseCode = "200", description = "Successfully created user",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class))
                     }),
@@ -93,7 +93,7 @@ public class UserController {
 
     @Operation(summary = "Edits a user's information ", description = "Edits and user in the database")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly edited user",
+            @ApiResponse(responseCode = "200", description = "Successfully edited user",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class))
                     }),
@@ -151,7 +151,7 @@ public class UserController {
 
     @Operation(summary = "Authenticates a user", description = "Confirms given info with info stored in the database")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly authenticated info",
+            @ApiResponse(responseCode = "200", description = "Successfully authenticated info",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = User.class))
                     }),

@@ -13,6 +13,10 @@ import java.util.Map;
  * @author Raine McKellar and Mack Quinn
  */
 
+/**
+ * A helper utility class for handling the current user data.
+ * Includes functions for fetching and packaging said data for any use.
+ */
 public class UserUtilities {
     private final SharedPreferences preferences;
     private final Context contextReference;
@@ -37,6 +41,13 @@ public class UserUtilities {
         applyUserObject(uname, status, userID);
     }
 
+    /**
+     * Applies the given user object to local variables.
+     *
+     * @param uname New username to be saved
+     * @param status New user status
+     * @param userID New user ID
+     */
     public void applyUserObject(String uname, String status, int userID) {
         preferences.edit().putBoolean("isLoggedIn", true).apply();
         preferences.edit().putInt("userID", userID).apply();
@@ -44,6 +55,12 @@ public class UserUtilities {
         preferences.edit().putString("status", status).apply();
     }
 
+    /**
+     * Applies new username to locally stored variables.
+     * Calls applyUserObject with same status and ID.
+     *
+     * @param uname New username to be saved.
+     */
     public void applyUsername(String uname) {
         int userID = getSavedId();
         String status = getSavedStatus();
@@ -81,7 +98,8 @@ public class UserUtilities {
     }
 
     /**
-     * Gets the saved Id in the preferences.
+     * Gets the saved Id in the user preferences.
+     *
      * @return Saved user ID
      */
     public int getSavedId() {
@@ -96,6 +114,11 @@ public class UserUtilities {
         return preferences.getString("username", "ERR_INVALID_REQUEST");
     }
 
+    /**
+     * Gets the saved user status in preferences.
+     *
+     * @return Saved status
+     */
     public String getSavedStatus() {
         return preferences.getString("status", "INVALID_STATUS");
     }

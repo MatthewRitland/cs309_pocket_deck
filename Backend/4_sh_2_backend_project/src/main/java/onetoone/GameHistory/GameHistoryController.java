@@ -33,7 +33,7 @@ public class GameHistoryController {
 
     @Operation(summary = "Creates a user's game history record", description = "Creates and stores a user's game history record belonging to the database")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly created game history record",
+            @ApiResponse(responseCode = "200", description = "Successfully created game history record",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = GameHistory.class))
                     }),
@@ -56,7 +56,7 @@ public class GameHistoryController {
 
     @Operation(summary = "Gets a list of game history records of a user", description = "Returns a complete list of a user' game history records from the database")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly returned a list of a user's game history records",
+            @ApiResponse(responseCode = "200", description = "Successfully returned a list of a user's game history records",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = GameHistory.class))
                     }),
@@ -77,7 +77,7 @@ public class GameHistoryController {
 
     @Operation(summary = "Gets a single game history record of a user", description = "Returns a user's complete game history record from the database")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly returned a user's single game history record",
+            @ApiResponse(responseCode = "200", description = "Successfully returned a user's single game history record",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = GameHistory.class))
                     }),
@@ -99,7 +99,7 @@ public class GameHistoryController {
 
     @Operation(summary = "Updates a specific game history record of a user", description = "Updates the game history record for that user")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly updated a user's single game history record",
+            @ApiResponse(responseCode = "200", description = "Successfully updated a user's single game history record",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = GameHistory.class))
                     }),
@@ -144,7 +144,7 @@ public class GameHistoryController {
 
     @Operation(summary = "Deletes a game history record", description = "Removes a game history record from the database by its id")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfuly deleted game history record",
+            @ApiResponse(responseCode = "200", description = "Successfully deleted game history record",
                     content = { @Content(mediaType = "text/plain")}),
             @ApiResponse(responseCode = "404", description = "game record by that id not found",
                     content = @Content),

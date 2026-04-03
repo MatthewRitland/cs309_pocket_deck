@@ -41,11 +41,12 @@ public class MessageViewAdapter extends RecyclerView.Adapter<MessageViewAdapter.
     public void onBindViewHolder(@NonNull MessageHolder holder, int position) {
         Message message = messageList.get(position);
         holder.usernameText.setText(message.getUsername());
-        holder.messageText.setText(message.getUsername());
+        holder.messageText.setText(message.getMessage());
     }
 
     public void addNewMessage(Message newMessage) {
         messageList.add(newMessage);
+        notifyItemInserted(messageList.size()-1);
     }
 
     @Override

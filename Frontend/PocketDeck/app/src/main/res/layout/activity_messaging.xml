@@ -13,7 +13,8 @@
         <TextView
             android:id="@+id/textView6"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="127dp"
+            android:gravity="center"
             android:text="Group Name"
             android:textAlignment="center"
             android:textColor="@color/cardinal"
@@ -23,31 +24,34 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/MessagesView"
             android:layout_width="match_parent"
-            android:layout_height="586dp"
+            android:layout_height="483dp"
+            android:layout_gravity="center"
             android:layout_margin="10dp">
 
         </androidx.recyclerview.widget.RecyclerView>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="85dp"
+            android:layout_marginBottom="40dp"
+            android:gravity="bottom"
             android:minHeight="24dp"
             android:orientation="horizontal"
-            android:padding="5dp">
+            android:padding="10dp">
 
             <EditText
-                android:id="@+id/editTextText"
+                android:id="@+id/messageEntryBox"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="72dp"
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Message"
                 android:inputType="text" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/messageSendButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="62dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/cardinal"
                 android:text="Send"

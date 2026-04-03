@@ -1,3 +1,6 @@
+/**
+ * @author Mack Quinn
+ */
 package com.example.pocketdeck;
 
 import android.os.Bundle;
@@ -29,6 +32,13 @@ public class GameHistory extends AppCompatActivity {
     private TextView historyText;
 
 
+    /**
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +62,10 @@ public class GameHistory extends AppCompatActivity {
         }
     }
 
+    /**
+     *
+     * @param userId use the userId to get the game history saved to each user.
+     */
     private void loadGameHistory(int userId) {
 
         String newURL = URL_STRING_REQ + userId;
@@ -97,6 +111,11 @@ public class GameHistory extends AppCompatActivity {
                 },
 
                 new Response.ErrorListener() {
+
+                    /**
+                     *
+                     * @param error
+                     */
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();

@@ -1,3 +1,7 @@
+/**
+ * @author Mack Quinn
+ */
+
 package com.example.pocketdeck;
 
 import android.content.Intent;
@@ -37,6 +41,10 @@ public class VolleyCommand {
 
     private RequestQueue requestQueue; //create the request queue
 
+    /**
+     *
+     * @param context
+     */
     private VolleyCommand(Context context) {
         // context is the info about the app while its running
         // this creates the request queue with access to that information
@@ -47,6 +55,12 @@ public class VolleyCommand {
 
     // this returns tha instance we created above
     // if it doesnt exist than it will create one
+
+    /**
+     *
+     * @param context
+     * @return
+     */
     public static synchronized VolleyCommand getInstance(Context context) {
         if (instance == null) {
             instance = new VolleyCommand(context);
@@ -55,6 +69,12 @@ public class VolleyCommand {
     }
 
     // adds a request to the queue
+
+    /**
+     *
+     * @param request
+     * @param <T>
+     */
     public <T> void addToRequestQueue(Request<T> request) {
         requestQueue.add(request);
     }

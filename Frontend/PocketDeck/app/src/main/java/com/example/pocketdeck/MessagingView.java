@@ -1,6 +1,8 @@
 package com.example.pocketdeck;
 
 import android.os.Bundle;
+import android.util.JsonReader;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,13 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessagingView extends AppCompatActivity{
+public class MessagingView extends AppCompatActivity implements WebSocketListener{
 
     private RecyclerView messageView;
     private MessageViewAdapter messageAdapter;
@@ -70,5 +73,31 @@ public class MessagingView extends AppCompatActivity{
         messageAdapter.addNewMessage(newMessage);
         // Scroll to bottom
         messageView.scrollToPosition(messageAdapter.getItemCount() - 1);
+    }
+
+    @Override
+    public void onWebSocketOpen(ServerHandshake handshakeData) {
+        // TODO : Code
+        /* Load previous messages from this group */
+    }
+
+    @Override
+    public void onWebSocketMessage(String message) {
+        // Run on UI
+        runOnUiThread(() -> {
+            try {
+                JSONObject jsonMessage = new JSONObject(message);
+                String messageContents = jsonMessage.getString("message");
+                String username = jsonMessage.getString("username");
+                Message newMessage = new Message(username, messageContents);
+            } catch (Exception e) {
+                Log.d("MessagingView","Parsing message data failed.");
+            }
+        });
+    }
+
+    @Override
+    public void onWebSocketClose(int code, String reason, boolean remote) {
+        // TODO : Code
     }
 }

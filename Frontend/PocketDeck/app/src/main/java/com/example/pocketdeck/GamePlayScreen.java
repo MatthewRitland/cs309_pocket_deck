@@ -1,3 +1,7 @@
+/**
+ * @author Mack Quinn
+ */
+
 package com.example.pocketdeck;
 
 import android.os.Bundle;

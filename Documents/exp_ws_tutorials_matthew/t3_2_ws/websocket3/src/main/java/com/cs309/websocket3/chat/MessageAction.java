@@ -3,6 +3,7 @@ package com.cs309.websocket3.chat;
 // NOT FOR "MESSAGES" ONLY, more what the client wants from the server!!!
 public enum MessageAction {
     SEND,
+    CREATE_GROUP,
     ADD_USER,
     LEAVE
     // more?

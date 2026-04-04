@@ -1,3 +1,7 @@
+/**
+ * @author Mack Quinn
+ */
+
 package com.example.pocketdeck;
 
 import android.content.Intent;
@@ -24,6 +28,13 @@ public class MainActivity extends AppCompatActivity {
 
     private Button modeButton;
 
+    /**
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
         playButton = findViewById(R.id.playButton);
 
         playButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             *
+             * @param v The view that was clicked.
+             */
             @Override
             public void onClick(View v) {
                 //open the file named userLoggedInCheck to check login status from LoginActivity
@@ -92,6 +107,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
     // This will access the XML to put the menu top right
+
+    /**
+     *
+     * @param menu The options menu in which you place your items.
+     *
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -99,6 +121,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // This is a menu method that handles menu clicks
+
+    /**
+     *
+     * @param item The menu item that was selected.
+     *
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();

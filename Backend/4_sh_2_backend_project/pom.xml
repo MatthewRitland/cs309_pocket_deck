@@ -14,7 +14,6 @@
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.1.4</version>
   </parent>
-
   <name>one-to-one</name>
 
   <properties>
@@ -41,6 +40,11 @@
         <scope>runtime</scope>
     </dependency>
 
+    <!-- Web socket dependencies -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+    </dependency>
     <!-- MYSQL dependencies -->
 <!--	<dependency>-->
 <!--	  <groupId>mysql</groupId>-->
@@ -55,6 +59,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-websocket</artifactId>
     </dependency>
 
     <!-- websocket dependency -->

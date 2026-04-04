@@ -23,7 +23,7 @@ public class RequestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successfully returned a list of all Requests",
                     content = {@Content(mediaType="application/json",
-                            schema = @Schema(implementation = CardGame.class))
+                            schema = @Schema(implementation = Request.class))
                     })
     })
     @GetMapping("/request")
@@ -35,7 +35,7 @@ public class RequestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successfully returned a Request",
                     content = {@Content(mediaType="application/json",
-                            schema = @Schema(implementation = CardGame.class))
+                            schema = @Schema(implementation = Request.class))
                     })
     })
     @GetMapping("/request/requested/{id}/{id}")
@@ -47,7 +47,7 @@ public class RequestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successfully returned a Request",
                     content = {@Content(mediaType="application/json",
-                            schema = @Schema(implementation = CardGame.class))
+                            schema = @Schema(implementation = Request.class))
                     })
     })
     @GetMapping("/request/{id}")
@@ -59,7 +59,7 @@ public class RequestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successfully created a Request",
                     content = {@Content(mediaType="application/json",
-                            schema = @Schema(implementation = CardGame.class))
+                            schema = @Schema(implementation = Request.class))
                     }),
             @ApiResponse(responseCode = "400", description = "missing one or two users", content = @Content)
     })
@@ -77,7 +77,7 @@ public class RequestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successfully updated a Request",
                     content = {@Content(mediaType="application/json",
-                            schema = @Schema(implementation = CardGame.class))
+                            schema = @Schema(implementation = Request.class))
                     }),
             @ApiResponse(responseCode = "404", description = "failed to find a Request", content = @Content)
     })
@@ -100,7 +100,7 @@ public class RequestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successfully deleted a Request",
                     content = {@Content(mediaType="application/json",
-                            schema = @Schema(implementation = CardGame.class))
+                            schema = @Schema(implementation = Request.class))
                     })
     })
     @DeleteMapping("request/{id}")

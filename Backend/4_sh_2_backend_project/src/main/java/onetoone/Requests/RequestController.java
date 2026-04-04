@@ -38,7 +38,7 @@ public class RequestController {
                             schema = @Schema(implementation = Request.class))
                     })
     })
-    @GetMapping("/request/requested/{id}/{id}")
+    @GetMapping("/request/requested/{requestedId}/{requesterId}")
     Request getRequestsByRequestedAndRequester (@Parameter(description = "id of requested user")@PathVariable int requestedId, @Parameter(description = "id of requester user")@PathVariable int requesterId) {
         return requestRepo.findByRequestedIdAndRequesterId(requestedId, requesterId);
     }

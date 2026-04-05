@@ -46,7 +46,7 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    implementation(files("/Users/mackquinn/Library/Android/sdk/platforms/android-36/android.jar"))
+    implementation("org.java-websocket:Java-WebSocket:1.5.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

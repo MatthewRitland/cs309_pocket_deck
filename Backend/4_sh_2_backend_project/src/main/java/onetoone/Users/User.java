@@ -62,4 +62,15 @@ public class User {
 
     public void setUserStatus(UserStatus status) {this.status = status;}
 
+
+    public Boolean isEqual (Object obj) {
+        if (obj.getClass() == this.getClass()) {
+            User temp = (User)obj;
+            if (temp.getId() == this.getId() && temp.getUsername() == this.getUsername() && temp.getPassword() == this.getPassword()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

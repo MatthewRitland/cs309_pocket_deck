@@ -10,6 +10,10 @@ import onetoone.Friends.Friendship;
 import onetoone.Friends.FriendshipRepository;
 import onetoone.Users.User;
 import onetoone.Users.UserRepository;
+
+import onetoone.CardGames.CardGame;
+import onetoone.CardGames.CardGameRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +28,11 @@ public class GameHistoryController {
     @Autowired
     GameHistoryRepository gameHistoryRepository;
 
-    @Autowired UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    CardGameRepository cardGameRepository;
 
     private String success = "{\"message\":\"success\"}";
     private String failure = "{\"message\":\"failure\"}";
@@ -41,14 +49,21 @@ public class GameHistoryController {
                     content = @Content),
     })
     @PostMapping(path = "/users/gamehistory/{userId}")
-    GameHistory createGameRecord(@Parameter(description = "id of user the created game record belongs to")@PathVariable int userId) {
+    GameHistory createGameRecord(@Parameter(description = "id of user the created game record belongs to")@PathVariable int userId,
+                                 @Parameter(description = "id of card game played")@PathVariable int cardGameId) {
 
         User user = userRepository.findById(userId);
 
         if(user == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "could not find user");
         }
-        GameHistory record = new GameHistory(user);
+
+        CardGame cardGame = cardGameRepository.findById(cardGameId);
+        if(cardGame == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "could not find card game");
+        }
+
+        GameHistory record = new GameHistory(user, cardGame);
 
         return gameHistoryRepository.save(record);
     }

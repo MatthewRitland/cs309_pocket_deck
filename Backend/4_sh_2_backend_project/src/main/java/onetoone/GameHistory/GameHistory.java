@@ -16,7 +16,7 @@ public class GameHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // each user only has one match history linked to them
+    // gamehistory table has many users (many different foreign key of different users)
     @ManyToOne
     @JoinColumn(nullable = false)
     private User user;

@@ -4,36 +4,41 @@
 
 package com.example.pocketdeck;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import com.example.pocketdeck.WebsocketListener;
-
-import java.util.Optional;
 
 public class GamePlayScreen extends AppCompatActivity implements WebsocketListener {
 
     //update later
-    private static final String WS_URL = "ws://coms-3090-025.class.las.iastate.edu:8080/";
+    //private static final String WS_URL = "ws://coms-3090-025.class.las.iastate.edu:8080/";
 
+    //test for personal ws server
+    private static final String WS_URL = "ws://10.0.2.2:8080/game";
     private TextView statusText;
+    private TextView centerText;
     private Button moveButton1;
     private Button moveButton2;
     private Button moveButton3;
-
-
+    private Button leaveButton;
+    private LinearLayout TableCardsL;
+    private LinearLayout playerCardsL;
     private WebsocketManager webSocketManager;
     private UserUtilities userUtilities;
 
@@ -50,39 +55,58 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
 
         userUtilities = new UserUtilities(GamePlayScreen.this);
         statusText = findViewById(R.id.statusText);
+        centerText = findViewById(R.id.centerText);
+        leaveButton = findViewById(R.id.leaveButton);
         moveButton1 = findViewById(R.id.moveButton1);
         moveButton2 = findViewById(R.id.moveButton2);
         moveButton3 = findViewById(R.id.moveButton3);
+        TableCardsL = findViewById(R.id.TableCardsL);
+        playerCardsL = findViewById(R.id.playerCardsLayout);
 
         statusText.setText("Connecting...");
+        centerText.setText("Waiting for game");
         moveButton1.setText("Move 1");
         moveButton2.setText("Move 2");
         moveButton3.setText("Leave");
 
-        //!! UPDATE THESE TO SEND GAME INFO
+        leaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(GamePlayScreen.this, MainActivity.class);
+                startActivity(i);
+            }
+        });
+
         moveButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                updateMove(moveButton1.getText().toString().toLowerCase());
             }
         });
 
         moveButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                updateMove(moveButton2.getText().toString().toLowerCase());
             }
         });
 
         moveButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if("Leave".contentEquals(moveButton3.getText())) {
+                    Intent i = new Intent(GamePlayScreen.this, MainActivity.class);
+                    startActivity(i);
+                } else {
+                    updateMove(moveButton3.getText().toString().toLowerCase());
+                }
             }
         });
 
         webSocketManager = WebsocketManager.getInstance();
         webSocketManager.setWebSocketListener(this);
         webSocketManager.connectWebSocket(WS_URL);
-        }
+    }
     //Websocket connected successfully
     //update UI using runOnUiThread
     @Override
@@ -146,27 +170,171 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
 
     //Take the json message from backend and determine whats going on
     //should be if statements regarding the message type and the next thing the game does
+    //android:background="@drawable/gameplaybackground1"
     private void gameUpdate(String message) {
         try {
+            //receive the message
             JSONObject object = new JSONObject(message);
             String messageType = object.optString("messageType", "..");
 
-            //logic here for game type based on the json name from back end.
+            // gamestate update
+            if("game_state".equals(messageType)) {
+                //update the status text to say if its your turn or someone elses
+                statusText.setText(object.optString("status", "Game update"));
+                //dealer hand info on the center txt
+                centerText.setText(object.optString("centerInfo", "No table info"));
+
+                //get the arary of cards the dealer has or the community cards in go fish or something
+                JSONArray centerCards = object.optJSONArray("centerCards");
+                //render the cards into the centerCard layout with true meaning theyre face up.
+                renderCards(TableCardsL, centerCards);
+
+                //get the player cards given
+                JSONArray players = object.optJSONArray("players");
+                //render the cards for all the players
+                renderPlayerCards(players);
+
+                // get the moves allowed from the backend for the player
+                JSONArray moves = object.optJSONArray("actions");
+                //update the buttons in the setButtons class
+                setButtons(moves);
+            } else if("message". equals(messageType)) {
+                //this is meant to show if a player is joinging or the game is starting or something
+                statusText.setText(object.optString("text", "update"));
+            }
         } catch (Exception e) {
+            //error stuff
             e.printStackTrace();
+            statusText.setText("No game update provided");
+        }
+    }
+
+    //Render the cards with info from the JSON object
+    //
+    private void renderCards(LinearLayout layout, JSONArray cards) {
+        //remove the previous card view when "making" the new cards
+        layout.removeAllViews();
+
+        //if the backend doesnt send a cards array then it wont generate anything
+        if(cards == null) {
+            return;
+        }
+
+        //loop through all the cards in the JSON array.
+        //if somethings wrong it will return the period
+        for(int i = 0; i < cards.length(); i++) {
+            //Get the card data at the index
+            String text = cards.optString(i, ".");
+
+            //inflate the new card from the layout in the card_holder xml file
+            //layout means that they'll all go in the layout we create
+            //false means it wont be added automatically so we can add the text below to it first
+            View cardView = getLayoutInflater().inflate(R.layout.card_holder, layout, false);
+
+            //lets us set the card text value by using the layout in the card
+            TextView cardText = cardView.findViewById(R.id.card);
+
+            //if true it will hide the card so you cant see the other players cards
+            //if false it will show the card for a game like blackjack where it doesnt matter
+            if(".".equals(text) || "??".equals(text)) {
+                cardText.setText("");
+            } else {
+                cardText.setText(text);
+            }
+            //add teh card to the layout now that it has text
+            //makes the card appear on the screen
+            //if the layout is TableCardsL then it will appear in the center of the screen
+            //if the layout is playerCardsLayout then it will appear in the players hand
+            layout.addView(cardView);
+        }
+    }
+
+    private void renderPlayerCards(JSONArray players) {
+        //clear all the cards in the players hand from the last game or when a new hand starts
+        //when the game updates
+        playerCardsL.removeAllViews();
+
+        //if the backend doesnt send any players then theres nothing to load
+        if(players == null) {
+            return;
+        }
+
+        //loop through all the players in the array which includes you and friends
+        for(int i = 0; i < players.length(); i++) {
+            //get the specific player necessary by indexing through the array
+            JSONObject player = players.optJSONObject(i);
+
+            //another check to make sure the player exists first
+            if(player != null) {
+                // find where the player is "sitting" in order for backend to know whos hand is whos.
+                // sends -1 if it doesnt exist
+                int position = player.optInt("seat", -1);
+                //assuming the position 0 is you
+                if(position == 0) {
+                    //get your cards from the array
+                    JSONArray cards = player.optJSONArray("cards");
+                    // render the cards onto the screen with the renderCards method.
+                    //playerCardsL is the linear layout to keep the cards uniform and in place
+                    // cards is the arrau from JSON and the cards shouldnt be hidden so its false
+                    renderCards(playerCardsL, cards);
+                    return;
+                }
+            }
         }
     }
 
     //update the buttons based on the previous action and the game being played
     //all actions that are allowed are based on rules from the backend
     private void setButtons(JSONArray moves) {
+        // start with the buttons hidden so they can be changed without the player seeing them change
+        moveButton1.setVisibility(View.GONE);
+        moveButton2.setVisibility(View.GONE);
+        moveButton3.setVisibility(View.GONE);
 
+        // if there are no moves sent from the backend then it will be null or empty
+        // show the leaev button so the player has the option to exit
+
+        if (moves == null || moves.length() == 0) {
+            moveButton3.setText("Leave");
+            moveButton3.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        // if one possible move exists then asign it to button 1 and make it visible
+        if(moves.length() > 0) {
+            moveButton1.setText(moves.optString(0, "..."));
+            moveButton1.setVisibility(View.VISIBLE);
+        }
+
+        // if two moves exist then then assign the second move to the second button and make it visible
+        if(moves.length() > 1) {
+            moveButton2.setText(moves.optString(1, "..."));
+            moveButton2.setVisibility(View.VISIBLE);
+        }
+
+        // if 3+ moves exist then assign it to the third button and make it visible
+        // if there are are less than 3 moves available it sets the third button as a default leave button for now.
+        // will probably change this later
+        if(moves.length() > 2) {
+            moveButton3.setText(moves.optString(2, "..."));
+            moveButton3.setVisibility(View.VISIBLE);
+        } else {
+            moveButton3.setText("Leave");
+            moveButton3.setVisibility(View.VISIBLE);
+        }
     }
 
     //update the move the player made and send it to the backend
     private void updateMove(String moveMade) {
+        try {
+            JSONObject object = new JSONObject();
+            object.put("messageType", "action_made");
+            object.put("move", moveMade);
 
+            webSocketManager.sendMessage(object.toString());
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
-
-
 }

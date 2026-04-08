@@ -1,5 +1,7 @@
 package onetoone.Game;
 
+import onetoone.Users.User;
+
 public class Card {
     private Suit suit;
     private Value value;
@@ -36,5 +38,15 @@ public class Card {
 
     public void isFaceCheck (Value value) {
         isFace = (value == Value.JACK) || (value == Value.QUEEN) || (value == Value.KING);
+    }
+
+    public Boolean isEqual (Object obj) {
+        if (obj.getClass() == this.getClass()) {
+            Card temp = (Card)obj;
+            if (temp.getSuit() == this.getSuit() && temp.getValue() == this.getValue()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

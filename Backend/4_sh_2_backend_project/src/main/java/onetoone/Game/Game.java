@@ -25,6 +25,104 @@ public class Game {
         playerHands = new Card[players.length][handLimit];
     }
 
+    public User[] getPlayers () {
+        return players;
+    }
+
+    public void setPlayers (User[] players) {
+        this.players = players;
+    }
+
+    public CardGame getGameRules () {
+        return gameRules;
+    }
+
+    public void setGameRules (CardGame gameRules) {
+        this.gameRules = gameRules;
+    }
+
+    public int getHandLimit () {
+        return handLimit;
+    }
+
+    public void setHandLimit (int handLimit) {
+        this.handLimit = handLimit;
+    }
+
+    public Actions[] getPossibleActions () {
+        return possibleActions;
+    }
+
+    public void setPossibleActions (Actions[] actions) {
+        this.possibleActions = actions;
+    }
+
+    public User getCurrentPlayer () {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer () {
+        currentPlayer = players[0];
+    }
+
+    public Card[] getDeck () {
+        return deck;
+    }
+
+    public Card[][] getPlayerHands () {
+        return playerHands;
+    }
+
+    public void setPlayerHands () {
+        playerHands = new Card[players.length][handLimit];
+    }
+
+    public Card[] getCurrentPlayerHand () {
+        if (findCurrentPlayer() == -1) {
+            return null;
+        }
+        return playerHands[findCurrentPlayer()];
+    }
+
+    public Card[] getPlayerHand (User player) {
+        if (findPlayer(player) == -1) {
+            return null;
+        }
+        return playerHands[findPlayer(player)];
+    }
+
+    public Card getCard (User player, int handPlacement) {
+        int playerLocation = findPlayer(player);
+        if (playerLocation == -1) {
+            return null;
+        }
+        if (handPlacement < 0 || handPlacement >= handLimit) {
+            return null;
+        }
+        return playerHands[playerLocation][handPlacement];
+    }
+
+    public int getCardLocation (User player, Card card) {
+        Card[] playerHand = getPlayerHand(player);
+        int cardLocation = 0;
+        for (cardLocation = 0; cardLocation < playerHand.length; cardLocation++) {
+            if (card.isEqual(playerHand[cardLocation])) {
+                return cardLocation;
+            }
+        }
+        return -1;
+    }
+
+    public int findPlayer (User player) {
+        int current;
+        for (current = 0; current < players.length; current++) {
+            if (player.isEqual(players[current])) {
+                return current;
+            }
+        }
+        return -1;
+    }
+
     public int findCurrentPlayer () {
         int current;
         for (current = 0; current < players.length; current++) {
@@ -46,9 +144,9 @@ public class Game {
         currentPlayer = players[current];
     }
 
-    public void draw () {
+    public Card draw () {
         if (findCurrentPlayer() == -1) {
-            return;
+            return null;
         }
         Card[] currentHand = playerHands[findCurrentPlayer()];
         int cardCount = 0;
@@ -60,9 +158,12 @@ public class Game {
             }
         }
         if (currentHand.length <= cardCount) {
-            return;
+            return null;
         }
         Random ran = new Random();
         playerHands[findCurrentPlayer()][cardCount] = deck[ran.nextInt(53)];
+        return playerHands[findCurrentPlayer()][cardCount];
     }
+
+    public void takeTurn (Actions action) {}
 }

@@ -137,6 +137,7 @@ public class UserUtilities {
      * @return return the game mode from pref. The default if nothing is selected it blackjack as of right now
      */
     public String getSelectedGame() {
-        return preferences.getString("selectedGme", "Blackjack");
+        return preferences.getString("selectedGame", "Blackjack");
     }
+
 }

@@ -97,10 +97,10 @@ public class MainActivity extends AppCompatActivity {
                 /*
                 Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
                 startActivity(i);
-                *
-                 */
-                // if logged in go to the gameplay screen if not then
 
+                 */
+
+                // if logged in go to the gameplay screen if not then
                 if(loggedIn) {
                     Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
                     startActivity(i);

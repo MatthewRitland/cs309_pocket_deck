@@ -1,5 +1,6 @@
 package com.example.pocketdeck;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -7,6 +8,11 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
@@ -18,6 +24,10 @@ public class GroupsListActivity extends AppCompatActivity {
     /* Page elements */
     private RecyclerView groupView;
     private Button createGroupButton, updateGroupsButton;
+
+    /* Internal Variables */
+    private String[] groupNames;
+    private String[] groupIds;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,9 +44,14 @@ public class GroupsListActivity extends AppCompatActivity {
         createGroupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                createGroupPrompt();
             }
         });
+
+        // TODO: UPDATE BUTTON
+
+        /* Initialize */
+        getGroups();
     }
 
     /**
@@ -44,6 +59,23 @@ public class GroupsListActivity extends AppCompatActivity {
      */
     public void getGroups() {
         /* Get the current groups from server (HTTP GET) */
+        JsonObjectRequest groupRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                URL_GROUP_FETCH + "",
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        updateGroups(jsonObject);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        // TODO: Handle error
+                    }
+                }
+        );
     }
 
     /**
@@ -52,7 +84,7 @@ public class GroupsListActivity extends AppCompatActivity {
      */
     private void updateGroups(JSONObject response) {
         /* Parse HTTP output into group array */
-        /* Update / Setup RecyclerView display */
+        /* Update or Setup RecyclerView display */
     }
 
     /**
@@ -74,8 +106,24 @@ public class GroupsListActivity extends AppCompatActivity {
      * Open a Websocket to the Groups Messaging and Switch to Messaging Screen.
      * @param groupId Unique groud ID string.
      */
-    public void openGroupMessages(String groupId) {
+    public void openGroupMessages(int groupId, String groupName) {
         /* Open Websocket for this group. */
+
+
         /* If or when websocket is opened successfully, switch to different view. */
+        Intent messageIntent = new Intent(GroupsListActivity.this, MessagingView.class);
+
+        /* Bundle information */
+        Bundle groupBundle = new Bundle();
+        groupBundle.putInt("groupId", groupId);
+        groupBundle.putString("groupName", groupName);
+
+        /* Start activity */
+        startActivity(messageIntent, groupBundle);
+    }
+
+    public class MessageGroup {
+        private String groupName;
+        private String groupId;
     }
 }

@@ -2,6 +2,7 @@ package onetoone.GameHistory;
 
 import jakarta.persistence.*;
 import onetoone.Users.User;
+import onetoone.CardGames.CardGame;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -16,10 +17,16 @@ public class GameHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // gamehistory table has many users (many different foreign key of different users)
+
+    // there are many game history records for one user
     @ManyToOne
     @JoinColumn(nullable = false)
     private User user;
+
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private CardGame cardGame;
 
     @Enumerated(EnumType.STRING)
     private GameHistoryResult gameResult; // to see the enumeration "IN_PROGRESS" will probably need to use websockets?
@@ -33,9 +40,10 @@ public class GameHistory {
     // on in CardGames? (Such as an enumeration?)
 
     // called when a game is created, can only initialize the user and time started, must update after game completes
-    public GameHistory(User user) {
+    public GameHistory(User user, CardGame cardGame) {
 
         this.user = user;
+        this.cardGame = cardGame;
         this.gameResult = GameHistoryResult.IN_PROGRESS;
         //this.mode = mode;
 
@@ -62,6 +70,10 @@ public class GameHistory {
 
 
     public User getUser() { return this.user; }
+    public void setUser(User user) { this.user = user; }
+
+    public CardGame getCardGame() { return this.cardGame; }
+    public void setCardGame(CardGame cardGame) { this.cardGame = cardGame; }
 
 
     public LocalDateTime getTimeGameStarted() { return this.timeGameStarted; }

@@ -74,7 +74,15 @@ public class GameHistory extends AppCompatActivity {
                                 String completed = obj.optString("timeGameCompleted", "N/A");
                                 String duration = obj.optString("timeGameDuration", "N/A");
 
+                                //get the game name from backend
+                                JSONObject cardGameName = obj.optJSONObject("cardGame");
+                                String gameName = "No Name";
+                                if(cardGameName != null) {
+                                    gameName = cardGameName.optString("gameName", "invalid");
+                                }
+
                                 // append formatted game info to string
+                                stringText.append("Game name: ").append(gameName).append("\n");
                                 stringText.append("Game #").append(id).append("\n");
                                 stringText.append("Result: ").append(result).append("\n");
                                 stringText.append("Started: ").append(started).append("\n");

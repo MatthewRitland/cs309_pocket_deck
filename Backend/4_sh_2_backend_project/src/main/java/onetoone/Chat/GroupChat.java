@@ -12,11 +12,16 @@ public class GroupChat {
     @Column
     private String groupName;
 
+    // set to true when have "direct message" which is really just a group with max size of 2
+    @Column
+    private boolean isDirectMessage = false;
+
     public GroupChat() {
     }
 
-    public GroupChat(String groupName) {
+    public GroupChat(String groupName, boolean isDirectMessage) {
         this.groupName = groupName;
+        this.isDirectMessage = isDirectMessage;
     }
 
 
@@ -27,5 +32,7 @@ public class GroupChat {
     String getGroupName() { return groupName; }
     void setGroupName(String groupName) { this.groupName = groupName; }
 
+    Boolean getIsDirectMessage() { return this.isDirectMessage; }
+    void setIsDirectMessage(Boolean isDirectMessage) { this.isDirectMessage = isDirectMessage; }
 
 }

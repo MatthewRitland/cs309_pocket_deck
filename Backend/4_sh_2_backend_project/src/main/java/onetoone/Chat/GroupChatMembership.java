@@ -19,6 +19,10 @@ public class GroupChatMembership {
     @JoinColumn (nullable = false)
     private User user;
 
+    @ManyToOne
+    @JoinColumn (nullable = false)
+    GroupChat groupChat;
+
 
     public GroupChatMembership() {}
 
@@ -28,5 +32,8 @@ public class GroupChatMembership {
 
     public User getUser() { return this.user; }
     public void setUser(User user) { this.user = user; }
+
+    public GroupChat getGroupChat() { return this.groupChat; }
+    public void setGroupChat(GroupChat groupChat) { this.groupChat = groupChat; }
 
 }

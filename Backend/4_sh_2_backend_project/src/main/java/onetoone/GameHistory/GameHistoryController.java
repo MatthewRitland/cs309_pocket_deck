@@ -48,7 +48,7 @@ public class GameHistoryController {
             @ApiResponse(responseCode = "400", description = "given user was null",
                     content = @Content),
     })
-    @PostMapping(path = "/users/gamehistory/{userId}")
+    @PostMapping(path = "/users/gamehistory/{userId}/{cardGameId}")
     GameHistory createGameRecord(@Parameter(description = "id of user the created game record belongs to")@PathVariable int userId,
                                  @Parameter(description = "id of card game played")@PathVariable int cardGameId) {
 

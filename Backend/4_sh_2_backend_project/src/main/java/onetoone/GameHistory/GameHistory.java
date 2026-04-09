@@ -39,9 +39,10 @@ public class GameHistory {
     // on in CardGames? (Such as an enumeration?)
 
     // called when a game is created, can only initialize the user and time started, must update after game completes
-    public GameHistory(User user, CardGame cardgame) {
+    public GameHistory(User user, CardGame cardGame) {
 
         this.user = user;
+        this.cardGame = cardGame;
         this.gameResult = GameHistoryResult.IN_PROGRESS;
         //this.mode = mode;
 

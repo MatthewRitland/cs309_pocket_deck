@@ -45,8 +45,8 @@ public class MessagingWebSocketManager {
 
     public void connectWebSocket(String serverUrl) {
         if (webSocketClient != null && webSocketClient.isOpen()) {
-            Log.d("WbSktManager", "Websocket already open");
-            return;
+            Log.d("WbSktManager", "A websocket already open");
+            webSocketClient.close();
         }
 
         try {

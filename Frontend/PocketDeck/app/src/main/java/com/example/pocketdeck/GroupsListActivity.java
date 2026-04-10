@@ -14,7 +14,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class GroupsListActivity extends AppCompatActivity {
 
@@ -84,7 +87,26 @@ public class GroupsListActivity extends AppCompatActivity {
      */
     private void updateGroups(JSONObject response) {
         /* Parse HTTP output into group array */
+
         /* Update or Setup RecyclerView display */
+    }
+
+    private ArrayList<GroupListAdapter.MessageGroup> parseJsonGroups(JSONObject response) {
+        ArrayList<GroupListAdapter.MessageGroup> groupList = new ArrayList<GroupListAdapter.MessageGroup>();
+        try {
+            JSONArray groupJsonArray = response.getJSONArray("groups");
+            for (int i = 0; i < groupJsonArray.length(); i++) {
+                JSONObject newGroupJson = (JSONObject)groupJsonArray.get(i);
+                String groupName = newGroupJson.getString("groupName");
+                Long groupId = newGroupJson.getLong("groupId");
+                groupList.add(new GroupListAdapter.MessageGroup(groupName, groupId));
+            }
+        }
+        catch (Exception e) {
+            /* TODO: Add actual error handling */
+        }
+
+        return groupList;
     }
 
     /**
@@ -106,7 +128,7 @@ public class GroupsListActivity extends AppCompatActivity {
      * Open a Websocket to the Groups Messaging and Switch to Messaging Screen.
      * @param groupId Unique groud ID string.
      */
-    public void openGroupMessages(int groupId, String groupName) {
+    public void openGroupMessages(Long groupId, String groupName) {
         /* Open Websocket for this group. */
 
 
@@ -115,7 +137,7 @@ public class GroupsListActivity extends AppCompatActivity {
 
         /* Bundle information */
         Bundle groupBundle = new Bundle();
-        groupBundle.putInt("groupId", groupId);
+        groupBundle.putLong("groupId", groupId);
         groupBundle.putString("groupName", groupName);
 
         /* Start activity */

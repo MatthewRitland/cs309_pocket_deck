@@ -26,7 +26,7 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
     private Button messageButton;
     private UserUtilities userUtils;
     // Message Group ID
-    private int messageGroupId;
+    private Long messageGroupId;
     private String messageGroupName;
 
     private static String WebsocketURL = "";
@@ -50,7 +50,7 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
         /* Unpacking Group */
         if (!savedInstancesState.isEmpty()) {
             String groupName = savedInstancesState.getString("groupName");
-            int groupId = savedInstancesState.getInt("groupId");
+            Long groupId = savedInstancesState.getLong("groupId");
 
             // TODO: Websocket connection managing here, likely.
             setGroupInformation(groupId, groupName);
@@ -77,7 +77,7 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
         });
     }
 
-    public void setGroupInformation(int groupId, String groupName) {
+    public void setGroupInformation(Long groupId, String groupName) {
         this.messageGroupId = groupId;
         this.messageGroupName = groupName;
     }

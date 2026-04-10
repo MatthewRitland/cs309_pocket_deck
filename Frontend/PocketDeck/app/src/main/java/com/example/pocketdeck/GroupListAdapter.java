@@ -47,7 +47,7 @@ public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.Grou
         return groups.size();
     }
 
-
+    /* Internal Classes */
 
     public static class GroupHolder extends RecyclerView.ViewHolder {
         public Button groupLink;
@@ -58,16 +58,16 @@ public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.Grou
         }
     }
 
-    public class MessageGroup {
+    public static class MessageGroup {
         private String groupName;
-        private int groupId;
+        private Long groupId;
 
-        public MessageGroup(String groupName, int groupId) {
+        public MessageGroup(String groupName, Long groupId) {
             this.groupName = groupName;
             this.groupId = groupId;
         }
 
         public String getGroupName() { return groupName; }
-        public int getGroupId() { return groupId; }
+        public Long getGroupId() { return groupId; }
     }
 }

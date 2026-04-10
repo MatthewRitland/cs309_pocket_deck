@@ -10,12 +10,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/groupOptionsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Actions" />
-
         <TextView
             android:id="@+id/MessagingGroupName"
             android:layout_width="match_parent"
@@ -26,6 +20,14 @@
             android:textColor="@color/cardinal"
             android:textSize="42dp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/groupOptionsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|right"
+            android:gravity="center"
+            android:text="Actions" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/MessagesView"

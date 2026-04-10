@@ -81,6 +81,7 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
                      Intent optionsIntent = new Intent(MessagingView.this, GroupOptionsActivity.class);
                      optionsIntent.putExtra("groupName", messageGroupName);
                      optionsIntent.putExtra("groupId", messageGroupId);
+                     startActivity(optionsIntent);
                  }
              }
         );

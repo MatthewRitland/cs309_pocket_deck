@@ -1,3 +1,6 @@
+/**
+ * @author Mack Quinn
+ */
 package com.example.pocketdeck;
 
 import android.os.Bundle;
@@ -29,6 +32,13 @@ public class GameHistory extends AppCompatActivity {
     private TextView historyText;
 
 
+    /**
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +62,10 @@ public class GameHistory extends AppCompatActivity {
         }
     }
 
+    /**
+     *
+     * @param userId use the userId to get the game history saved to each user.
+     */
     private void loadGameHistory(int userId) {
 
         String newURL = URL_STRING_REQ + userId;
@@ -74,7 +88,15 @@ public class GameHistory extends AppCompatActivity {
                                 String completed = obj.optString("timeGameCompleted", "N/A");
                                 String duration = obj.optString("timeGameDuration", "N/A");
 
+                                //get the game name from backend
+                                JSONObject cardGameName = obj.optJSONObject("cardGame");
+                                String gameName = "No Name";
+                                if(cardGameName != null) {
+                                    gameName = cardGameName.optString("gameName", "invalid");
+                                }
+
                                 // append formatted game info to string
+                                stringText.append("Game name: ").append(gameName).append("\n");
                                 stringText.append("Game #").append(id).append("\n");
                                 stringText.append("Result: ").append(result).append("\n");
                                 stringText.append("Started: ").append(started).append("\n");
@@ -97,17 +119,23 @@ public class GameHistory extends AppCompatActivity {
                 },
 
                 new Response.ErrorListener() {
+
+                    /**
+                     *
+                     * @param error
+                     */
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
-
-                        //historyText.setText("Failed to load game history.");
+                        historyText.setText("Failed to load game history.");
                         //for debugging
+                        /*
                         if (error.networkResponse != null) {
                             historyText.setText("Error code: " + error.networkResponse.statusCode);
                         } else {
                             historyText.setText(error.toString());
                         }
+                         */
                     }
                 }
         );

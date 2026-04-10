@@ -2,6 +2,12 @@ package onetoone.Users;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,13 +25,29 @@ public class UserController {
     private String success = "{\"message\":\"success\"}";
     private String failure = "{\"message\":\"failure\"}";
 
+    @Operation(summary = "Lists all users", description = "Returns a complete list of all users from the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfully returned list",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))
+            }),
+    })
     @GetMapping(path = "/users")
     List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    @Operation(summary = "Lists a single user", description = "Returns a complete user from the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfully returned user",
+                content = { @Content(mediaType = "application/json",
+                        schema = @Schema(implementation = User.class))
+            }),
+            @ApiResponse(responseCode = "404", description = "failed to return complete user",
+                    content = @Content),
+    })
     @GetMapping(path = "/users/{id}")
-    User getUserById(@PathVariable int id) {
+    User getUserById(@Parameter(description = "id of user to get") @PathVariable int id) {
         User user = userRepository.findById(id);
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
@@ -33,9 +55,20 @@ public class UserController {
         return user;
     }
 
+    @Operation(summary = "Creates a user", description = "Creates and stores a newly created user to the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfully created user",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))
+                    }),
+            @ApiResponse(responseCode = "400", description = "username or password is invalid",
+                    content = @Content),
+            @ApiResponse(responseCode = "409", description = "Username already in use",
+                    content = @Content),
+    })
     // sign up feature
     @PostMapping(path = "/signup")
-    User createUser(@RequestBody User user) {
+    User createUser(@Parameter(description = "user object to create")@RequestBody User user) {
         // is it a valid request? (is overall request empty? stopped w/ user == null,
         // or username or password is missing.)
         if (user == null || user.getUsername() == null || user.getPassword() == null) {
@@ -58,8 +91,20 @@ public class UserController {
         return user;
     }
 
+    @Operation(summary = "Edits a user's information ", description = "Edits and user in the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfully edited user",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "User was not found",
+                    content = @Content),
+            @ApiResponse(responseCode = "409", description = "Username already in use",
+                    content = @Content),
+    })
     @PutMapping("/users/{id}")
-    User updateUser(@PathVariable int id, @RequestBody User request) {
+    User updateUser(@Parameter(description = "id of user to update")@PathVariable int id,
+                    @Parameter(description = "new user info to replace the old one")@RequestBody User request) {
         User user = userRepository.findById(id);
 
         // check if user was found by id, and if not throw an exception. (don't want to update a non-existent user)
@@ -85,7 +130,11 @@ public class UserController {
         return user;
     }
 
-
+    @Operation(summary = "Deletes a user", description = "Removes a user that was stored in the database by their ID")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "returns a success/fail string",
+                    content = { @Content(mediaType = "text/plain")})
+    })
     @DeleteMapping(path = "/users/{id}")
         // delete the user that matches the id
     String deleteUser(@PathVariable int id) {
@@ -100,9 +149,19 @@ public class UserController {
     }
 
 
-    // austin (edited 03/04 by matthew to return user object to frontend)
+    @Operation(summary = "Authenticates a user", description = "Confirms given info with info stored in the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfully authenticated info",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))
+                    }),
+            @ApiResponse(responseCode = "400", description = "User was not given correctly",
+                    content = @Content),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials",
+                    content = @Content),
+    })
     @PostMapping("/login")
-    User login(@RequestBody User request) {
+    User login(@Parameter(description = "User info to attempt authentication with")@RequestBody User request) {
         User user = userRepository.findByUsername(request.getUsername());
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");

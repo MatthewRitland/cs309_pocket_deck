@@ -12,11 +12,10 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
-import lombok.Data;
+import lombok.Data; // removed, (I think?) it's not practice to mix @Entity and @Data->from lombok
 
 @Entity
 @Table(name = "messages")
-@Data
 public class Message {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +39,8 @@ public class Message {
 		this.content = content;
 	}
 
+
+    // =============================== Getters and Setters for each field ================================== //
     public Long getId() {
         return id;
     }

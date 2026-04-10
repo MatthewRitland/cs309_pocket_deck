@@ -1,3 +1,7 @@
+/**
+ * @author Mack Quinn
+ */
+
 package com.example.pocketdeck;
 
 import android.content.Intent;
@@ -25,6 +29,13 @@ public class Settings extends AppCompatActivity {
 
     //private static MediaPlayer music;
 
+    /**
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +64,11 @@ public class Settings extends AppCompatActivity {
 
         //switch listener so it can turn on and off with the settings button
         musicSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            /**
+             *
+             * @param buttonView The compound button view whose state has changed.
+             * @param isChecked  The new checked state of buttonView.
+             */
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //if swtich is on then play. if no tthen turn off
@@ -64,6 +80,7 @@ public class Settings extends AppCompatActivity {
         });
 
         //lisitener for the volume control slider
+
         volumeControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar volumeBar, int userVolume, boolean fromUser) {

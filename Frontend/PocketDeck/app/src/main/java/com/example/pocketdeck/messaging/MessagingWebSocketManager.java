@@ -44,6 +44,10 @@ public class MessagingWebSocketManager {
     }
 
     public void connectWebSocket(String serverUrl) {
+        if (webSocketClient != null && webSocketClient.isOpen()) {
+            Log.d("WbSktManager", "Websocket already open");
+            return;
+        }
 
         try {
             URI serverUri = URI.create(serverUrl);

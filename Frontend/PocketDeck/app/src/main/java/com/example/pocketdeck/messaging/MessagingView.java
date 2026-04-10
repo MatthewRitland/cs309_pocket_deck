@@ -87,7 +87,8 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
                 // Get username
                 String username = userUtils.getSavedUsername();
 
-                Message userMessage = new Message(username, messageText);
+                messageText = messageText.replace(':',';');
+
                 try {
                     JSONObject newMessage = new JSONObject();
                     newMessage.put("action", "SEND");
@@ -125,20 +126,24 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
     public void onWebSocketMessage(String message) {
         // Run on UI
         runOnUiThread(() -> {
-            try {
-                Log.d("NEW MESSAGE!!!", message);
-                String[] messageSplit = message.split(": ");
-                String messageContents = "";
-                for (int i = 1; i < messageSplit.length; i++) {
-                    messageContents = messageContents + messageSplit[i];
-                }
-                String username = messageSplit[0];
-                Message newMessage = new Message(username, messageContents);
 
+            String[] singleMessages = message.split("\n");
+            for(int i = 0; i < singleMessages.length; i++) {
+                if (singleMessages[i].contains("No messages found for")) {
+                    continue;
+                }
+                String[] messageSplit = singleMessages[i].split(": ");
+
+                String username = messageSplit[0];
+                String messageContents = "";
+                for (int j = 1; j < messageSplit.length; j++) {
+                    messageContents += messageSplit[j];
+                }
+
+                Message newMessage = new Message(username, messageContents);
                 addMessage(newMessage);
-            } catch (Exception e) {
-                Log.d("MessagingView","Parsing message data failed.");
             }
+
         });
     }
 

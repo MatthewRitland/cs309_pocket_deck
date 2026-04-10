@@ -49,4 +49,8 @@ public class Card {
         }
         return false;
     }
+
+    public String toString () {
+        return value + " " + suit;
+    }
 }

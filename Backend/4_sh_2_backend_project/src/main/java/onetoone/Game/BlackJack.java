@@ -9,7 +9,6 @@ public class BlackJack extends Game{
     private int[] scores;
     private int dealerScore;
     private Card[] dealerHand;
-    private Result[] winners;
     private boolean[] stood;
     private final static int MAX_SCORE = 21;
 
@@ -20,7 +19,6 @@ public class BlackJack extends Game{
         super (gameRules, players, 30);
         scores = new int[players.length];
         dealerHand = new Card[30];
-        winners = new Result[players.length];
         stood = new boolean[players.length];
         dealerScore = 0;
         for (int i = 0; i < players.length; i++) {
@@ -142,10 +140,12 @@ public class BlackJack extends Game{
     }
 
     private void dealerTurn () {
+        Card currentCard;
+        int cardCount = 0;
         if (dealerHand.length > 2) {
             if (dealerScore < 17) {
-                int cardCount = 0;
-                Card currentCard = dealerHand[cardCount];
+                cardCount = 0;
+                currentCard = dealerHand[cardCount];
                 while (currentCard != null && cardCount < dealerHand.length) {
                     cardCount += 1;
                     if (cardCount < dealerHand.length) {
@@ -161,12 +161,13 @@ public class BlackJack extends Game{
             }
         }
         else {
-            int cardCount = 0;
-            Card currentCard = dealerHand[cardCount];
-            while (currentCard != null && cardCount < dealerHand.length) {
-                cardCount += 1;
-                if (cardCount < dealerHand.length) {
-                    currentCard = dealerHand[cardCount];
+            if (dealerHand[cardCount] == null ) {
+                currentCard = dealerHand[cardCount];
+                while (currentCard != null && cardCount < dealerHand.length) {
+                    cardCount += 1;
+                    if (cardCount < dealerHand.length) {
+                        currentCard = dealerHand[cardCount];
+                    }
                 }
             }
             if (dealerHand.length <= cardCount) {
@@ -188,21 +189,21 @@ public class BlackJack extends Game{
     }
 
     public void checkWinners () {
-        for (int i = 0; i < winners.length; i++) {
+        for (int i = 0; i < getWinners().length; i++) {
             if (dealerScore > MAX_SCORE) {
-                winners[i] = Result.WIN;
+                setWinner(i, Result.WIN);
             }
             else if (scores[i] > MAX_SCORE) {
-                winners[i] = Result.LOSE;
+                setWinner(i, Result.LOSE);
             }
             else if (scores[i] == dealerScore) {
-                winners[i] = Result.DRAW;
+                setWinner(i, Result.DRAW);
             }
             else if (scores[i] > dealerScore) {
-                winners[i] = Result.WIN;
+                setWinner(i, Result.WIN);
             }
             else if (scores[i] < dealerScore) {
-                winners[i] = Result.LOSE;
+                setWinner(i, Result.LOSE);
             }
         }
     }
@@ -218,7 +219,13 @@ public class BlackJack extends Game{
                 scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), drawn);
                 if (scores[currentPlayerLocation] > MAX_SCORE) {
                     Card[] currentHand = getCurrentPlayerHand();
-                    for (int i = 0; i < currentHand.length; i++) {
+                    int cardCount = 0;
+                    for (cardCount = 0; cardCount < currentHand.length; cardCount++) {
+                        if (currentHand[cardCount] == null) {
+                            break;
+                        }
+                    }
+                    for (int i = 0; i < cardCount; i++) {
                         if (currentHand[i].getValue().equals(Value.ACE)) {
                             if (scores[currentPlayerLocation] > MAX_SCORE && scores[currentPlayerLocation] - 10 <= MAX_SCORE) {
                                 scores[currentPlayerLocation] -= 10;

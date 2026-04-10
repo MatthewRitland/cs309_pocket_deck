@@ -15,6 +15,7 @@ abstract public class Game {
     private int handLimit;
     private Actions[] possibleActions;
     private int turn;
+    private Result[] winners;
 
     public Game () {}
 
@@ -25,6 +26,7 @@ abstract public class Game {
         currentPlayer = players[0];
         playerHands = new Card[players.length][handLimit];
         turn = 0;
+        winners = new Result[players.length];
     }
 
     public User[] getPlayers () {
@@ -82,6 +84,12 @@ abstract public class Game {
     public int getTurn () { return turn; }
 
     protected void setTurn (int turn) { this.turn = turn; }
+
+    public Result[] getWinners () { return winners; }
+
+    public void setWinner (int index, Result result) {
+        winners[index] = result;
+    }
 
     public Card[] getCurrentPlayerHand () {
         if (findCurrentPlayer() == -1) {
@@ -156,11 +164,14 @@ abstract public class Game {
         }
         Card[] currentHand = playerHands[findCurrentPlayer()];
         int cardCount = 0;
-        Card currentCard = currentHand[cardCount];
-        while (currentCard != null && cardCount < currentHand.length) {
-            cardCount += 1;
-            if (cardCount < currentHand.length) {
-                currentCard = currentHand[cardCount];
+        Card currentCard;
+        if (currentHand[cardCount] != null) {
+            currentCard = currentHand[cardCount];
+            while (currentCard != null && cardCount < currentHand.length) {
+                cardCount += 1;
+                if (cardCount < currentHand.length) {
+                    currentCard = currentHand[cardCount];
+                }
             }
         }
         if (currentHand.length <= cardCount) {
@@ -174,4 +185,16 @@ abstract public class Game {
     abstract public void takeTurn (Actions action);
 
     abstract public boolean checkGameProgress ();
+
+    public int getCardAmount (User player) {
+        Card[] hand = getPlayerHand(player);
+        int cardCount = 0;
+        for (cardCount = 0; cardCount < hand.length; cardCount++) {
+            if (hand[cardCount] == null) {
+                return cardCount;
+            }
+        }
+        return 0;
+    }
+
 }

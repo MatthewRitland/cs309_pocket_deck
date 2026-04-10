@@ -2,10 +2,7 @@ package onetoone.Game;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
@@ -27,6 +24,7 @@ import org.springframework.stereotype.Controller;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.JSONArray;
 
 @Controller
 @ServerEndpoint(value = "/game/{username}/{game}")
@@ -61,26 +59,26 @@ public class GameSocket {
     private static Game cardGame;
 
     @OnOpen
-    public void onOpen(Session session, @PathParam("username") String username) throws IOException {
+    public void onOpen(Session session, @PathParam("username") String username, @PathParam("game") String game) throws IOException {
         logger.info("Entered into open");
         sessionUsernameMap.put(session, username);
         usernameSessionMap.put(username, session);
 
-        gameHistory = new GameHistory(userRepo.findByUsername(username));
+        gameHistory = new GameHistory(userRepo.findByUsername(username), cardGameRepository.findByGameName(game));
     }
 
     @OnMessage
     public void onMessage(Session session, String message, @PathParam("game") String game) throws IOException, ParseException {
         JSONObject json = (JSONObject) new JSONParser().parse(message);
         if (json.get("messageType").equals("join_game")) {
-            if (cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {
+            if (!(users.size() == 0) && cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {
                 try {
                     logger.info((String) json.get("username"));
                     JSONObject mes = new JSONObject();
                     mes.put("messageType", "message");
                     mes.put("text", "Game full");
-                    usernameSessionMap.get((String) json.get("username")).getBasicRemote().sendObject(mes);
-                } catch (IOException | EncodeException e) {
+                    usernameSessionMap.get((String) json.get("username")).getBasicRemote().sendText((mes.toJSONString()));
+                } catch (IOException e) {
                     logger.info("Exception: " + e.getMessage().toString());
                     e.printStackTrace();
                     return;
@@ -94,22 +92,31 @@ public class GameSocket {
                 players[i] = users.get(i);
             }
             cardGame = new BlackJack(cardGameRepository.findByGameName(game), players);
+            for (int i = 0; i < users.size(); i++) {
+                try {
+                    logger.info(users.get(i).getUsername());
+                    JSONObject output = makeOutput(game, users.get(i).getUsername());
+                    usernameSessionMap.get(users.get(i).getUsername()).getBasicRemote().sendText(output.toJSONString());
+                } catch (IOException e) {
+                    logger.info("Exception: " + e.getMessage().toString());
+                    e.printStackTrace();
+                }
+            }
         } else if (json.get("messageType").equals("action_made")) {
             if (json.get("move").equals("hit")) {
                 cardGame.takeTurn(Actions.HIT);
             } else if (json.get("move").equals("stand")) {
                 cardGame.takeTurn(Actions.STAND);
             }
-        }
-
-        for (int i = 0; i < users.size(); i++) {
-            try {
-                logger.info(cardGame.getPlayers()[i].getUsername());
-                JSONObject output = makeOutput(game, cardGame.getPlayers()[i].getUsername());
-                usernameSessionMap.get(cardGame.getPlayers()[i].getUsername()).getBasicRemote().sendObject(output);
-            } catch (IOException | EncodeException e) {
-                logger.info("Exception: " + e.getMessage().toString());
-                e.printStackTrace();
+            for (int i = 0; i < users.size(); i++) {
+                try {
+                    logger.info(users.get(i).getUsername());
+                    JSONObject output = makeOutput(game, users.get(i).getUsername());
+                    usernameSessionMap.get(users.get(i).getUsername()).getBasicRemote().sendText(output.toJSONString());
+                } catch (IOException e) {
+                    logger.info("Exception: " + e.getMessage().toString());
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -121,7 +128,20 @@ public class GameSocket {
         output.put("status", "Seat " + cardGame.findCurrentPlayer() + " turn");
         if (cardGame.getClass().equals(BlackJack.class)) {
             BlackJack temp = (BlackJack) cardGame;
-            output.put("centerCards", temp.getDealerHand());
+            JSONArray array = new JSONArray();
+            Card[] dealerHand = temp.getDealerHand();
+            int cardCount;
+            for (cardCount = 0; cardCount < dealerHand.length; cardCount++) {
+                if (dealerHand[cardCount] == null) {
+                    break;
+                }
+            }
+            Card[] tempHand = new Card[cardCount];
+            for (int i = 0; i < cardCount; i++) {
+                tempHand[i] = dealerHand[i];
+            }
+            array.addAll(List.of(tempHand));
+            output.put("centerCards", array);
         }
         output.put("yourSeat", cardGame.findPlayer(userRepo.findByUsername(username)));
         output.put("currentTurn", cardGame.getTurn());
@@ -131,19 +151,31 @@ public class GameSocket {
             output.put("gamePhase", "in progress");
         }
         output.put("actions", cardGame.getPossibleActions());
-        JSONObject[] players = new JSONObject[cardGame.getPlayers().length];
-        for (int i = 0; i < players.length; i++) {
+        JSONArray players = new JSONArray();
+        for (int i = 0; i < users.size(); i++) {
             JSONObject player = new JSONObject();
             player.put("seat", i);
             player.put("username", cardGame.getPlayers()[i].getUsername());
-            if (cardGame.getPlayers()[i].isEqual(cardGame.findPlayer(userRepo.findByUsername(username)))) {
-                player.put("cards", cardGame.getPlayerHand(userRepo.findByUsername(username)));
+            if (cardGame.getPlayers()[i].getUsername().equals(username)) {
+                JSONArray array = new JSONArray();
+                int cardCount = cardGame.getCardAmount(cardGame.getPlayers()[i]);
+                Card[] playerHand = cardGame.getPlayerHand(cardGame.getPlayers()[i]);
+                Card[] tempHand = new Card[cardCount];
+                for (int j = 0; j < cardCount; j++) {
+                    tempHand[j] = playerHand[j];
+                }
+                array.addAll(List.of(tempHand));
+                player.put("cards", array);
             } else {
                 player.put("cards", "[]");
-                player.put("hiddenCount", cardGame.getPlayerHand(cardGame.getPlayers()[i]).length);
+                player.put("hiddenCount", cardGame.getCardAmount(users.get(i)));
             }
+            players.add(player);
         }
         output.put("players", players);
+        if (cardGame.checkGameProgress()) {
+            output.put("winners", Arrays.toString(cardGame.getWinners()));
+        }
         return output;
     }
 
@@ -156,6 +188,7 @@ public class GameSocket {
         String username = sessionUsernameMap.get(session);
         sessionUsernameMap.remove(session);
         usernameSessionMap.remove(username);
+        users.remove(userRepo.findByUsername(username));
     }
 
 
@@ -163,6 +196,9 @@ public class GameSocket {
     public void onError(Session session, Throwable throwable) {
         // Do error handling here
         logger.info("Entered into Error");
+        for (int i = 0; i < users.size(); i++) {
+            logger.info(users.get(i).getUsername());
+        }
         throwable.printStackTrace();
     }
 }

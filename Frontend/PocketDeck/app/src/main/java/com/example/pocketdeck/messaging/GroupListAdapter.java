@@ -1,4 +1,4 @@
-package com.example.pocketdeck;
+package com.example.pocketdeck.messaging;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.pocketdeck.R;
 
 import java.util.List;
 
@@ -56,18 +58,5 @@ public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.Grou
             super(view);
             groupLink = view.findViewById(R.id.groupMessagingLink);
         }
-    }
-
-    public static class MessageGroup {
-        private String groupName;
-        private Long groupId;
-
-        public MessageGroup(String groupName, Long groupId) {
-            this.groupName = groupName;
-            this.groupId = groupId;
-        }
-
-        public String getGroupName() { return groupName; }
-        public Long getGroupId() { return groupId; }
     }
 }

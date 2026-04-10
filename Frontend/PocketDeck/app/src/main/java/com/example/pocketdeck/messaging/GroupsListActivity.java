@@ -1,4 +1,4 @@
-package com.example.pocketdeck;
+package com.example.pocketdeck.messaging;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.pocketdeck.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -91,15 +92,15 @@ public class GroupsListActivity extends AppCompatActivity {
         /* Update or Setup RecyclerView display */
     }
 
-    private ArrayList<GroupListAdapter.MessageGroup> parseJsonGroups(JSONObject response) {
-        ArrayList<GroupListAdapter.MessageGroup> groupList = new ArrayList<GroupListAdapter.MessageGroup>();
+    private ArrayList<MessageGroup> parseJsonGroups(JSONObject response) {
+        ArrayList<MessageGroup> groupList = new ArrayList<MessageGroup>();
         try {
             JSONArray groupJsonArray = response.getJSONArray("groups");
             for (int i = 0; i < groupJsonArray.length(); i++) {
                 JSONObject newGroupJson = (JSONObject)groupJsonArray.get(i);
                 String groupName = newGroupJson.getString("groupName");
                 Long groupId = newGroupJson.getLong("groupId");
-                groupList.add(new GroupListAdapter.MessageGroup(groupName, groupId));
+                groupList.add(new MessageGroup(groupName, groupId));
             }
         }
         catch (Exception e) {

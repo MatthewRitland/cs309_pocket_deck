@@ -1,4 +1,4 @@
-package com.example.pocketdeck;
+package com.example.pocketdeck.messaging;
 
 public class Message {
     // Display name of the sender

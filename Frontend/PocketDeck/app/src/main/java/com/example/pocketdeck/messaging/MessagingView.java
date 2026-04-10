@@ -1,7 +1,6 @@
-package com.example.pocketdeck;
+package com.example.pocketdeck.messaging;
 
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -11,14 +10,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.pocketdeck.R;
+import com.example.pocketdeck.UserUtilities;
+import com.example.pocketdeck.WebSocketListener;
+
 import org.java_websocket.handshake.ServerHandshake;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessagingView extends AppCompatActivity implements WebSocketListener{
+public class MessagingView extends AppCompatActivity implements WebSocketListener {
 
     private RecyclerView messageView;
     private MessageViewAdapter messageAdapter;

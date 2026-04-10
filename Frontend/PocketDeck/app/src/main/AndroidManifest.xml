@@ -15,7 +15,7 @@
         android:theme="@style/Theme.PocketDeck"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".MessagingView"
+            android:name=".messaging.MessagingView"
             android:exported="false" />
         <activity
             android:name=".GameModes"

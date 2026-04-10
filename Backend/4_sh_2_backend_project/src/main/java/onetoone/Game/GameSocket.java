@@ -1,6 +1,7 @@
 package onetoone.Game;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -11,6 +12,7 @@ import jakarta.websocket.server.ServerEndpoint;
 import onetoone.CardGames.CardGameRepository;
 import onetoone.GameHistory.GameHistory;
 import onetoone.GameHistory.GameHistoryRepository;
+import onetoone.GameHistory.GameHistoryResult;
 import onetoone.Requests.RequestRepository;
 import onetoone.Requests.RequestSocket;
 import onetoone.Users.UserRepository;
@@ -186,6 +188,17 @@ public class GameSocket {
     public void onClose(Session session) throws IOException {
         logger.info("Entered into Close");
         gameHistory.setTimeGameCompleted(LocalDateTime.now());
+        gameHistory.setTimeGameDuration(Duration.between(gameHistory.getTimeGameStarted(), gameHistory.getTimeGameCompleted()));
+        Result result = cardGame.getWinners()[cardGame.findPlayer(userRepo.findByUsername(sessionUsernameMap.get(session)))];
+        if (result.equals(Result.DRAW)) {
+            gameHistory.setGameResult(GameHistoryResult.DRAW);
+        }
+        else if (result.equals(Result.LOSE)) {
+            gameHistory.setGameResult(GameHistoryResult.DEFEAT);
+        }
+        else if (result.equals(Result.WIN)) {
+            gameHistory.setGameResult(GameHistoryResult.VICTORY);
+        }
         gameHistoryRepository.save(gameHistory);
 
         String username = sessionUsernameMap.get(session);

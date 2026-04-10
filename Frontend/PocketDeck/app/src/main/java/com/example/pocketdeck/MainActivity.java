@@ -6,7 +6,6 @@ package com.example.pocketdeck;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +17,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import com.example.pocketdeck.messaging.GroupsListActivity;
+
+import com.example.pocketdeck.messaging.GroupsListActivity;
+import com.example.pocketdeck.messaging.MessagingView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -154,6 +157,12 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(MainActivity.this, Settings.class);
             startActivity(i);
         }
+
+        if (id == R.id.nav_messaging) {
+            Intent i = new Intent(MainActivity.this, GroupsListActivity.class);
+            startActivity(i);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

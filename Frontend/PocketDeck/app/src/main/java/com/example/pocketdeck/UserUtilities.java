@@ -57,7 +57,7 @@ public class UserUtilities {
 
     /**
      * Applies new username to locally stored variables.
-     * Calls applyUserObject with same status and ID.
+     * Alias of applyUserObject
      *
      * @param uname New username to be saved.
      */

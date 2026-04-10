@@ -15,11 +15,6 @@
         android:theme="@style/Theme.PocketDeck"
         android:usesCleartextTraffic="true" >
         <activity
-            android:name=".messaging.GroupOptionsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_group_options"
-            android:theme="@style/Theme.PocketDeck" />
-        <activity
             android:name=".messaging.MessagingView"
             android:exported="false" />
         <activity
@@ -48,6 +43,10 @@
             android:name=".messaging.GroupsListActivity"
             android:exported="true"
             android:label="GroupsListActivity" />
+        <activity
+            android:name=".messaging.GroupOptionsActivity"
+            android:exported="true"
+            android:label="GroupOptionsActivity"/>
         <activity
             android:name=".MainActivity"
             android:exported="true" >

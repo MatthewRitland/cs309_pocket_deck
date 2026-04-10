@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +19,25 @@ import java.util.List;
 public class GroupChatController {
 
     @Autowired
-    private GroupChatMembershipRepository groupChatMembershipRepo;
+    private UserRepository userRepo;
 
     @Autowired
-    private UserRepository userRepo;
+    private MessageRepository msgRepo;
+
+    @Autowired
+    private GroupChatRepository groupChatRepo;
+    @Autowired
+    private GroupChatMembershipRepository groupChatMembershipRepo;
+
+
+    @GetMapping(path = "/groupChat/history/{groupChatId}")
+    public List<Message> getGroupChatHistory(@PathVariable Long groupChatId) {
+        GroupChat groupChat = groupChatRepo.findById(groupChatId).orElse(null);
+        if (groupChat == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Group chat was not found");
+        }
+        return msgRepo.findByGroupChatId(groupChatId);
+    }
 
     // returns a list of all group chats a user belongs to
     @GetMapping(path = "/user/groupChats/{userId}")

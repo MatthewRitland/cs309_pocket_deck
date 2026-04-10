@@ -112,6 +112,7 @@ public class ChatSocket {
 		}
 
 		switch(payload.getAction()) {
+			//TODO CURRENTLY THINKING OF REMOVING, JUST JUST THE GroupChatController endpoint for this!
 			case GET_CHAT_HISTORY:
 				handleGetChatHistory(username, payload);
 				break;

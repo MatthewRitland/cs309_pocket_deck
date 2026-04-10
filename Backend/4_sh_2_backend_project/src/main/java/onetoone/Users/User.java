@@ -70,4 +70,15 @@ public class User {
         return false;
     }
 
+    @Override
+    public boolean equals (Object obj) {
+        if (obj.getClass() == this.getClass()) {
+            User temp = (User)obj;
+            if (temp.getId() == this.getId() && temp.getUsername().equals(this.getUsername()) && temp.getPassword().equals(this.getPassword())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

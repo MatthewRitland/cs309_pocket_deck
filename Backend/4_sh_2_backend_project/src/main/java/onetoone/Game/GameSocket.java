@@ -200,11 +200,14 @@ public class GameSocket {
             gameHistory.setGameResult(GameHistoryResult.VICTORY);
         }
         gameHistoryRepository.save(gameHistory);
-
         String username = sessionUsernameMap.get(session);
+        logger.info(username);
         sessionUsernameMap.remove(session);
         usernameSessionMap.remove(username);
-        users.remove(userRepo.findByUsername(username));
+        logger.info(String.valueOf(users.remove(userRepo.findByUsername(username))));
+        for (int i = 0; i < users.size(); i++) {
+            logger.info(users.get(i).getUsername());
+        }
     }
 
 

@@ -2,7 +2,7 @@ package com.example.pocketdeck.messaging;
 
 import android.util.Log;
 
-import com.example.pocketdeck.WebSocketListener;
+import com.example.pocketdeck.WebsocketListener;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -13,7 +13,7 @@ public class MessagingWebSocketManager {
 
     private static MessagingWebSocketManager instance;
     private MessagingClient webSocketClient;
-    private WebSocketListener currentListener;
+    private WebsocketListener currentListener;
 
     /* Singleton instancing */
 
@@ -32,7 +32,7 @@ public class MessagingWebSocketManager {
      *
      * @param newListener Listener to be assigned
      */
-    public void setListener(WebSocketListener newListener) {
+    public void setListener(WebsocketListener newListener) {
         this.currentListener = newListener;
     }
 

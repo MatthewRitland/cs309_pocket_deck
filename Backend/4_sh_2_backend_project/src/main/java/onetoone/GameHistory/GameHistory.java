@@ -17,6 +17,7 @@ public class GameHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+
     // there are many game history records for one user
     @ManyToOne
     @JoinColumn(nullable = false)

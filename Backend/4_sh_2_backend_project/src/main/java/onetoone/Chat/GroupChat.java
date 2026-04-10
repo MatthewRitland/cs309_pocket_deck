@@ -12,6 +12,7 @@ public class GroupChat {
     @Column
     private String groupName;
 
+
     public GroupChat() {
     }
 
@@ -24,8 +25,6 @@ public class GroupChat {
     // =============================== Getters and Setters for each field ================================== //
     public long getId() { return id; }
 
-    String getGroupName() { return groupName; }
-    void setGroupName(String groupName) { this.groupName = groupName; }
-
-
+    public String getGroupChatName() { return groupName; }
+    public void setGroupName(String groupName) { this.groupName = groupName; }
 }

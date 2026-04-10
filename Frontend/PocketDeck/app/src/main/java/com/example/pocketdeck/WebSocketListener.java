@@ -26,4 +26,6 @@ public interface WebSocketListener {
      * @param remote Indicates whether the closure was from the remote endpoint.
      */
     void onWebSocketClose(int code, String reason, boolean remote);
+
+    void onWebSocketError(Exception ex);
 }

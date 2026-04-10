@@ -151,7 +151,9 @@ public class GameSocket {
         } else {
             output.put("gamePhase", "in progress");
         }
-        output.put("actions", cardGame.getPossibleActions());
+        JSONArray actionArray = new JSONArray();
+        actionArray.addAll(List.of(cardGame.getPossibleActions()));
+        output.put("actions", actionArray);
         JSONArray players = new JSONArray();
         for (int i = 0; i < users.size(); i++) {
             JSONObject player = new JSONObject();

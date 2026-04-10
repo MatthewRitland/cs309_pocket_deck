@@ -13,6 +13,8 @@ import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +32,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
     //private static final String WS_URL = "ws://coms-3090-025.class.las.iastate.edu:8080/";
 
     //test for personal ws server
-    private static final String WS_URL = "ws://10.0.2.2:8080/game";
+    private static final String WS_URL = "ws://10.0.2.2:8080/game/mack1/blackjack";
     private TextView statusText;
     private TextView centerText;
     private Button moveButton1;
@@ -44,6 +46,18 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
     private UserUtilities userUtilities;
     private TextView otherPlayersText;
     private int mySeat = -1;
+
+
+    private String websocketUrlBuilder() {
+        String username = userUtilities.getSavedUsername();
+        String selectedGameName = userUtilities.getSelectedGame().toLowerCase();
+
+        if(username == null || username.isEmpty() || "ERR_INVALID_REQUEST".equals(username)){
+            username = "guest";
+        }
+
+        return "ws://coms-3090-025.class.las.iastate.edu:8080/game/" + username + "/" + selectedGameName;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +103,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
                     JSONObject object = new JSONObject();
                     object.put("messageType", "start_game");
                     webSocketManager.sendMessage(object.toString());
+                    startGameButton.setVisibility(View.GONE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -123,7 +138,9 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
 
         webSocketManager = WebsocketManager.getInstance();
         webSocketManager.setWebSocketListener(this);
+        //webSocketManager.connectWebSocket(websocketUrlBuilder());
         webSocketManager.connectWebSocket(WS_URL);
+
     }
     //Websocket connected successfully
     //update UI using runOnUiThread
@@ -137,12 +154,11 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         });
 
         //Get the selected game mode from pref and make the game message to send to backend
+
         try {
-            String selectedGameName = userUtilities.getSelectedGame();
             String username = userUtilities.getSavedUsername();
             JSONObject object = new JSONObject();
             object.put("messageType", "join_game");
-            object.put("gameName", selectedGameName);
             object.put("username", username);
             webSocketManager.sendMessage(object.toString());
 
@@ -158,8 +174,12 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+
+                gameUpdate(message);
+                //statusText.setText(message);
                 gameUpdate(message);
             }
+
         });
     }
 
@@ -172,6 +192,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             public void run() {
                 //!!update to include the whole reason why
                 statusText.setText("Disconnected");
+                //statusText.setText(code + reason);
             }
         });
     }
@@ -183,7 +204,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(GamePlayScreen.this, "Websocket error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GamePlayScreen.this, "Connection error", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -216,8 +237,9 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
                 mySeat = object.optInt("yourSeat", -1);
                 //get the arary of cards the dealer has or the community cards in go fish or something
                 JSONArray centerCards = object.optJSONArray("centerCards");
+                int centerCardsHidden = object.optInt("centerHidden", 0);
                 //render the cards into the centerCard layout with true meaning theyre face up.
-                renderCards(TableCardsL, centerCards);
+                renderCenterCards(centerCards, centerCardsHidden);
 
                 //get the player cards given
                 JSONArray players = object.optJSONArray("players");
@@ -237,6 +259,116 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             e.printStackTrace();
             statusText.setText("No game update provided");
         }
+    }
+
+    //turn the message text into usable text for the cards
+    private String formatCardTextMessagge(String rawText) {
+        if (rawText == null) {
+            return "";
+        }
+
+        String text = rawText.toUpperCase();
+
+        String suit = "";
+        if (text.endsWith("SPADES")) {
+            suit = "♠";
+            text = text.replace("SPADES", "");
+        } else if (text.endsWith("HEARTS")) {
+            suit = "♥";
+            text = text.replace("HEARTS", "");
+        } else if (text.endsWith("DIAMONDS")) {
+            suit = "♦";
+            text = text.replace("DIAMONDS", "");
+        } else if (text.endsWith("CLUBS")) {
+            suit = "♣";
+            text = text.replace("CLUBS", "");
+        }
+
+        String value;
+        switch (text) {
+            case "ACE":
+                value = "A";
+                break;
+            case "KING":
+                value = "K";
+                break;
+            case "QUEEN":
+                value = "Q";
+                break;
+            case "JACK":
+                value = "J";
+                break;
+            case "TEN":
+                value = "10";
+                break;
+            case "NINE":
+                value = "9";
+                break;
+            case "EIGHT":
+                value = "8";
+                break;
+            case "SEVEN":
+                value = "7";
+                break;
+            case "SIX":
+                value = "6";
+                break;
+            case "FIVE":
+                value = "5";
+                break;
+            case "FOUR":
+                value = "4";
+                break;
+            case "THREE":
+                value = "3";
+                break;
+            case "TWO":
+                value = "2";
+                break;
+            default:
+                value = rawText;
+                break;
+        }
+
+        return value + suit;
+    }
+
+    //renders the dealer cards
+    private void renderCenterCards(JSONArray cards, int hiddenCount) {
+        //get rid of old cards
+        TableCardsL.removeAllViews();
+
+        //render the face up cards first
+        if (cards != null) {
+            //get cards from json and iterate
+            for (int i = 0; i < cards.length(); i++) {
+                String text = cards.optString(i, ".");
+                //add cards to the layout
+                addCard(TableCardsL, text);
+            }
+        }
+        // render the hidden cards from what backend tells it
+        for(int i = 0; i < hiddenCount; i++) {
+            addCard(TableCardsL, "");
+        }
+    }
+
+    //make a card view and add it to the layout
+    private void addCard(LinearLayout layout, String text) {
+        //inflate the card from the XML
+        View cardView = getLayoutInflater().inflate(R.layout.card_holder,layout, false);
+        //get the textview inside the card layout
+        TextView cardText = cardView.findViewById(R.id.card);
+
+        //. ? and blank all show that the card is hidden so leave these blank to be hidden
+        if(".".equals(text) || "??".equals(text) || "".equals(text)) {
+            cardText.setText("");
+        } else {
+            //use the formatter to get the message to proper text and display it
+            cardText.setText(formatCardTextMessagge(text));
+        }
+        //add the card to the layout
+        layout.addView(cardView);
     }
 
 
@@ -314,27 +446,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         for(int i = 0; i < cards.length(); i++) {
             //Get the card data at the index
             String text = cards.optString(i, ".");
-
-            //inflate the new card from the layout in the card_holder xml file
-            //layout means that they'll all go in the layout we create
-            //false means it wont be added automatically so we can add the text below to it first
-            View cardView = getLayoutInflater().inflate(R.layout.card_holder, layout, false);
-
-            //lets us set the card text value by using the layout in the card
-            TextView cardText = cardView.findViewById(R.id.card);
-
-            //if true it will hide the card so you cant see the other players cards
-            //if false it will show the card for a game like blackjack where it doesnt matter
-            if(".".equals(text) || "??".equals(text)) {
-                cardText.setText("");
-            } else {
-                cardText.setText(text);
-            }
-            //add teh card to the layout now that it has text
-            //makes the card appear on the screen
-            //if the layout is TableCardsL then it will appear in the center of the screen
-            //if the layout is playerCardsLayout then it will appear in the players hand
-            layout.addView(cardView);
+            addCard(layout, text);
         }
     }
 

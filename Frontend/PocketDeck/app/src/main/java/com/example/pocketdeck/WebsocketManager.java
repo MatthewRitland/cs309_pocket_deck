@@ -4,7 +4,6 @@ import android.util.Log;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
-
 public class WebsocketManager {
     private static WebsocketManager instance;
     private WebSocketClient webSocketClient;
@@ -51,7 +50,7 @@ public class WebsocketManager {
 
                 @Override
                 public void onClose(int code, String reason, boolean remote) {
-                    Log.d("WS", "Closed");
+                    Log.d("WS", "Closed: code=" + code + " reason=" + reason + " remote=" + remote);
                     if (listener != null) {
                         listener.onWebSocketClose(code, reason, remote);
                     }

@@ -27,7 +27,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
     //private static final String WS_URL = "ws://coms-3090-025.class.las.iastate.edu:8080/";
 
     //test for personal ws server
-    //private static final String WS_URL = "ws://10.0.2.2:8080/game/test1/blackjack";
+    private static final String WS_URL = "ws://10.0.2.2:8080/game/test1/blackjack";
     private TextView statusText;
     private TextView centerText;
     private Button moveButton1;
@@ -133,8 +133,8 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
 
         webSocketManager = WebsocketManager.getInstance();
         webSocketManager.setWebSocketListener(this);
-        webSocketManager.connectWebSocket(websocketUrlBuilder());
-        //webSocketManager.connectWebSocket(WS_URL);
+        //webSocketManager.connectWebSocket(websocketUrlBuilder());
+        webSocketManager.connectWebSocket(WS_URL);
 
     }
     //Websocket connected successfully

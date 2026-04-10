@@ -103,19 +103,21 @@ public class GameSocket {
                 }
             }
         } else if (json.get("messageType").equals("action_made")) {
-            if (json.get("move").equals("hit")) {
-                cardGame.takeTurn(Actions.HIT);
-            } else if (json.get("move").equals("stand")) {
-                cardGame.takeTurn(Actions.STAND);
-            }
-            for (int i = 0; i < users.size(); i++) {
-                try {
-                    logger.info(users.get(i).getUsername());
-                    JSONObject output = makeOutput(game, users.get(i).getUsername());
-                    usernameSessionMap.get(users.get(i).getUsername()).getBasicRemote().sendText(output.toJSONString());
-                } catch (IOException e) {
-                    logger.info("Exception: " + e.getMessage().toString());
-                    e.printStackTrace();
+            if (sessionUsernameMap.get(session).equals(cardGame.getCurrentPlayer().getUsername())) {
+                if (json.get("move").equals("hit")) {
+                    cardGame.takeTurn(Actions.HIT);
+                } else if (json.get("move").equals("stand")) {
+                    cardGame.takeTurn(Actions.STAND);
+                }
+                for (int i = 0; i < users.size(); i++) {
+                    try {
+                        logger.info(users.get(i).getUsername());
+                        JSONObject output = makeOutput(game, users.get(i).getUsername());
+                        usernameSessionMap.get(users.get(i).getUsername()).getBasicRemote().sendText(output.toJSONString());
+                    } catch (IOException e) {
+                        logger.info("Exception: " + e.getMessage().toString());
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -136,12 +138,11 @@ public class GameSocket {
                     break;
                 }
             }
-            Card[] tempHand = new Card[cardCount];
-            for (int i = 0; i < cardCount; i++) {
-                tempHand[i] = dealerHand[i];
-            }
+            Card[] tempHand = new Card[1];
+            tempHand[0] = dealerHand[0];
             array.addAll(List.of(tempHand));
             output.put("centerCards", array);
+            output.put("centerHidden", cardCount - 1);
         }
         output.put("yourSeat", cardGame.findPlayer(userRepo.findByUsername(username)));
         output.put("currentTurn", cardGame.getTurn());

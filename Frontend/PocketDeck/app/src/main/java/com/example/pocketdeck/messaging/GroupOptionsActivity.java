@@ -1,10 +1,12 @@
 package com.example.pocketdeck.messaging;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,10 +32,13 @@ public class GroupOptionsActivity extends AppCompatActivity {
         leaveGroup = findViewById(R.id.leaveGroupButton);
         addUser = findViewById(R.id.groupInviteButton);
         usernameInput = findViewById(R.id.groupInviteName);
+        TextView groupLabel = findViewById(R.id.groupOptionsLabel);
 
         Bundle extraBundle = getIntent().getExtras();
         groupName = extraBundle.getString("groupName");
         groupId = extraBundle.getLong("groupId");
+
+        groupLabel.setText(groupName);
 
         addUser.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +77,9 @@ public class GroupOptionsActivity extends AppCompatActivity {
             messageObject.put("groupChatId", groupId);
 
             MessagingWebSocketManager.getInstance().sendMessage(messageObject.toString());
+
+            Intent listIntent = new Intent(GroupOptionsActivity.this, GroupsListActivity.class);
+            startActivity(listIntent);
         } catch (Exception e) {
             Log.d("GroupOptions", "Failed to leave");
         }

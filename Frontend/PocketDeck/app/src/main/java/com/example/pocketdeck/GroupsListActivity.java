@@ -121,9 +121,4 @@ public class GroupsListActivity extends AppCompatActivity {
         /* Start activity */
         startActivity(messageIntent, groupBundle);
     }
-
-    public class MessageGroup {
-        private String groupName;
-        private String groupId;
-    }
 }

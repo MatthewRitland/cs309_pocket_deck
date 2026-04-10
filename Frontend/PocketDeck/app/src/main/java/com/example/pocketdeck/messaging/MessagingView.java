@@ -1,5 +1,6 @@
 package com.example.pocketdeck.messaging;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -72,6 +73,17 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
         } catch (Exception e) {
             Log.d("Msg-View", "COULDN'T FETCH INFO");
         }
+
+        Button groupActionButton = findViewById(R.id.groupOptionsButton);
+        groupActionButton.setOnClickListener(new View.OnClickListener() {
+                 @Override
+                 public void onClick(View v) {
+                     Intent optionsIntent = new Intent(MessagingView.this, GroupOptionsActivity.class);
+                     optionsIntent.putExtra("groupName", messageGroupName);
+                     optionsIntent.putExtra("groupId", messageGroupId);
+                 }
+             }
+        );
 
         // Adding messages upon entering
         messageButton.setOnClickListener(new View.OnClickListener(){

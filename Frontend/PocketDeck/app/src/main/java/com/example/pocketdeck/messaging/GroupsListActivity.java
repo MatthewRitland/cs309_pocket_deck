@@ -20,14 +20,16 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.pocketdeck.R;
 import com.example.pocketdeck.UserUtilities;
 import com.example.pocketdeck.VolleyCommand;
+import com.example.pocketdeck.WebSocketListener;
 
+import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupsListActivity extends AppCompatActivity {
+public class GroupsListActivity extends AppCompatActivity implements WebSocketListener {
 
     /* HTTP paths */
     static final String URL_GROUP_FETCH = "http://coms-3090-025.class.las.iastate.edu:8080/user/groupChats/";
@@ -46,7 +48,7 @@ public class GroupsListActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_message_groups);
         MessagingWebSocketManager.getInstance().connectWebSocket(URL_MESSAGING_WEBSOCKET + userUtils.getSavedUsername());
-
+        MessagingWebSocketManager.getInstance().setListener(this);
         /* Get Page Elements */
 
         groupView = findViewById(R.id.GroupListView);
@@ -181,4 +183,19 @@ public class GroupsListActivity extends AppCompatActivity {
         /* Start activity */
         startActivity(messageIntent);
     }
+
+    @Override
+    public void onWebSocketOpen(ServerHandshake handshakeData) { }
+
+    @Override
+    public void onWebSocketMessage(String message) {
+        // Kinda hacky.
+        getGroups();
+    }
+
+    @Override
+    public void onWebSocketClose(int code, String reason, boolean remote) { }
+
+    @Override
+    public void onWebSocketError(Exception ex) { }
 }

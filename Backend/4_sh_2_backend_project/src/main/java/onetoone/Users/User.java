@@ -63,13 +63,10 @@ public class User {
     public void setUserStatus(UserStatus status) {this.status = status;}
 
 
-    public Boolean isEqual (Object obj) {
-        if (obj.getClass() == this.getClass()) {
-            User temp = (User)obj;
-            if (temp.getId() == this.getId() && temp.getUsername() == this.getUsername() && temp.getPassword() == this.getPassword()) {
+    public Boolean isEqual (User obj) {
+            if (obj.getId() == this.getId() && obj.getUsername().equals(this.getUsername()) && obj.getPassword().equals(this.getPassword())) {
                 return true;
             }
-        }
         return false;
     }
 

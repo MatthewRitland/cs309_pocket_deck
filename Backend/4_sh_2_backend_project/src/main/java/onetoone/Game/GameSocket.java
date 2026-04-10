@@ -148,7 +148,7 @@ public class GameSocket {
         }
         output.put("yourSeat", cardGame.findPlayer(userRepo.findByUsername(username)));
         output.put("currentTurn", cardGame.getTurn());
-        if (!cardGame.checkGameProgress()) {
+        if (cardGame.checkGameProgress()) {
             output.put("gamePhase", "finished");
         } else {
             output.put("gamePhase", "in progress");

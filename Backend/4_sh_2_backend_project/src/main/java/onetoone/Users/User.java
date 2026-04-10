@@ -63,10 +63,18 @@ public class User {
     public void setUserStatus(UserStatus status) {this.status = status;}
 
 
-    public Boolean isEqual (Object obj) {
+    public Boolean isEqual (User obj) {
+            if (obj.getId() == this.getId() && obj.getUsername().equals(this.getUsername()) && obj.getPassword().equals(this.getPassword())) {
+                return true;
+            }
+        return false;
+    }
+
+    @Override
+    public boolean equals (Object obj) {
         if (obj.getClass() == this.getClass()) {
             User temp = (User)obj;
-            if (temp.getId() == this.getId() && temp.getUsername() == this.getUsername() && temp.getPassword() == this.getPassword()) {
+            if (temp.getId() == this.getId() && temp.getUsername().equals(this.getUsername()) && temp.getPassword().equals(this.getPassword())) {
                 return true;
             }
         }

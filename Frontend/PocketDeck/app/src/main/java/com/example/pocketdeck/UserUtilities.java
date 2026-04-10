@@ -122,4 +122,22 @@ public class UserUtilities {
     public String getSavedStatus() {
         return preferences.getString("status", "INVALID_STATUS");
     }
+
+    /**
+     *
+     * @param gameName
+     * saves the game mode in user pref
+     */
+    public void setSelectedGame(String gameName) {
+        preferences.edit().putString("selectedGame", gameName).apply();
+    }
+
+    /**
+     *
+     * @return return the game mode from pref. The default if nothing is selected it blackjack as of right now
+     */
+    public String getSelectedGame() {
+        return preferences.getString("selectedGame", "Blackjack");
+    }
+
 }

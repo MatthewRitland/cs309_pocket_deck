@@ -4,6 +4,7 @@
 
 package com.example.pocketdeck;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.content.Intent;
@@ -37,6 +38,8 @@ public class GameModes extends AppCompatActivity {
     private CardView futureCard2;
     private Button backButton;
 
+    private UserUtilities userUtilities;
+
     /**
      *
      * @param savedInstanceState If the activity is being re-initialized after
@@ -55,6 +58,7 @@ public class GameModes extends AppCompatActivity {
             return insets;
         });
 
+        userUtilities = new UserUtilities(GameModes.this);
         pokerCard = findViewById(R.id.pokerCard);
         blackjackCard = findViewById(R.id.blackjackCard);
         futureCard1 = findViewById(R.id.futureCard1);
@@ -75,6 +79,8 @@ public class GameModes extends AppCompatActivity {
         pokerCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                userUtilities.setSelectedGame("Poker");
+
                 Intent i = new Intent(GameModes.this, MainActivity.class);
                 startActivity(i);
             }
@@ -84,6 +90,8 @@ public class GameModes extends AppCompatActivity {
         blackjackCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                userUtilities.setSelectedGame("Blackjack");
+
                 Intent i = new Intent(GameModes.this, MainActivity.class);
                 startActivity(i);
             }
@@ -93,6 +101,8 @@ public class GameModes extends AppCompatActivity {
         futureCard1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //userUtilities.setSelectedGame("");
+
             }
         });
 
@@ -100,6 +110,8 @@ public class GameModes extends AppCompatActivity {
         futureCard2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //userUtilities.setSelectedGame("");
+
             }
         });
     }

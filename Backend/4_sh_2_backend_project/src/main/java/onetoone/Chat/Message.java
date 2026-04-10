@@ -45,7 +45,7 @@ public class Message {
     public User getUser() {
         return user;
     }
-    public void setUser(String userName) {
+    public void setUser(User user) {
         this.user= user;
     }
 

@@ -4,9 +4,9 @@ package onetoone.Chat;
 public enum MessageAction {
     GET_CHAT_HISTORY,
     SEND,
-    CREATE_GROUP,
+    CREATE_GROUPCHAT,
     ADD_USER,
     LEAVE,
-    DEBUG
+    DEBUG,
     // more?
 }

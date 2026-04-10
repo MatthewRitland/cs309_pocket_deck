@@ -37,10 +37,13 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
     private Button moveButton2;
     private Button moveButton3;
     private Button leaveButton;
+    private Button startGameButton;
     private LinearLayout TableCardsL;
     private LinearLayout playerCardsL;
     private WebsocketManager webSocketManager;
     private UserUtilities userUtilities;
+    private TextView otherPlayersText;
+    private int mySeat = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +63,10 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         moveButton1 = findViewById(R.id.moveButton1);
         moveButton2 = findViewById(R.id.moveButton2);
         moveButton3 = findViewById(R.id.moveButton3);
+        startGameButton = findViewById(R.id.startGameButton);
         TableCardsL = findViewById(R.id.TableCardsL);
         playerCardsL = findViewById(R.id.playerCardsLayout);
+        otherPlayersText = findViewById(R.id.otherPlayersText);
 
         statusText.setText("Connecting...");
         centerText.setText("Waiting for game");
@@ -74,6 +79,19 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             public void onClick(View v) {
                 Intent i = new Intent(GamePlayScreen.this, MainActivity.class);
                 startActivity(i);
+            }
+        });
+
+        startGameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    JSONObject object = new JSONObject();
+                    object.put("messageType", "start_game");
+                    webSocketManager.sendMessage(object.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -121,9 +139,11 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         //Get the selected game mode from pref and make the game message to send to backend
         try {
             String selectedGameName = userUtilities.getSelectedGame();
+            String username = userUtilities.getSavedUsername();
             JSONObject object = new JSONObject();
             object.put("messageType", "join_game");
             object.put("gameName", selectedGameName);
+            object.put("username", username);
             webSocketManager.sendMessage(object.toString());
 
         } catch (Exception e) {
@@ -176,6 +196,14 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             //receive the message
             JSONObject object = new JSONObject(message);
             String messageType = object.optString("messageType", "..");
+            String gamePhase = object.optString("gamePhase", "lobby");
+
+            //so you only see the start button before the game starts
+            if ("lobby".equals(gamePhase)) {
+                startGameButton.setVisibility(View.VISIBLE);
+            } else {
+                startGameButton.setVisibility(View.GONE);
+            }
 
             // gamestate update
             if("game_state".equals(messageType)) {
@@ -184,6 +212,8 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
                 //dealer hand info on the center txt
                 centerText.setText(object.optString("centerInfo", "No table info"));
 
+                //set your seat for multiplayer play
+                mySeat = object.optInt("yourSeat", -1);
                 //get the arary of cards the dealer has or the community cards in go fish or something
                 JSONArray centerCards = object.optJSONArray("centerCards");
                 //render the cards into the centerCard layout with true meaning theyre face up.
@@ -192,7 +222,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
                 //get the player cards given
                 JSONArray players = object.optJSONArray("players");
                 //render the cards for all the players
-                renderPlayerCards(players);
+                renderPlayers(players);
 
                 // get the moves allowed from the backend for the player
                 JSONArray moves = object.optJSONArray("actions");
@@ -206,6 +236,65 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             //error stuff
             e.printStackTrace();
             statusText.setText("No game update provided");
+        }
+    }
+
+
+    private void renderPlayers(JSONArray players) {
+        //clear out all the previosu cards
+        playerCardsL.removeAllViews();
+
+        //check to make sure the backend sent something
+        //if nothing sent it will leave
+        if (players == null) {
+            otherPlayersText.setText("Waiting for players...");
+            return;
+        }
+
+        //to understand where teh other players are.
+        StringBuilder otherPlayers = new StringBuilder();
+
+        //loop through all the players in the game
+        for (int i = 0; i < players.length(); i++) {
+            JSONObject player = players.optJSONObject(i);
+
+            //make sure the player obj exists
+            if (player != null) {
+                //get the number of their seat from the backend to assign who is who
+                int position = player.optInt("seat", -1);
+                //get the players username
+                String name = player.optString("username", "Player " + position);
+                //get your cards from the array
+                JSONArray cards = player.optJSONArray("cards");
+                //how many cards the other people have since you cant see them
+                int hiddenCount = player.optInt("hiddenCount", 0);
+
+                //if the player is you then render the cards assigned to you
+                if (position == mySeat) {
+                    renderCards(playerCardsL, cards);
+                } else {
+                    //if it isnt you then it will get their name and determine the cards to display for them on your screen
+                    otherPlayers.append(name).append(" (Seat ").append(position).append(") - ");
+
+                    //if the backend sends visible cards for the other players
+                    if (cards != null && cards.length() > 0) {
+                        //only shows how many they have
+                        otherPlayers.append(cards.length()).append(" cards");
+                    } else {
+                        //if the backend hides the cards then it will show how many hidden cards
+                        otherPlayers.append(hiddenCount).append(" cards");
+                    }
+                    otherPlayers.append("\n");
+                }
+            }
+        }
+
+        //if only you exist in the lobby it will tell you that
+        if (otherPlayers.length() == 0) {
+            otherPlayersText.setText("No other players yet");
+        } else {
+            //build a string of all opponents
+            otherPlayersText.setText(otherPlayers.toString().trim());
         }
     }
 
@@ -249,6 +338,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         }
     }
 
+    /*
     private void renderPlayerCards(JSONArray players) {
         //clear all the cards in the players hand from the last game or when a new hand starts
         //when the game updates
@@ -282,6 +372,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             }
         }
     }
+     */
 
     //update the buttons based on the previous action and the game being played
     //all actions that are allowed are based on rules from the backend
@@ -336,5 +427,12 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        webSocketManager.removeWebSocketListener();
+        webSocketManager.disconnectWebSocket();
     }
 }

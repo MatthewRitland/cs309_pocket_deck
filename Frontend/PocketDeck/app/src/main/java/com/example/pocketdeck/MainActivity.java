@@ -94,9 +94,11 @@ public class MainActivity extends AppCompatActivity {
                 //isLoggedIn is stored in the file and if it doesnt exist set it to false.
                 boolean loggedIn = preferences.getBoolean("isLoggedIn", false);
 
+
                 /*
                 Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
                 startActivity(i);
+
 
                  */
 

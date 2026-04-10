@@ -6,7 +6,7 @@ import onetoone.Users.User;
 import java.util.Random;
 
 
-public class Game {
+abstract public class Game {
     private static Card[] deck = {new Card (Suit.CLUBS, Value.ACE), new Card (Suit.CLUBS, Value.TWO), new Card (Suit.CLUBS, Value.THREE), new Card (Suit.CLUBS, Value.FOUR), new Card (Suit.CLUBS, Value.FIVE), new Card (Suit.CLUBS, Value.SIX), new Card (Suit.CLUBS, Value.SEVEN), new Card (Suit.CLUBS, Value.EIGHT), new Card (Suit.CLUBS, Value.NINE), new Card (Suit.CLUBS, Value.TEN), new Card (Suit.CLUBS, Value.JACK), new Card (Suit.CLUBS, Value.QUEEN), new Card (Suit.CLUBS, Value.KING), new Card (Suit.SPADES, Value.ACE), new Card (Suit.SPADES, Value.TWO), new Card (Suit.SPADES, Value.THREE), new Card (Suit.SPADES, Value.FOUR), new Card (Suit.SPADES, Value.FIVE), new Card (Suit.SPADES, Value.SIX), new Card (Suit.SPADES, Value.SEVEN), new Card (Suit.SPADES, Value.EIGHT), new Card (Suit.SPADES, Value.NINE), new Card (Suit.SPADES, Value.TEN), new Card (Suit.SPADES, Value.JACK), new Card (Suit.SPADES, Value.QUEEN), new Card (Suit.SPADES, Value.KING), new Card (Suit.DIAMONDS, Value.ACE), new Card (Suit.DIAMONDS, Value.TWO), new Card (Suit.DIAMONDS, Value.THREE), new Card (Suit.DIAMONDS, Value.FOUR), new Card (Suit.DIAMONDS, Value.FIVE), new Card (Suit.DIAMONDS, Value.SIX), new Card (Suit.DIAMONDS, Value.SEVEN), new Card (Suit.DIAMONDS, Value.EIGHT), new Card (Suit.DIAMONDS, Value.NINE), new Card (Suit.DIAMONDS, Value.TEN), new Card (Suit.DIAMONDS, Value.JACK), new Card (Suit.DIAMONDS, Value.QUEEN), new Card (Suit.DIAMONDS, Value.KING), new Card (Suit.HEARTS, Value.ACE), new Card (Suit.HEARTS, Value.TWO), new Card (Suit.HEARTS, Value.THREE), new Card (Suit.HEARTS, Value.FOUR), new Card (Suit.HEARTS, Value.FIVE), new Card (Suit.HEARTS, Value.SIX), new Card (Suit.HEARTS, Value.SEVEN), new Card (Suit.HEARTS, Value.EIGHT), new Card (Suit.HEARTS, Value.NINE), new Card (Suit.HEARTS, Value.TEN), new Card (Suit.HEARTS, Value.JACK), new Card (Suit.HEARTS, Value.QUEEN), new Card (Suit.HEARTS, Value.KING)};
     private CardGame gameRules;
     private User[] players;
@@ -14,6 +14,7 @@ public class Game {
     private Card[][] playerHands;
     private int handLimit;
     private Actions[] possibleActions;
+    private int turn;
 
     public Game () {}
 
@@ -23,6 +24,7 @@ public class Game {
         this.handLimit = handLimit;
         currentPlayer = players[0];
         playerHands = new Card[players.length][handLimit];
+        turn = 0;
     }
 
     public User[] getPlayers () {
@@ -76,6 +78,10 @@ public class Game {
     public void setPlayerHands () {
         playerHands = new Card[players.length][handLimit];
     }
+
+    public int getTurn () { return turn; }
+
+    protected void setTurn (int turn) { this.turn = turn; }
 
     public Card[] getCurrentPlayerHand () {
         if (findCurrentPlayer() == -1) {
@@ -161,9 +167,11 @@ public class Game {
             return null;
         }
         Random ran = new Random();
-        playerHands[findCurrentPlayer()][cardCount] = deck[ran.nextInt(53)];
+        playerHands[findCurrentPlayer()][cardCount] = deck[ran.nextInt(52)];
         return playerHands[findCurrentPlayer()][cardCount];
     }
 
-    public void takeTurn (Actions action) {}
+    abstract public void takeTurn (Actions action);
+
+    abstract public boolean checkGameProgress ();
 }

@@ -16,21 +16,31 @@ public class BlackJack extends Game{
     public BlackJack () {
     }
 
-    public BlackJack (CardGame gameRules, User[] players, int handLimit) {
-        super (gameRules, players, handLimit);
+    public BlackJack (CardGame gameRules, User[] players) {
+        super (gameRules, players, 30);
         scores = new int[players.length];
-        dealerHand = new Card[handLimit];
+        dealerHand = new Card[30];
         winners = new Result[players.length];
         stood = new boolean[players.length];
         dealerScore = 0;
         for (int i = 0; i < players.length; i++) {
             scores[i] = 0;
             stood[i] = false;
+            draw();
+            draw();
+            scores[i] = cardValueConversion(getCard(getCurrentPlayer(), 0)) + cardValueConversion(getCard(getCurrentPlayer(), 1));
+            nextPlayer();
         }
+        dealerTurn();
+        dealerTurn();
         Actions[] actions = new Actions[2];
         actions[0] = Actions.STAND;
         actions[1] = Actions.HIT;
         this.setPossibleActions(actions);
+    }
+
+    public Card[] getDealerHand () {
+        return dealerHand;
     }
 
     private int cardValueConversion (User player, Card card) {
@@ -132,7 +142,25 @@ public class BlackJack extends Game{
     }
 
     private void dealerTurn () {
-        if (dealerScore < 17) {
+        if (dealerHand.length > 2) {
+            if (dealerScore < 17) {
+                int cardCount = 0;
+                Card currentCard = dealerHand[cardCount];
+                while (currentCard != null && cardCount < dealerHand.length) {
+                    cardCount += 1;
+                    if (cardCount < dealerHand.length) {
+                        currentCard = dealerHand[cardCount];
+                    }
+                }
+                if (dealerHand.length <= cardCount) {
+                    return;
+                }
+                Random ran = new Random();
+                dealerHand[cardCount] = getDeck()[ran.nextInt(52)];
+                dealerScore += cardValueConversion(dealerHand[cardCount]);
+            }
+        }
+        else {
             int cardCount = 0;
             Card currentCard = dealerHand[cardCount];
             while (currentCard != null && cardCount < dealerHand.length) {
@@ -145,7 +173,7 @@ public class BlackJack extends Game{
                 return;
             }
             Random ran = new Random();
-            dealerHand[cardCount] = getDeck()[ran.nextInt(53)];
+            dealerHand[cardCount] = getDeck()[ran.nextInt(52)];
             dealerScore += cardValueConversion(dealerHand[cardCount]);
         }
     }
@@ -205,6 +233,9 @@ public class BlackJack extends Game{
         }
         if (currentPlayerLocation == getPlayers().length - 1) {
             dealerTurn();
+        }
+        if (currentPlayerLocation == getPlayers().length - 1) {
+            this.setTurn(this.getTurn() + 1);
         }
         if (!checkGameProgress()) {
             nextPlayer();

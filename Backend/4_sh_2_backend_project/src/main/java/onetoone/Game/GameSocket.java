@@ -142,7 +142,10 @@ public class GameSocket {
             }
             Card[] tempHand = new Card[1];
             tempHand[0] = dealerHand[0];
-            array.addAll(List.of(tempHand));
+            JSONObject card = new JSONObject();
+            card.put("suit", tempHand[0].getSuit().toString());
+            card.put("value", tempHand[0].getValue().toString());
+            array.add(card);
             output.put("centerCards", array);
             output.put("centerHidden", cardCount - 1);
         }
@@ -154,7 +157,9 @@ public class GameSocket {
             output.put("gamePhase", "in progress");
         }
         JSONArray actionArray = new JSONArray();
-        actionArray.addAll(List.of(cardGame.getPossibleActions()));
+        Actions[] actions = cardGame.getPossibleActions();
+        actionArray.add(actions[0].toString());
+        actionArray.add(actions[1].toString());
         output.put("actions", actionArray);
         JSONArray players = new JSONArray();
         for (int i = 0; i < users.size(); i++) {
@@ -169,7 +174,12 @@ public class GameSocket {
                 for (int j = 0; j < cardCount; j++) {
                     tempHand[j] = playerHand[j];
                 }
-                array.addAll(List.of(tempHand));
+                for (int j = 0; j < cardCount; j++) {
+                    JSONObject card = new JSONObject();
+                    card.put("suit", tempHand[j].getSuit().toString());
+                    card.put("value", tempHand[j].getValue().toString());
+                    array.add(card);
+                }
                 player.put("cards", array);
             } else {
                 player.put("cards", "[]");
@@ -179,7 +189,11 @@ public class GameSocket {
         }
         output.put("players", players);
         if (cardGame.checkGameProgress()) {
-            output.put("winners", Arrays.toString(cardGame.getWinners()));
+            JSONArray array = new JSONArray();
+            for (int j = 0; j < cardGame.getPlayers().length; j++) {
+                array.add(cardGame.getWinners()[j].toString());
+            }
+            output.put("winners", array);
         }
         return output;
     }

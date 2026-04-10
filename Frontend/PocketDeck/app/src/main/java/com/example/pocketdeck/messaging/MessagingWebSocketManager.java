@@ -44,6 +44,7 @@ public class MessagingWebSocketManager {
     }
 
     public void connectWebSocket(String serverUrl) {
+
         try {
             URI serverUri = URI.create(serverUrl);
             webSocketClient = new MessagingClient(serverUri);
@@ -56,6 +57,7 @@ public class MessagingWebSocketManager {
     }
 
     public void sendMessage(String message) {
+        Log.d("WbSktManager", message);
         if (webSocketClient != null && webSocketClient.isOpen()) {
             webSocketClient.send(message);
         }
@@ -77,12 +79,14 @@ public class MessagingWebSocketManager {
         @Override
         public void onOpen(ServerHandshake handshakedata) {
             // On opening server
+            Log.d("WbSktManager", handshakedata.toString());
             if (currentListener != null) currentListener.onWebSocketOpen(handshakedata);
         }
 
         @Override
         public void onMessage(String message) {
             // On receiving a message
+            Log.d("WbSktManager", message);
             if (currentListener != null) currentListener.onWebSocketMessage(message);
         }
 
@@ -95,6 +99,7 @@ public class MessagingWebSocketManager {
         @Override
         public void onError(Exception ex) {
             // When an error occurs.
+            Log.d("WbSktManager", ex.getMessage());
             if (currentListener != null) currentListener.onWebSocketError(ex);
         }
     }

@@ -57,9 +57,20 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
         if (extraData != null && !extraData.isEmpty()) {
             String groupName = extraData.getString("groupName");
             Long groupId = extraData.getLong("groupId");
-
-            // TODO: Websocket connection managing here, likely.
             setGroupInformation(groupId, groupName);
+        }
+
+        /* Websocket */
+        MessagingWebSocketManager.getInstance().setListener(this);
+        try {
+            JSONObject jsonMessage = new JSONObject();
+            jsonMessage.put("action", "GET_CHAT_HISTORY");
+            jsonMessage.put("groupChatId", messageGroupId);
+
+            Log.d("Msg-View", jsonMessage.toString());
+            MessagingWebSocketManager.getInstance().sendMessage(jsonMessage.toString());
+        } catch (Exception e) {
+            Log.d("Msg-View", "COULDN'T FETCH INFO");
         }
 
         // Adding messages upon entering
@@ -77,8 +88,17 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
                 String username = userUtils.getSavedUsername();
 
                 Message userMessage = new Message(username, messageText);
-                // TODO: Change out for server communication
-                addMessage(userMessage);
+                try {
+                    JSONObject newMessage = new JSONObject();
+                    newMessage.put("action", "SEND");
+                    newMessage.put("messageContent", messageText.trim());
+                    newMessage.put("groupChatId", messageGroupId);
+
+                    MessagingWebSocketManager.getInstance().sendMessage(newMessage.toString());
+                } catch (Exception e) {
+                    Log.d("Msg-View", "Failed to send message");
+                }
+                //addMessage(userMessage);
             }
         });
     }
@@ -106,10 +126,16 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
         // Run on UI
         runOnUiThread(() -> {
             try {
-                JSONObject jsonMessage = new JSONObject(message);
-                String messageContents = jsonMessage.getString("message");
-                String username = jsonMessage.getString("username");
+                Log.d("NEW MESSAGE!!!", message);
+                String[] messageSplit = message.split(": ");
+                String messageContents = "";
+                for (int i = 1; i < messageSplit.length; i++) {
+                    messageContents = messageContents + messageSplit[i];
+                }
+                String username = messageSplit[0];
                 Message newMessage = new Message(username, messageContents);
+
+                addMessage(newMessage);
             } catch (Exception e) {
                 Log.d("MessagingView","Parsing message data failed.");
             }
@@ -118,4 +144,7 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
 
     @Override
     public void onWebSocketClose(int code, String reason, boolean remote) { }
+
+    @Override
+    public void onWebSocketError(Exception ex) { }
 }

@@ -2,8 +2,10 @@ package com.example.pocketdeck.messaging;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,10 +30,11 @@ import java.util.List;
 public class GroupsListActivity extends AppCompatActivity {
 
     /* HTTP paths */
-    static final String URL_GROUP_FETCH = "http://coms-3090-025.class.las.iastate.edu:8080/users/groupChats/";
-
+    static final String URL_GROUP_FETCH = "http://coms-3090-025.class.las.iastate.edu:8080/user/groupChats/";
+    static final String URL_MESSAGING_WEBSOCKET = "http://coms-3090-025.class.las.iastate.edu:8080/chat/";
     /* Page elements */
     private RecyclerView groupView;
+    private EditText groupNameInput;
     private Button createGroupButton, updateGroupsButton;
 
     private UserUtilities userUtils;
@@ -39,12 +42,15 @@ public class GroupsListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message_groups);
-
-        /* Get Page Elements */
         userUtils = new UserUtilities(this);
 
+        setContentView(R.layout.activity_message_groups);
+        MessagingWebSocketManager.getInstance().connectWebSocket(URL_MESSAGING_WEBSOCKET + userUtils.getSavedUsername());
+
+        /* Get Page Elements */
+
         groupView = findViewById(R.id.GroupListView);
+        groupNameInput = findViewById(R.id.groupNameInput);
         createGroupButton = findViewById(R.id.CreateGroupButton);
         // TODO: Add update group button (page motion instead?)
 
@@ -105,7 +111,7 @@ public class GroupsListActivity extends AppCompatActivity {
         try {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject newGroupJson = (JSONObject)response.get(i);
-                String groupName = newGroupJson.getString("groupName");
+                String groupName = newGroupJson.getString("groupChatName");
                 Long groupId = newGroupJson.getLong("id");
                 groupList.add(new MessageGroup(groupName, groupId));
             }
@@ -128,6 +134,11 @@ public class GroupsListActivity extends AppCompatActivity {
      */
     private void createGroupPrompt() {
         /* Prompt the user for the name of the new group */
+
+        String groupName = groupNameInput.getText().toString().trim();
+        if (!groupName.isEmpty()) {
+            createNewGroup(groupName);
+        }
     }
 
     /**
@@ -135,7 +146,17 @@ public class GroupsListActivity extends AppCompatActivity {
      * @param groupName Name of the new group.
      */
     public void createNewGroup(String groupName) {
-        /* Attempt to create the new group (HTTP PUT) */
+
+        try {
+            JSONObject newMessage = new JSONObject();
+            newMessage.put("action","CREATE_GROUPCHAT");
+            newMessage.put("messageContent", groupName);
+
+            Log.d("Msg-View", newMessage.toString());
+            MessagingWebSocketManager.getInstance().sendMessage(newMessage.toString());
+        } catch (Exception e) {
+
+        }
 
     }
 
@@ -148,9 +169,6 @@ public class GroupsListActivity extends AppCompatActivity {
      * @param groupId Unique groud ID string.
      */
     public void openGroupMessages(Long groupId, String groupName) {
-        /* Open Websocket for this group. */
-
-
         /* If or when websocket is opened successfully, switch to different view. */
         Intent messageIntent = new Intent(GroupsListActivity.this, MessagingView.class);
 

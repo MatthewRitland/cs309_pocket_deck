@@ -15,7 +15,16 @@ import java.util.List;
 public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.GroupHolder> {
 
     private List<MessageGroup> groups;
-    private final GroupsListActivity groupManager;
+    private GroupsListActivity groupManager;
+
+    public static class GroupHolder extends RecyclerView.ViewHolder {
+        public Button groupLink;
+
+        public GroupHolder(View view) {
+            super(view);
+            this.groupLink = view.findViewById(R.id.groupMessagingLink);
+        }
+    }
 
     public GroupListAdapter(List<MessageGroup> groups, GroupsListActivity groupActivity) {
         this.groups = groups;
@@ -31,32 +40,19 @@ public class GroupListAdapter extends RecyclerView.Adapter<GroupListAdapter.Grou
 
     @Override
     public void onBindViewHolder(@NonNull GroupHolder holder, int position) {
-        MessageGroup group = groups.get(position);
+        MessageGroup selectGroup = groups.get(position);
 
         /* Set text */
-        holder.groupLink.setText(group.getGroupName());
+        holder.groupLink.setText(selectGroup.getGroupName());
         /* Set button onClick*/
         holder.groupLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                groupManager.openGroupMessages(group.getGroupId(), group.getGroupName());
+                groupManager.openGroupMessages(selectGroup.getGroupId(), selectGroup.getGroupName());
             }
         });
     }
 
     @Override
-    public int getItemCount() {
-        return groups.size();
-    }
-
-    /* Internal Classes */
-
-    public static class GroupHolder extends RecyclerView.ViewHolder {
-        public Button groupLink;
-
-        public GroupHolder(View view) {
-            super(view);
-            groupLink = view.findViewById(R.id.groupMessagingLink);
-        }
-    }
+    public int getItemCount() { return groups.size(); }
 }

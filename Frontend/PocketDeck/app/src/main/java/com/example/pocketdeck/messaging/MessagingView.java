@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,6 +25,7 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
 
     private RecyclerView messageView;
     private MessageViewAdapter messageAdapter;
+    private TextView groupNameLabel;
     private EditText messageTextbox;
     private Button messageButton;
     private UserUtilities userUtils;
@@ -37,12 +39,13 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_messaging);
         messageView = findViewById(R.id.MessagesView);
+        groupNameLabel = findViewById(R.id.MessagingGroupName);
         messageTextbox = findViewById(R.id.messageEntryBox);
         messageButton = findViewById(R.id.messageSendButton);
         userUtils = new UserUtilities(this);
 
         List<Message> messages = new ArrayList<Message>();
-        // Demo lines
+
         //messages.add(new Message("System","New user joined"));
         messageView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -50,9 +53,10 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
         messageView.setAdapter(messageAdapter);
 
         /* Unpacking Group */
-        if (!savedInstancesState.isEmpty()) {
-            String groupName = savedInstancesState.getString("groupName");
-            Long groupId = savedInstancesState.getLong("groupId");
+        Bundle extraData = getIntent().getExtras();
+        if (extraData != null && !extraData.isEmpty()) {
+            String groupName = extraData.getString("groupName");
+            Long groupId = extraData.getLong("groupId");
 
             // TODO: Websocket connection managing here, likely.
             setGroupInformation(groupId, groupName);
@@ -82,6 +86,7 @@ public class MessagingView extends AppCompatActivity implements WebSocketListene
     public void setGroupInformation(Long groupId, String groupName) {
         this.messageGroupId = groupId;
         this.messageGroupName = groupName;
+        groupNameLabel.setText(groupName);
     }
 
     public void addMessage(Message newMessage) {

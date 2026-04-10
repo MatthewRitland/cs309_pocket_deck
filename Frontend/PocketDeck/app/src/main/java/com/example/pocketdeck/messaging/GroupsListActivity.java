@@ -7,31 +7,34 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.pocketdeck.R;
+import com.example.pocketdeck.UserUtilities;
+import com.example.pocketdeck.VolleyCommand;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GroupsListActivity extends AppCompatActivity {
 
     /* HTTP paths */
-    static final String URL_GROUP_FETCH = "";
+    static final String URL_GROUP_FETCH = "http://coms-3090-025.class.las.iastate.edu:8080/users/groupChats/";
 
     /* Page elements */
     private RecyclerView groupView;
     private Button createGroupButton, updateGroupsButton;
 
-    /* Internal Variables */
-    private String[] groupNames;
-    private String[] groupIds;
+    private UserUtilities userUtils;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +42,8 @@ public class GroupsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_message_groups);
 
         /* Get Page Elements */
+        userUtils = new UserUtilities(this);
+
         groupView = findViewById(R.id.GroupListView);
         createGroupButton = findViewById(R.id.CreateGroupButton);
         // TODO: Add update group button (page motion instead?)
@@ -55,7 +60,7 @@ public class GroupsListActivity extends AppCompatActivity {
         // TODO: UPDATE BUTTON
 
         /* Initialize */
-        //getGroups();
+        getGroups();
     }
 
     /**
@@ -63,14 +68,14 @@ public class GroupsListActivity extends AppCompatActivity {
      */
     public void getGroups() {
         /* Get the current groups from server (HTTP GET) */
-        JsonObjectRequest groupRequest = new JsonObjectRequest(
+        JsonArrayRequest groupRequest = new JsonArrayRequest(
                 Request.Method.GET,
-                URL_GROUP_FETCH + "",
+                URL_GROUP_FETCH + userUtils.getSavedId(),
                 null,
-                new Response.Listener<JSONObject>() {
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        updateGroups(jsonObject);
+                    public void onResponse(JSONArray jsonArray) {
+                        updateGroups(jsonArray);
                     }
                 },
                 new Response.ErrorListener() {
@@ -80,26 +85,28 @@ public class GroupsListActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        VolleyCommand.getInstance(this).addToRequestQueue(groupRequest);
     }
 
     /**
      * Internal method to update the RecyclerView with the HTTP response.
      * @param response JSON object returned from the HTTP request.
      */
-    private void updateGroups(JSONObject response) {
+    private void updateGroups(JSONArray response) {
         /* Parse HTTP output into group array */
-
+        List<MessageGroup> groups = parseJsonGroups(response);
         /* Update or Setup RecyclerView display */
+        setupRecyclerView(groups);
     }
 
-    private ArrayList<MessageGroup> parseJsonGroups(JSONObject response) {
+    private ArrayList<MessageGroup> parseJsonGroups(JSONArray response) {
         ArrayList<MessageGroup> groupList = new ArrayList<MessageGroup>();
         try {
-            JSONArray groupJsonArray = response.getJSONArray("groups");
-            for (int i = 0; i < groupJsonArray.length(); i++) {
-                JSONObject newGroupJson = (JSONObject)groupJsonArray.get(i);
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject newGroupJson = (JSONObject)response.get(i);
                 String groupName = newGroupJson.getString("groupName");
-                Long groupId = newGroupJson.getLong("groupId");
+                Long groupId = newGroupJson.getLong("id");
                 groupList.add(new MessageGroup(groupName, groupId));
             }
         }
@@ -108,6 +115,12 @@ public class GroupsListActivity extends AppCompatActivity {
         }
 
         return groupList;
+    }
+
+    private void setupRecyclerView(List<MessageGroup> groups) {
+        groupView.setLayoutManager(new LinearLayoutManager(this));
+        GroupListAdapter groupAdapter = new GroupListAdapter(groups, this);
+        groupView.setAdapter(groupAdapter);
     }
 
     /**
@@ -123,6 +136,11 @@ public class GroupsListActivity extends AppCompatActivity {
      */
     public void createNewGroup(String groupName) {
         /* Attempt to create the new group (HTTP PUT) */
+
+    }
+
+    private void onGroupCreated(int response) {
+        /* Add current user to group */
     }
 
     /**
@@ -137,11 +155,12 @@ public class GroupsListActivity extends AppCompatActivity {
         Intent messageIntent = new Intent(GroupsListActivity.this, MessagingView.class);
 
         /* Bundle information */
-        Bundle groupBundle = new Bundle();
-        groupBundle.putLong("groupId", groupId);
-        groupBundle.putString("groupName", groupName);
-
+        //Bundle groupBundle = new Bundle();
+        //groupBundle.putLong("groupId", groupId);
+        //groupBundle.putString("groupName", groupName);
+        messageIntent.putExtra("groupId", groupId);
+        messageIntent.putExtra("groupName", groupName);
         /* Start activity */
-        startActivity(messageIntent, groupBundle);
+        startActivity(messageIntent);
     }
 }

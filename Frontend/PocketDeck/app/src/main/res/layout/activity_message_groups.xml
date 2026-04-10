@@ -25,8 +25,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/GroupListView"
             android:layout_width="match_parent"
-            android:layout_height="576dp"
-            android:layout_gravity="center" />
+            android:layout_height="571dp"
+            android:layout_gravity="center"
+            android:scrollbars="vertical" />
 
         <Button
             android:id="@+id/CreateGroupButton"

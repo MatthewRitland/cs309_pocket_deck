@@ -11,7 +11,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/MessagingGroupName"
             android:layout_width="match_parent"
             android:layout_height="127dp"
             android:gravity="center"

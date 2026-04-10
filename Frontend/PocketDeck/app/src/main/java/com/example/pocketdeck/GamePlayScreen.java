@@ -5,19 +5,14 @@
 package com.example.pocketdeck;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,7 +27,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
     //private static final String WS_URL = "ws://coms-3090-025.class.las.iastate.edu:8080/";
 
     //test for personal ws server
-    private static final String WS_URL = "ws://10.0.2.2:8080/game/mack1/blackjack";
+    //private static final String WS_URL = "ws://10.0.2.2:8080/game/test1/blackjack";
     private TextView statusText;
     private TextView centerText;
     private Button moveButton1;
@@ -101,7 +96,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             public void onClick(View v) {
                 try {
                     JSONObject object = new JSONObject();
-                    object.put("messageType", "start_game");
+                    object.put("message_type", "start_game");
                     webSocketManager.sendMessage(object.toString());
                     startGameButton.setVisibility(View.GONE);
                 } catch (Exception e) {
@@ -138,8 +133,8 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
 
         webSocketManager = WebsocketManager.getInstance();
         webSocketManager.setWebSocketListener(this);
-        //webSocketManager.connectWebSocket(websocketUrlBuilder());
-        webSocketManager.connectWebSocket(WS_URL);
+        webSocketManager.connectWebSocket(websocketUrlBuilder());
+        //webSocketManager.connectWebSocket(WS_URL);
 
     }
     //Websocket connected successfully
@@ -158,7 +153,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         try {
             String username = userUtilities.getSavedUsername();
             JSONObject object = new JSONObject();
-            object.put("messageType", "join_game");
+            object.put("message_type", "join_game");
             object.put("username", username);
             webSocketManager.sendMessage(object.toString());
 
@@ -174,8 +169,6 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                gameUpdate(message);
                 //statusText.setText(message);
                 gameUpdate(message);
             }
@@ -216,7 +209,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         try {
             //receive the message
             JSONObject object = new JSONObject(message);
-            String messageType = object.optString("messageType", "..");
+            String messageType = object.optString("message_type", object.optString("messageType", ".."));
             String gamePhase = object.optString("gamePhase", "lobby");
 
             //so you only see the start button before the game starts
@@ -262,75 +255,74 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
     }
 
     //turn the message text into usable text for the cards
-    private String formatCardTextMessagge(String rawText) {
-        if (rawText == null) {
-            return "";
-        }
+    private String formatCardTextMessage(String value, String suit) {
+        String Value;
+        String Suit;
 
-        String text = rawText.toUpperCase();
-
-        String suit = "";
-        if (text.endsWith("SPADES")) {
-            suit = "♠";
-            text = text.replace("SPADES", "");
-        } else if (text.endsWith("HEARTS")) {
-            suit = "♥";
-            text = text.replace("HEARTS", "");
-        } else if (text.endsWith("DIAMONDS")) {
-            suit = "♦";
-            text = text.replace("DIAMONDS", "");
-        } else if (text.endsWith("CLUBS")) {
-            suit = "♣";
-            text = text.replace("CLUBS", "");
-        }
-
-        String value;
-        switch (text) {
+        switch (value) {
             case "ACE":
-                value = "A";
+                Value = "A";
                 break;
             case "KING":
-                value = "K";
+                Value = "K";
                 break;
             case "QUEEN":
-                value = "Q";
+                Value = "Q";
                 break;
             case "JACK":
-                value = "J";
+                Value = "J";
                 break;
             case "TEN":
-                value = "10";
+                Value = "10";
                 break;
             case "NINE":
-                value = "9";
+                Value = "9";
                 break;
             case "EIGHT":
-                value = "8";
+                Value = "8";
                 break;
             case "SEVEN":
-                value = "7";
+                Value = "7";
                 break;
             case "SIX":
-                value = "6";
+                Value = "6";
                 break;
             case "FIVE":
-                value = "5";
+                Value = "5";
                 break;
             case "FOUR":
-                value = "4";
+                Value = "4";
                 break;
             case "THREE":
-                value = "3";
+                Value = "3";
                 break;
             case "TWO":
-                value = "2";
+                Value = "2";
                 break;
             default:
-                value = rawText;
+                Value = value;
                 break;
         }
 
-        return value + suit;
+        switch (suit) {
+            case "SPADES":
+                Suit = "♠";
+                break;
+            case "HEARTS":
+                Suit = "♥";
+                break;
+            case "DIAMONDS":
+                Suit = "♦";
+                break;
+            case "CLUBS":
+                Suit = "♣";
+                break;
+            default:
+                Suit = suit;
+                break;
+        }
+
+        return Value + Suit;
     }
 
     //renders the dealer cards
@@ -341,10 +333,15 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         //render the face up cards first
         if (cards != null) {
             //get cards from json and iterate
-            for (int i = 0; i < cards.length(); i++) {
-                String text = cards.optString(i, ".");
-                //add cards to the layout
-                addCard(TableCardsL, text);
+            for(int i = 0; i < cards.length(); i++) {
+                JSONObject cardObject = cards.optJSONObject(i);
+
+                if(cardObject != null) {
+                    String value = cardObject.optString("value", "");
+                    String suit = cardObject.optString("suit", "");
+                    String text = formatCardTextMessage(value, suit);
+                    addCard(TableCardsL, text);
+                }
             }
         }
         // render the hidden cards from what backend tells it
@@ -365,7 +362,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             cardText.setText("");
         } else {
             //use the formatter to get the message to proper text and display it
-            cardText.setText(formatCardTextMessagge(text));
+            cardText.setText(text);
         }
         //add the card to the layout
         layout.addView(cardView);
@@ -444,9 +441,14 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         //loop through all the cards in the JSON array.
         //if somethings wrong it will return the period
         for(int i = 0; i < cards.length(); i++) {
-            //Get the card data at the index
-            String text = cards.optString(i, ".");
-            addCard(layout, text);
+            JSONObject cardObject = cards.optJSONObject(i);
+
+            if(cardObject != null) {
+                String value = cardObject.optString("value", "");
+                String suit = cardObject.optString("suit", "");
+                String text = formatCardTextMessage(value, suit);
+                addCard(layout, text);
+            }
         }
     }
 
@@ -531,7 +533,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
     private void updateMove(String moveMade) {
         try {
             JSONObject object = new JSONObject();
-            object.put("messageType", "action_made");
+            object.put("message_type", "action_made");
             object.put("move", moveMade);
 
             webSocketManager.sendMessage(object.toString());

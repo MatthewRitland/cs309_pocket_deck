@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pocketdeck.R;
 import com.example.pocketdeck.UserUtilities;
-import com.example.pocketdeck.WebSocketListener;
+import com.example.pocketdeck.WebsocketListener;
 
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessagingView extends AppCompatActivity implements WebSocketListener {
+public class MessagingView extends AppCompatActivity implements WebsocketListener {
 
     private RecyclerView messageView;
     private MessageViewAdapter messageAdapter;

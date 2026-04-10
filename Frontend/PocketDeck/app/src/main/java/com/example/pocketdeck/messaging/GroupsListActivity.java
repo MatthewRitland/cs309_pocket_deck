@@ -20,7 +20,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.pocketdeck.R;
 import com.example.pocketdeck.UserUtilities;
 import com.example.pocketdeck.VolleyCommand;
-import com.example.pocketdeck.WebSocketListener;
+import com.example.pocketdeck.WebsocketListener;
 
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupsListActivity extends AppCompatActivity implements WebSocketListener {
+public class GroupsListActivity extends AppCompatActivity implements WebsocketListener {
 
     /* HTTP paths */
     static final String URL_GROUP_FETCH = "http://coms-3090-025.class.las.iastate.edu:8080/user/groupChats/";

@@ -40,6 +40,10 @@
             android:exported="true"
             android:label="@string/title_activity_signin" />
         <activity
+            android:name=".messaging.GroupsListActivity"
+            android:exported="true"
+            android:label="GroupsListActivity"/>
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

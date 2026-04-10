@@ -55,7 +55,7 @@ public class GroupsListActivity extends AppCompatActivity {
         // TODO: UPDATE BUTTON
 
         /* Initialize */
-        getGroups();
+        //getGroups();
     }
 
     /**

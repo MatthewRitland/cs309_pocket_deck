@@ -28,6 +28,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+/**
+ * Screen that allows the user to edit their account settings.
+ * Contains methods for user deletion and logging out.
+ */
 public class AccountSettings extends AppCompatActivity {
 
     // URLs
@@ -139,6 +143,9 @@ public class AccountSettings extends AppCompatActivity {
         // Change picture selection
     }
 
+    /**
+     * Inspects each element for changes and, if any are made, applies them.
+     */
     private void confirmChoices() {
         // Do checks
 
@@ -201,6 +208,10 @@ public class AccountSettings extends AppCompatActivity {
         VolleyCommand.getInstance(AccountSettings.this).addToRequestQueue(userRequest);
     }
 
+    /**
+     * Sends new user object over to the server and handles response.
+     * @param userObject New user in JSON Object format
+     */
     private void sendUpdatedUser(JSONObject userObject) {
         JsonObjectRequest userUpdate = new JsonObjectRequest(
                 Request.Method.PUT,
@@ -231,6 +242,10 @@ public class AccountSettings extends AppCompatActivity {
         VolleyCommand.getInstance(AccountSettings.this).addToRequestQueue(userUpdate);
     }
 
+    /**
+     * Helper function. Checks with the user whether or not they want to
+     * log out and, if so, fully logs the user out of their account.
+     */
     private void logOutUser() {
         // Pop up to confirm
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -264,6 +279,10 @@ public class AccountSettings extends AppCompatActivity {
         logoutAlert.show();
     }
 
+    /**
+     * Helper function. Confirms choice of deletion with user and
+     * requests the server delete the user object. Handles response.
+     */
     private void deleteUserAccount() {
         // Pop up to confirm
         AlertDialog.Builder builder = new AlertDialog.Builder(AccountSettings.this);
@@ -340,6 +359,10 @@ public class AccountSettings extends AppCompatActivity {
         AlertDialog deletionAlert = builder.create();
         deletionAlert.show();
     }
+
+    /**
+     * Added music code.
+     */
     @Override
     protected void onResume() {
         super.onResume();

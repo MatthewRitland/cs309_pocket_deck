@@ -15,16 +15,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView4"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/friendsTabBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:text="Friends"
-            android:textColor="@color/cardinal"
-            android:textSize="48sp"
-            android:textStyle="bold" />
+            app:tabIndicatorColor="@color/cardinal"
+            app:tabSelectedTextAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:tabTextAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:tabTextColor="@color/cardinal">
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/friendsTab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Friends" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/requestsTab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Requests" />
+
+        </com.google.android.material.tabs.TabLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/friendsListView"

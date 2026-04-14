@@ -21,6 +21,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.pocketdeck.R;
 import com.example.pocketdeck.UserUtilities;
 import com.example.pocketdeck.VolleyCommand;
+import com.google.android.material.tabs.TabLayout;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,26 +59,33 @@ public class FriendsScreen extends AppCompatActivity {
 
         friendsView = findViewById(R.id.friendsListView);
 
+        TabLayout tabs = findViewById(R.id.friendsTabBar);
         getRelationships();
     }
 
     public void friendRequestPopup() {
         // Create a friend request popup.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter the Friend's username");
-
+        builder.setTitle("Enter the Friend's User ID (temp)");
+        // TODO: USERNAME INSTEAD
         EditText usernameInput = new EditText(this);
-        usernameInput.setHint("Username");
+        usernameInput.setHint("User ID");
         builder.setView(usernameInput);
         builder.setPositiveButton("Send Request", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String idFromNamePath = URL_NAME_PATH + usernameInput.getText().toString().trim();
                 // NOTE: There currently isn't any functionality to get the user from a name available.
-                // TODO: HTTP REQUEST for User by their name.
-                Toast.makeText(FriendsScreen.this, "DEMO: No backend yet", Toast.LENGTH_SHORT).show();
+                // TODO: HTTP REQUEST to find the User ID by their name.
+                String input = usernameInput.getText().toString().trim();
+                Long id = Long.parseLong(input);
+                if (id == null) {
+                    Toast.makeText(FriendsScreen.this, "Input is not a valid user ID.", Toast.LENGTH_SHORT).show();
+                } else {
+                    sendFriendRequest(id);
 
-                dialog.dismiss();
+                    dialog.dismiss();
+                }
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -90,10 +98,10 @@ public class FriendsScreen extends AppCompatActivity {
 
     /**
      * Sends a friend request to a user of the specified ID. (Create)
-     * @param requestId User ID of the requested friend.
+     * @param receiverId User ID of the requested friend.
      */
-    private void sendFriendRequest(int requestId) {
-        String newPath = URL_FRIENDS_PATH + "request/" + userUtils.getSavedId() + "/" + requestId;
+    private void sendFriendRequest(long receiverId) {
+        String newPath = URL_FRIENDS_PATH + "request/" + userUtils.getSavedId() + "/" + receiverId;
 
         JsonObjectRequest requestSend = new JsonObjectRequest(
                 Request.Method.POST,
@@ -103,46 +111,19 @@ public class FriendsScreen extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         // TODO: Handle response object (Friend object)
+                        Toast.makeText(FriendsScreen.this, "Friend request sent.", Toast.LENGTH_SHORT).show();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO: Handle errors.
+                        Toast.makeText(FriendsScreen.this, "Error: ID is either invalid or already a friend.", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
 
         VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestSend);
-    }
-
-    /**
-     * Accept a friend request with the ID friendshipId (Update)
-     * @param friendshipId ID of the friendship connection.
-     */
-    private void acceptRequest(int friendshipId) {
-        String newPath = URL_FRIENDS_PATH + "accept/" + friendshipId;
-
-        JsonObjectRequest requestAccept = new JsonObjectRequest(
-                Request.Method.PUT,
-                newPath,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        // TODO: Handle response
-                        getRelationships();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // Send toast
-                    }
-                }
-        );
-
-        VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestAccept);
     }
 
     /**
@@ -175,6 +156,36 @@ public class FriendsScreen extends AppCompatActivity {
         );
 
         VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestDelete);
+    }
+
+    /**
+     * Accept a friend request with the ID friendshipId (Update)
+     * @param friendshipId ID of the friendship connection.
+     */
+    public void acceptRequest(long friendshipId) {
+        String newPath = URL_FRIENDS_PATH + "accept/" + friendshipId;
+
+        JsonObjectRequest requestAccept = new JsonObjectRequest(
+                Request.Method.PUT,
+                newPath,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // TODO: Handle response
+                        getRelationships();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Send toast
+
+                    }
+                }
+        );
+
+        VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestAccept);
     }
 
     /**
@@ -224,9 +235,10 @@ public class FriendsScreen extends AppCompatActivity {
 
                 String friendName = friendObject.getString("username");
                 long friendId = friendObject.getLong("id");
+                long relationId = object.getLong("id");
 
                 // PENDING or FRIEND
-                Friend friend = new Friend(friendName, friendId, requested);
+                Friend friend = new Friend(friendName, friendId, relationId,requested);
 
                 if (friendshipStatus.equals("PENDING")) {
                     Log.d("FriendsScreen", "REQUEST-" + friend.toString());
@@ -245,7 +257,7 @@ public class FriendsScreen extends AppCompatActivity {
 
     private void setFriendsView() {
         // Request view
-        FriendsListAdapter adapter = new FriendsListAdapter(friendsList, false);
+        FriendsListAdapter adapter = new FriendsListAdapter(friendsList, false, this);
         friendsView.setLayoutManager(new LinearLayoutManager(this));
         friendsView.setAdapter(adapter);
     }

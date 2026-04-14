@@ -19,10 +19,12 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
 
     private List<Friend> friends;
     private boolean isRequests;
+    private FriendsScreen screenRef;
 
-    public FriendsListAdapter(List<Friend> friends, boolean isRequests) {
+    public FriendsListAdapter(List<Friend> friends, boolean isRequests, FriendsScreen screen) {
         this.friends = friends;
         this.isRequests = isRequests;
+        this.screenRef = screen;
     }
 
     @NonNull
@@ -37,12 +39,22 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         Friend holderFriend = friends.get(position);
         holder.usernameLabel.setText(holderFriend.getFriendName());
         holder.statusLabel.setText(holderFriend.getFriendStatus());
-        holder.actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: MESSAGING OR ACCEPT
-            }
-        });
+        if (isRequests) {
+            holder.actionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    screenRef.acceptRequest( holderFriend.getFriendshipId() );
+                }
+            });
+        } else {
+            holder.actionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO: MESSAGING OR ACCEPT
+                }
+            });
+        }
+
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.pocketdeck.friends;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
@@ -23,6 +25,9 @@ import com.example.pocketdeck.VolleyCommand;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Raine McKellar
  */
@@ -33,7 +38,9 @@ public class FriendsScreen extends AppCompatActivity {
     static final String URL_FRIENDS_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/friendships/";
     static final String URL_NAME_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/users/";
 
-    RecyclerView friendsList, requestList;
+    RecyclerView friendsView, requestView;
+
+    List<Friend> friendsList, requestList;
 
     @Override
     protected void onCreate(Bundle savedInstancesState) {
@@ -49,7 +56,7 @@ public class FriendsScreen extends AppCompatActivity {
             public void onClick(View v) { friendRequestPopup(); }
         });
 
-        friendsList = findViewById(R.id.friendsListView);
+        friendsView = findViewById(R.id.friendsListView);
 
         getRelationships();
     }
@@ -57,7 +64,10 @@ public class FriendsScreen extends AppCompatActivity {
     public void friendRequestPopup() {
         // Create a friend request popup.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter the Friend's username");
+
         EditText usernameInput = new EditText(this);
+        usernameInput.setHint("Username");
         builder.setView(usernameInput);
         builder.setPositiveButton("Send Request", new DialogInterface.OnClickListener() {
             @Override
@@ -196,10 +206,48 @@ public class FriendsScreen extends AppCompatActivity {
 
     private void updateFriendships(JSONArray response) {
         // TODO : Parse response
+        friendsList = new ArrayList<Friend>();
+        requestList = new ArrayList<Friend>();
+
+        try {
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject object = (JSONObject)response.get(i);
+                String friendshipStatus = object.getString("friendshipStatus");
+                JSONObject requester = object.getJSONObject("requester");
+                JSONObject receiver = object.getJSONObject("receiver");
+
+                JSONObject friendObject;
+                boolean requested = requester.getLong("id") == userUtils.getSavedId();
+
+                if (requested) friendObject = receiver;
+                else friendObject = requester;
+
+                String friendName = friendObject.getString("username");
+                long friendId = friendObject.getLong("id");
+
+                // PENDING or FRIEND
+                Friend friend = new Friend(friendName, friendId, requested);
+
+                if (friendshipStatus.equals("PENDING")) {
+                    Log.d("FriendsScreen", "REQUEST-" + friend.toString());
+                    requestList.add(friend);
+                } else {
+                    // Friend
+                    Log.d("FriendsScreen", "FRIEND-" + friend.toString());
+                    friendsList.add(friend);
+                }
+            }
+            setFriendsView();
+        } catch (Exception e) {
+            // TODO : Error Handling
+        }
     }
 
     private void setFriendsView() {
-
+        // Request view
+        FriendsListAdapter adapter = new FriendsListAdapter(friendsList, false);
+        friendsView.setLayoutManager(new LinearLayoutManager(this));
+        friendsView.setAdapter(adapter);
     }
 
 }

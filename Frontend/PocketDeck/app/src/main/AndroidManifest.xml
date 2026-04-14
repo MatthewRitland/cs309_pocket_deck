@@ -17,7 +17,7 @@
         <activity
             android:name=".messaging.MessagingView"
             android:exported="false" />
-        <activity 
+        <activity
             android:name=".friends.FriendsScreen"
             android:exported="false" />
         <activity

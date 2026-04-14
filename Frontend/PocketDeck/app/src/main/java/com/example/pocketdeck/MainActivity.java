@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import com.example.pocketdeck.friends.FriendsScreen;
 import com.example.pocketdeck.messaging.GroupsListActivity;
 
 import com.example.pocketdeck.messaging.GroupsListActivity;
@@ -160,6 +162,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.nav_messaging) {
             Intent i = new Intent(MainActivity.this, GroupsListActivity.class);
+            startActivity(i);
+        }
+
+        if (id == R.id.nav_friends) {
+            Intent i = new Intent(MainActivity.this, FriendsScreen.class);
             startActivity(i);
         }
 

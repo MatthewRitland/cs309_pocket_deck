@@ -1,8 +1,15 @@
 package com.example.pocketdeck.friends;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -24,6 +31,9 @@ public class FriendsScreen extends AppCompatActivity {
 
     private UserUtilities userUtils;
     static final String URL_FRIENDS_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/friendships/";
+    static final String URL_NAME_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/users/";
+
+    RecyclerView friendsList, requestList;
 
     @Override
     protected void onCreate(Bundle savedInstancesState) {
@@ -32,7 +42,40 @@ public class FriendsScreen extends AppCompatActivity {
 
         userUtils = new UserUtilities(FriendsScreen.this);
 
+        /* Button functionality */
+        Button addFriendButton = findViewById(R.id.addFriendButton);
+        addFriendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { friendRequestPopup(); }
+        });
+
+        friendsList = findViewById(R.id.friendsListView);
+
         getRelationships();
+    }
+
+    public void friendRequestPopup() {
+        // Create a friend request popup.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        EditText usernameInput = new EditText(this);
+        builder.setView(usernameInput);
+        builder.setPositiveButton("Send Request", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String idFromNamePath = URL_NAME_PATH + usernameInput.getText().toString().trim();
+                // NOTE: There currently isn't any functionality to get the user from a name available.
+                // TODO: HTTP REQUEST for User by their name.
+                Toast.makeText(FriendsScreen.this, "DEMO: No backend yet", Toast.LENGTH_SHORT).show();
+
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) { dialog.cancel(); }
+        });
+
+        builder.show();
     }
 
     /**
@@ -78,12 +121,13 @@ public class FriendsScreen extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         // TODO: Handle response
+                        getRelationships();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle errors
+                        // Send toast
                     }
                 }
         );

@@ -7,11 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.pocketdeck.R;
 import com.example.pocketdeck.UserUtilities;
 import com.example.pocketdeck.VolleyCommand;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -29,6 +31,8 @@ public class FriendsScreen extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
 
         userUtils = new UserUtilities(FriendsScreen.this);
+
+        getRelationships();
     }
 
     /**
@@ -46,7 +50,6 @@ public class FriendsScreen extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         // TODO: Handle response object (Friend object)
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -102,9 +105,11 @@ public class FriendsScreen extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        // TODO : Handle response
-                            // 10.0.0.2
-                            // Bessey 228
+                        // TODO : Success response (toast)
+
+
+                        // Update relationships
+                        getRelationships();
                     }
                 },
                 new Response.ErrorListener() {
@@ -120,20 +125,19 @@ public class FriendsScreen extends AppCompatActivity {
 
     /**
      * Get a list of the users friends in the form of User IDs. (Get)
-     * @return Array of friends user ids
      */
-    private int[] getRelationships() {
-        // TODO: CODE
+    private void getRelationships() {
         String friendshipPath = URL_FRIENDS_PATH + "received/" + userUtils.getSavedId();
 
-        JsonObjectRequest getFriendsRequest = new JsonObjectRequest(
+        JsonArrayRequest getFriendsRequest = new JsonArrayRequest(
                 Request.Method.GET,
                 friendshipPath,
                 null,
-                new Response.Listener<JSONObject>() {
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(JSONArray response) {
                         // TODO: Handle responses
+                        updateFriendships(response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -143,9 +147,15 @@ public class FriendsScreen extends AppCompatActivity {
                     }
                 }
         );
-
-        return new int[]{1};
+        VolleyCommand.getInstance(this).addToRequestQueue(getFriendsRequest);
     }
 
+    private void updateFriendships(JSONArray response) {
+        // TODO : Parse response
+    }
+
+    private void setFriendsView() {
+
+    }
 
 }

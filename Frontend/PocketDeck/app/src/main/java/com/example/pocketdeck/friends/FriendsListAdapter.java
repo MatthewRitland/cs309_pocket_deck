@@ -40,6 +40,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         holder.usernameLabel.setText(holderFriend.getFriendName());
         holder.statusLabel.setText(holderFriend.getFriendStatus());
         if (isRequests) {
+            holder.actionButton.setText("Accept");
             holder.actionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -47,6 +48,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
                 }
             });
         } else {
+            holder.actionButton.setText("Message");
             holder.actionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

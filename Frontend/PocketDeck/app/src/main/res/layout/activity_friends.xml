@@ -19,6 +19,7 @@
             android:id="@+id/friendsTabBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             app:tabIndicatorColor="@color/cardinal"
             app:tabSelectedTextAppearance="@style/TextAppearance.AppCompat.Medium"
             app:tabTextAppearance="@style/TextAppearance.AppCompat.Medium"

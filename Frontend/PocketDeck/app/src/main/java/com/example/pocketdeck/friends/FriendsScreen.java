@@ -39,9 +39,11 @@ public class FriendsScreen extends AppCompatActivity {
     static final String URL_FRIENDS_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/friendships/";
     static final String URL_NAME_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/users/";
 
-    RecyclerView friendsView, requestView;
+    private RecyclerView friendsView, requestView;
 
-    List<Friend> friendsList, requestList;
+    private List<Friend> friendsList, requestList;
+
+    private boolean inReceivedView = false;
 
     @Override
     protected void onCreate(Bundle savedInstancesState) {
@@ -60,6 +62,30 @@ public class FriendsScreen extends AppCompatActivity {
         friendsView = findViewById(R.id.friendsListView);
 
         TabLayout tabs = findViewById(R.id.friendsTabBar);
+        tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Log.d("FriendsScreen", "Tab selected");
+                // TODO: REPLACE LATER!!!
+                if (tab.getText().toString().equals("Friends")) {
+                    inReceivedView = false;
+                } else {
+                    inReceivedView = true;
+                }
+
+                setFriendsView();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
         getRelationships();
     }
 
@@ -257,7 +283,12 @@ public class FriendsScreen extends AppCompatActivity {
 
     private void setFriendsView() {
         // Request view
-        FriendsListAdapter adapter = new FriendsListAdapter(friendsList, false, this);
+        List<Friend> sendFriends = friendsList;
+        if (inReceivedView) {
+            sendFriends = requestList;
+        }
+
+        FriendsListAdapter adapter = new FriendsListAdapter(sendFriends, inReceivedView, this);
         friendsView.setLayoutManager(new LinearLayoutManager(this));
         friendsView.setAdapter(adapter);
     }

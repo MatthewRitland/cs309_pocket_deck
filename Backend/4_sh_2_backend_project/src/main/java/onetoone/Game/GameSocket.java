@@ -74,7 +74,7 @@ public class GameSocket {
     public void onMessage(Session session, String message, @PathParam("game") String game) throws IOException, ParseException {
         JSONObject json = (JSONObject) new JSONParser().parse(message);
         if (json.get("messageType").equals("join_game")) {
-            if (!(users.size() == 0) && cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {
+            if (cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {
                 try {
                     logger.info((String) json.get("username"));
                     JSONObject mes = new JSONObject();
@@ -197,7 +197,6 @@ public class GameSocket {
                 array.add(cardGame.getWinners()[j].toString());
             }
             output.put("winners", array);
-            recordGame(usernameSessionMap.get(username));
         }
         return output;
     }
@@ -205,6 +204,7 @@ public class GameSocket {
     @OnClose
     public void onClose(Session session) throws IOException {
         logger.info("Entered into Close");
+        recordGame(session);
         String username = sessionUsernameMap.get(session);
         logger.info(username);
         sessionUsernameMap.remove(session);

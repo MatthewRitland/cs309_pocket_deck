@@ -2,7 +2,6 @@ package onetoone.Requests;
 
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 import jakarta.websocket.OnError;
@@ -18,7 +17,6 @@ import onetoone.Users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -50,22 +48,25 @@ public class RequestSocket {
     }
 
     @OnMessage
-    public void onMessage (Session session, String message) throws IOException {
+    public void onMessage (Session session, String message) throws IOException, NullPointerException {
         logger.info("Entered into Message: Got Message:" + message);
         String username = sessionUsernameMap.get(session);
         if (message.startsWith("invite")) {
+            String requested = message.substring(7);
+            requested = requested.strip();
             try {
-                logger.info(message.substring(7));
-                usernameSessionMap.get(message.substring(7)).getBasicRemote().sendText(username +
+                logger.info(requested);
+                usernameSessionMap.get(requested).getBasicRemote().sendText(username +
                         " invites you to a game");
             }
-            catch (IOException e) {
+            catch (IOException | NullPointerException e) {
                 logger.info("Exception: " + e.getMessage().toString());
                 e.printStackTrace();
             }
             Request request = new Request();
             request.setRequester(userRepo.findByUsername(username));
-            request.setRequested(userRepo.findByUsername(message.substring(7)));
+            logger.info(userRepo.findByUsername(requested).toString());
+            request.setRequested(userRepo.findByUsername(requested));
             request.setStatus(RequestStatus.PENDING);
             requestRepo.save(request);
         }

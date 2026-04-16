@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import onetoone.CardGames.CardGame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +37,8 @@ public class RequestController {
                             schema = @Schema(implementation = Request.class))
                     })
     })
-    @GetMapping("/request/requested/{requestedId}/{requesterId}")
-    Request getRequestsByRequestedAndRequester (@Parameter(description = "id of requested user")@PathVariable int requestedId, @Parameter(description = "id of requester user")@PathVariable int requesterId) {
+    @GetMapping("/request/requested/{requestedId}/{requesterId}/{status}")
+    Request getRequestsByRequestedAndRequester (@Parameter(description = "id of requested user")@PathVariable int requestedId, @Parameter(description = "id of requester user")@PathVariable int requesterId, @Parameter(description = "status of the friend request")@PathVariable RequestStatus status) {
         return requestRepo.findByRequestedIdAndRequesterId(requestedId, requesterId);
     }
 

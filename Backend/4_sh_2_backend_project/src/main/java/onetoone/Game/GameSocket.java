@@ -204,15 +204,12 @@ public class GameSocket {
     @OnClose
     public void onClose(Session session) throws IOException {
         logger.info("Entered into Close");
-        recordGame(session);
         String username = sessionUsernameMap.get(session);
+        recordGame(session);
         logger.info(username);
         sessionUsernameMap.remove(session);
         usernameSessionMap.remove(username);
         logger.info(String.valueOf(users.remove(userRepo.findByUsername(username))));
-        for (int i = 0; i < users.size(); i++) {
-            logger.info(users.get(i).getUsername());
-        }
     }
 
     private void recordGame (Session session) {
@@ -237,9 +234,6 @@ public class GameSocket {
     public void onError(Session session, Throwable throwable) {
         // Do error handling here
         logger.info("Entered into Error");
-        for (int i = 0; i < users.size(); i++) {
-            logger.info(users.get(i).getUsername());
-        }
         throwable.printStackTrace();
     }
 }

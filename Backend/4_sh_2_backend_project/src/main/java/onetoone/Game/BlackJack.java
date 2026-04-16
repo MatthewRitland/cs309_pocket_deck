@@ -80,12 +80,7 @@ public class BlackJack extends Game{
             return 10;
         }
         else if (value.equals(Value.ACE)) {
-            if (scores[findPlayer(player)] + 11 > MAX_SCORE) {
-                return 1;
-            }
-            else {
-                return 11;
-            }
+            return 11;
         }
         return 0;
     }
@@ -246,6 +241,9 @@ public class BlackJack extends Game{
         }
         if (!checkGameProgress()) {
             nextPlayer();
+            while(stood[findCurrentPlayer()]) {
+                nextPlayer();
+            }
             return;
         }
         checkWinners();

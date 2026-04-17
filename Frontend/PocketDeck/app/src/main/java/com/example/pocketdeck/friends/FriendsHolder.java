@@ -18,6 +18,7 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
     public ImageView userIcon;
     public Button primaryButton, secondaryButton;
     public ImageButton menuButton;
+    private Friend holderFriend;
 
     public FriendsHolder(View view) {
         super(view);
@@ -81,6 +82,8 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
                 }
             });
         }
+
+        holderFriend = friend;
     }
 
     private void friendMenuButton(long friendId, View anchor) {
@@ -95,6 +98,7 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.fnav_delete) {
             // request deletion
+            FriendsUtilities.getInstance().confirmRemoval(holderFriend, itemView.getContext());
             return true;
         }
 

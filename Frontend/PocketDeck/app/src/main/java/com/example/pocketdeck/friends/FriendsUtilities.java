@@ -210,9 +210,9 @@ public class FriendsUtilities {
                 Log.d("FriendsScreen", Long.toString(relationId));
 
                 // PENDING or FRIEND
-                Friend friend = new Friend(friendName, friendId, relationId, requested);
+                Friend friend = new Friend(friendName, friendId, relationId, requested, friendshipStatus.equals("PENDING"));
 
-                if (friendshipStatus.equals("PENDING")) {
+                if (friend.getPending()) {
                     //Log.d("FriendsScreen", "REQUEST-" + friend.toString());
                     requestList.add(friend);
                 } else {

@@ -31,9 +31,6 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
     }
 
     public void setHolderView(Friend friend) {
-        // Get isRequest
-        boolean pending = friend.getFriendStatus().equals("PENDING");
-
         /* Friend Properties */
         usernameLabel.setText(friend.getFriendName());
         statusLabel.setText(friend.getFriendStatus());
@@ -42,7 +39,8 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
         primaryButton.setVisibility(View.VISIBLE);
         secondaryButton.setVisibility(View.INVISIBLE);
 
-        if (pending) {
+        if (friend.getPending()) {
+            menuButton.setVisibility(View.INVISIBLE);
             if( friend.getRequested() ) {
                 primaryButton.setVisibility(View.INVISIBLE);
                 statusLabel.setText("Request Pending");
@@ -58,7 +56,7 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
                 });
 
                 /* Decline Button */
-                primaryButton.setText("Decline");
+                secondaryButton.setText("Decline");
                 secondaryButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -75,6 +73,7 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
                     // TODO: MESSAGING OR ACCEPT
                 }
             });
+            menuButton.setVisibility(View.VISIBLE);
             menuButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

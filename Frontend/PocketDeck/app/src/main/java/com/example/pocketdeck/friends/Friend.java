@@ -8,17 +8,19 @@ public class Friend {
     private final String friendStatus;
     private final boolean requested;
     private final long friendshipId;
+    private final boolean pendingFriendship;
 
-    public Friend(String name, long id, long friendshipId, boolean requested) {
-        this(name, id, friendshipId, "", requested);
+    public Friend(String name, long id, long friendshipId, boolean requested, boolean pending) {
+        this(name, id, friendshipId, "", requested, pending);
     }
 
-    public Friend(String name, long id, long friendshipId, String status, boolean requested) {
+    public Friend(String name, long id, long friendshipId, String status, boolean requested, boolean pending) {
         this.friendName = name;
         this.friendId = id;
         this.friendshipId = friendshipId;
         this.friendStatus = status;
         this.requested = requested;
+        this.pendingFriendship = pending;
     }
 
     public boolean getRequested() { return requested; }
@@ -26,6 +28,7 @@ public class Friend {
     public long getFriendId() { return friendId; }
     public long getFriendshipId() { return friendshipId; }
     public String getFriendStatus() { return friendStatus; }
+    public boolean getPending() { return pendingFriendship; }
 
     @NonNull
     @Override

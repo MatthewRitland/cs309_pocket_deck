@@ -2,6 +2,7 @@ package onetoone.Requests;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.websocket.OnError;
@@ -73,16 +74,16 @@ public class RequestSocket {
         if (message.startsWith("accept")) {
             User requested = userRepo.findByUsername(username);
             User requester = userRepo.findByUsername(message.substring(7));
-            Request req = requestRepo.findByRequestedIdAndRequesterId(requested.getId(), requester.getId());
-            req.setStatus(RequestStatus.ACCEPTED);
-            requestRepo.save(req);
+            List<Request> reqs = requestRepo.findByRequestedIdAndRequesterId(requested.getId(), requester.getId());
+            reqs.get(reqs.size() - 1).setStatus(RequestStatus.ACCEPTED);
+            requestRepo.save(reqs.get(reqs.size() - 1));
         }
         if (message.startsWith("reject")) {
             User requested = userRepo.findByUsername(username);
             User requester = userRepo.findByUsername(message.substring(7));
-            Request req = requestRepo.findByRequestedIdAndRequesterId(requested.getId(), requester.getId());
-            req.setStatus(RequestStatus.REJECTED);
-            requestRepo.save(req);
+            List<Request> reqs = requestRepo.findByRequestedIdAndRequesterId(requested.getId(), requester.getId());
+            reqs.get(reqs.size() - 1).setStatus(RequestStatus.REJECTED);
+            requestRepo.save(reqs.get(reqs.size() - 1));
         }
     }
 

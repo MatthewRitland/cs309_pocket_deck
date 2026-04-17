@@ -38,7 +38,7 @@ public class RequestController {
                     })
     })
     @GetMapping("/request/requested/{requestedId}/{requesterId}/{status}")
-    Request getRequestsByRequestedAndRequester (@Parameter(description = "id of requested user")@PathVariable int requestedId, @Parameter(description = "id of requester user")@PathVariable int requesterId, @Parameter(description = "status of the friend request")@PathVariable RequestStatus status) {
+    List<Request> getRequestsByRequestedAndRequester (@Parameter(description = "id of requested user")@PathVariable int requestedId, @Parameter(description = "id of requester user")@PathVariable int requesterId, @Parameter(description = "status of the friend request")@PathVariable RequestStatus status) {
         return requestRepo.findByRequestedIdAndRequesterId(requestedId, requesterId);
     }
 

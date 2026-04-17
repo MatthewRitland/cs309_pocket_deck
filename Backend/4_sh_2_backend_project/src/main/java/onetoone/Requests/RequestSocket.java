@@ -65,8 +65,8 @@ public class RequestSocket {
                 e.printStackTrace();
             }
             Request request = new Request();
+            logger.info(String.valueOf(userRepo.existsByUsername(requested)));
             request.setRequester(userRepo.findByUsername(username));
-            logger.info(userRepo.findByUsername(requested).toString());
             request.setRequested(userRepo.findByUsername(requested));
             request.setStatus(RequestStatus.PENDING);
             requestRepo.save(request);

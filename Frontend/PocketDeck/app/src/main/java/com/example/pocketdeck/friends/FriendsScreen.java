@@ -33,7 +33,7 @@ import java.util.List;
  * @author Raine McKellar
  */
 
-public class FriendsScreen extends AppCompatActivity {
+public class FriendsScreen extends AppCompatActivity implements FriendsUtilities.ResponseListener{
 
     private UserUtilities userUtils;
     static final String URL_FRIENDS_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/friendships/";
@@ -41,8 +41,6 @@ public class FriendsScreen extends AppCompatActivity {
 
     private RecyclerView friendsView, requestView;
     private Button addFriendButton;
-
-    private List<Friend> friendsList, requestList;
 
     private boolean inReceivedView = false;
 
@@ -78,16 +76,13 @@ public class FriendsScreen extends AppCompatActivity {
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabUnselected(TabLayout.Tab tab) { }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabReselected(TabLayout.Tab tab) { }
         });
-        getRelationships();
+        FriendsUtilities.getInstance().setListener(this);
+        FriendsUtilities.getInstance().fetchRelationships(this);
     }
 
     public void friendRequestPopup() {
@@ -109,8 +104,7 @@ public class FriendsScreen extends AppCompatActivity {
                 if (id == null) {
                     Toast.makeText(FriendsScreen.this, "Input is not a valid user ID.", Toast.LENGTH_SHORT).show();
                 } else {
-                    sendFriendRequest(id);
-
+                    FriendsUtilities.getInstance().sendFriendRequest(userUtils.getSavedId(), id, FriendsScreen.this);
                     dialog.dismiss();
                 }
             }
@@ -123,174 +117,14 @@ public class FriendsScreen extends AppCompatActivity {
         builder.show();
     }
 
-    /**
-     * Sends a friend request to a user of the specified ID. (Create)
-     * @param receiverId User ID of the requested friend.
-     */
-    private void sendFriendRequest(long receiverId) {
-        String newPath = URL_FRIENDS_PATH + "request/" + userUtils.getSavedId() + "/" + receiverId;
-
-        JsonObjectRequest requestSend = new JsonObjectRequest(
-                Request.Method.POST,
-                newPath,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        // TODO: Handle response object (Friend object)
-                        Toast.makeText(FriendsScreen.this, "Friend request sent.", Toast.LENGTH_SHORT).show();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle errors.
-                        Toast.makeText(FriendsScreen.this, "Error: ID is either invalid or already a friend.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-        );
-
-        VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestSend);
-    }
-
-    /**
-     * Removes the friendship with the specified ID. (Delete)
-     * @param friendshipId ID of the friendship connection.
-     */
-    public void removeFriend(long friendshipId) {
-        String friendshipPath = URL_FRIENDS_PATH + friendshipId;
-
-        JsonObjectRequest requestDelete = new JsonObjectRequest(
-                Request.Method.DELETE,
-                friendshipPath,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        // TODO : Success response (toast)
-
-
-                        // Update relationships
-                        getRelationships();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO : Handle error
-                        Log.d("FriendsScreen", "Deletion failed");
-                    }
-                }
-        );
-
-        VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestDelete);
-    }
-
-    /**
-     * Accept a friend request with the ID friendshipId (Update)
-     * @param friendshipId ID of the friendship connection.
-     */
-    public void acceptRequest(long friendshipId) {
-        String newPath = URL_FRIENDS_PATH + "accept/" + friendshipId;
-
-        JsonObjectRequest requestAccept = new JsonObjectRequest(
-                Request.Method.PUT,
-                newPath,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        // TODO: Handle response
-                        getRelationships();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // Send toast
-
-                    }
-                }
-        );
-
-        VolleyCommand.getInstance(FriendsScreen.this).addToRequestQueue(requestAccept);
-    }
-
-    /**
-     * Get a list of the users friends in the form of User IDs. (Get)
-     */
-    private void getRelationships() {
-        String friendshipPath = URL_FRIENDS_PATH + "received/" + userUtils.getSavedId();
-
-        JsonArrayRequest getFriendsRequest = new JsonArrayRequest(
-                Request.Method.GET,
-                friendshipPath,
-                null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        // TODO: Handle responses
-                        updateFriendships(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO: Handle Errors
-                    }
-                }
-        );
-        VolleyCommand.getInstance(this).addToRequestQueue(getFriendsRequest);
-    }
-
-    private void updateFriendships(JSONArray response) {
-        // TODO : Parse response
-        friendsList = new ArrayList<Friend>();
-        requestList = new ArrayList<Friend>();
-
-        try {
-            for (int i = 0; i < response.length(); i++) {
-                JSONObject object = (JSONObject)response.get(i);
-                String friendshipStatus = object.getString("friendshipStatus");
-                JSONObject requester = object.getJSONObject("requester");
-                JSONObject receiver = object.getJSONObject("receiver");
-
-                JSONObject friendObject;
-                boolean requested = requester.getLong("id") == userUtils.getSavedId();
-
-                if (requested) friendObject = receiver;
-                else friendObject = requester;
-
-                String friendName = friendObject.getString("username");
-                long friendId = friendObject.getLong("id");
-                long relationId = object.getLong("id");
-                Log.d("FriendsScreen", Long.toString(relationId));
-
-                // PENDING or FRIEND
-                Friend friend = new Friend(friendName, friendId, relationId, requested);
-
-                if (friendshipStatus.equals("PENDING")) {
-                    Log.d("FriendsScreen", "REQUEST-" + friend.toString());
-                    requestList.add(friend);
-                } else {
-                    // Friend
-                    Log.d("FriendsScreen", "FRIEND-" + friend.toString());
-                    friendsList.add(friend);
-                }
-            }
-            setFriendsView();
-        } catch (Exception e) {
-            // TODO : Error Handling
-        }
-    }
 
     private void setFriendsView() {
         // Request view
-        List<Friend> sendFriends = friendsList;
+        List<Friend> sendFriends = FriendsUtilities.getInstance().getFriends();
         addFriendButton.setVisibility(View.VISIBLE);
         if (inReceivedView) {
             addFriendButton.setVisibility(View.INVISIBLE);
-            sendFriends = requestList;
+            sendFriends = FriendsUtilities.getInstance().getRequests();
         }
 
         FriendsListAdapter adapter = new FriendsListAdapter(sendFriends, inReceivedView, this);
@@ -298,4 +132,24 @@ public class FriendsScreen extends AppCompatActivity {
         friendsView.setAdapter(adapter);
     }
 
+    @Override
+    public void onFriendsUpdated() {
+        setFriendsView();
+    }
+
+    @Override
+    public void onActionSuccess(String successMessage) {
+        Toast.makeText(this, successMessage, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onActionFail(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onListenerConnect() { }
+
+    @Override
+    public void onListenerDisconnect() { }
 }

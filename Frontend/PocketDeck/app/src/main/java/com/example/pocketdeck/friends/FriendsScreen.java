@@ -40,6 +40,7 @@ public class FriendsScreen extends AppCompatActivity {
     static final String URL_NAME_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/users/";
 
     private RecyclerView friendsView, requestView;
+    private Button addFriendButton;
 
     private List<Friend> friendsList, requestList;
 
@@ -53,7 +54,7 @@ public class FriendsScreen extends AppCompatActivity {
         userUtils = new UserUtilities(FriendsScreen.this);
 
         /* Button functionality */
-        Button addFriendButton = findViewById(R.id.addFriendButton);
+        addFriendButton = findViewById(R.id.addFriendButton);
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { friendRequestPopup(); }
@@ -156,7 +157,7 @@ public class FriendsScreen extends AppCompatActivity {
      * Removes the friendship with the specified ID. (Delete)
      * @param friendshipId ID of the friendship connection.
      */
-    private void removeFriend(int friendshipId) {
+    public void removeFriend(long friendshipId) {
         String friendshipPath = URL_FRIENDS_PATH + friendshipId;
 
         JsonObjectRequest requestDelete = new JsonObjectRequest(
@@ -177,6 +178,7 @@ public class FriendsScreen extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // TODO : Handle error
+                        Log.d("FriendsScreen", "Deletion failed");
                     }
                 }
         );
@@ -262,9 +264,10 @@ public class FriendsScreen extends AppCompatActivity {
                 String friendName = friendObject.getString("username");
                 long friendId = friendObject.getLong("id");
                 long relationId = object.getLong("id");
+                Log.d("FriendsScreen", Long.toString(relationId));
 
                 // PENDING or FRIEND
-                Friend friend = new Friend(friendName, friendId, relationId,requested);
+                Friend friend = new Friend(friendName, friendId, relationId, requested);
 
                 if (friendshipStatus.equals("PENDING")) {
                     Log.d("FriendsScreen", "REQUEST-" + friend.toString());
@@ -284,7 +287,9 @@ public class FriendsScreen extends AppCompatActivity {
     private void setFriendsView() {
         // Request view
         List<Friend> sendFriends = friendsList;
+        addFriendButton.setVisibility(View.VISIBLE);
         if (inReceivedView) {
+            addFriendButton.setVisibility(View.INVISIBLE);
             sendFriends = requestList;
         }
 

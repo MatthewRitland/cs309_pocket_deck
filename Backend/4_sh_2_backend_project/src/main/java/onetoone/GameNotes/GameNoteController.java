@@ -2,12 +2,6 @@ package onetoone.GameNotes;
 
 import java.util.List;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import onetoone.CardGames.CardGameRepository;
 import onetoone.Users.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +22,31 @@ public class GameNoteController {
     UserRepository userRepo;
 
     @GetMapping("/gameNotes/{userId}/{gameId}")
-    public List<GameNote> getAllNotesForGame (@PathVariable int userId, @PathVariable int gameId) {
-        return gameNoteRepo.findByUserAndGame(userId, gameId);
+    public List<GameNote> getAllNotesForUserAndGame (@PathVariable int userId, @PathVariable int gameId) {
+        if (!userRepo.existsById(userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user");
+        }
+        if (!cardGameRepo.existsById(gameId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find game");
+        }
+        return gameNoteRepo.findByUserIdAndGameId(userId, gameId);
+    }
+
+    @GetMapping("/gameNotes/{userId}")
+    public List<GameNote> getAllNotesForUser (@PathVariable int userId) {
+        if (!userRepo.existsById(userId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user");
+        }
+        return gameNoteRepo.findByUserId(userId);
     }
 
     @PostMapping("/gameNotes/{userId}/{gameId}")
     public GameNote createGameNote (@PathVariable int userId, @RequestBody String note, @PathVariable int gameId) {
         if (!userRepo.existsById(userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find user");
+        }
+        if (!cardGameRepo.existsById(gameId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find game");
         }
         GameNote sticky = new GameNote();
         sticky.setUser(userRepo.findById(userId));

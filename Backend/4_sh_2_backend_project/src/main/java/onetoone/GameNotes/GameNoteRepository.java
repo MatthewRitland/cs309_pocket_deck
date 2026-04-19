@@ -11,7 +11,9 @@ public interface GameNoteRepository extends JpaRepository<GameNote, Integer>{
 
     GameNote findById (int id);
 
-    List<GameNote> findByUserAndGame (int userId, int gameId);
+    List<GameNote> findByUserIdAndGameId(int userId, int gameId);
+
+    List<GameNote> findByUserId (int userId);
 
     boolean existsById (int id);
 }

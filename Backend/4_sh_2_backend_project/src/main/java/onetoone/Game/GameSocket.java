@@ -74,6 +74,7 @@ public class GameSocket {
     public void onMessage(Session session, String message, @PathParam("game") String game) throws IOException, ParseException {
         JSONObject json = (JSONObject) new JSONParser().parse(message);
         if (json.get("messageType").equals("join_game")) {
+            logger.info(game);
             if (cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {
                 try {
                     logger.info((String) json.get("username"));

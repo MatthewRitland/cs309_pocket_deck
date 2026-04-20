@@ -3,6 +3,8 @@ package onetoone.Game;
 import onetoone.CardGames.CardGame;
 import onetoone.Users.User;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class BlackJack extends Game{
@@ -80,7 +82,12 @@ public class BlackJack extends Game{
             return 10;
         }
         else if (value.equals(Value.ACE)) {
-            return 11;
+            if (scores[findPlayer(player)] + 11 > MAX_SCORE) {
+                return 1;
+            }
+            else {
+                return 11;
+            }
         }
         return 0;
     }
@@ -211,25 +218,25 @@ public class BlackJack extends Game{
             }
             else if (action.equals(Actions.HIT)) {
                 Card drawn = draw();
-                scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), drawn);
+                scores[currentPlayerLocation] = 0;
+                int cardCount = getCardAmount(getCurrentPlayer());
+                Card[] currentHand = getCurrentPlayerHand();
+                int aceCount = 0;
+                ArrayList<Card> aces = new ArrayList<>();
+                for (int i = 0; i < cardCount; i++) {
+                    if (!currentHand[i].getValue().equals(Value.ACE)) {
+                        scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), currentHand[i]);
+                    }
+                    else {
+                        aceCount += 1;
+                        aces.add(currentHand[i]);
+                    }
+                }
+                for (int i = 0; i < aceCount; i++) {
+                        scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), aces.get(i));
+                }
                 if (scores[currentPlayerLocation] > MAX_SCORE) {
-                    Card[] currentHand = getCurrentPlayerHand();
-                    int cardCount = 0;
-                    for (cardCount = 0; cardCount < currentHand.length; cardCount++) {
-                        if (currentHand[cardCount] == null) {
-                            break;
-                        }
-                    }
-                    for (int i = 0; i < cardCount; i++) {
-                        if (currentHand[i].getValue().equals(Value.ACE)) {
-                            if (scores[currentPlayerLocation] > MAX_SCORE && scores[currentPlayerLocation] - 10 <= MAX_SCORE) {
-                                scores[currentPlayerLocation] -= 10;
-                            }
-                        }
-                    }
-                    if (scores[currentPlayerLocation] > MAX_SCORE) {
-                        stood[currentPlayerLocation] = true;
-                    }
+                    stood[currentPlayerLocation] = true;
                 }
             }
         }

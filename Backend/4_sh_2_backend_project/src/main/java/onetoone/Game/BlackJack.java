@@ -159,7 +159,21 @@ public class BlackJack extends Game{
                 }
                 Random ran = new Random();
                 dealerHand[cardCount] = getDeck()[ran.nextInt(52)];
-                dealerScore += cardValueConversion(dealerHand[cardCount]);
+                dealerScore = 0;
+                int aceCount = 0;
+                ArrayList<Card> aces = new ArrayList<>();
+                for (int i = 0; i < cardCount; i++) {
+                    if (!dealerHand[i].getValue().equals(Value.ACE)) {
+                        dealerScore += cardValueConversion(dealerHand[i]);
+                    }
+                    else {
+                        aceCount += 1;
+                        aces.add(dealerHand[i]);
+                    }
+                }
+                for (int i = 0; i < aceCount; i++) {
+                    dealerScore += cardValueConversion(aces.get(i));
+                }
             }
         }
         else {
@@ -177,7 +191,21 @@ public class BlackJack extends Game{
             }
             Random ran = new Random();
             dealerHand[cardCount] = getDeck()[ran.nextInt(52)];
-            dealerScore += cardValueConversion(dealerHand[cardCount]);
+            dealerScore = 0;
+            int aceCount = 0;
+            ArrayList<Card> aces = new ArrayList<>();
+            for (int i = 0; i < cardCount; i++) {
+                if (!dealerHand[i].getValue().equals(Value.ACE)) {
+                    dealerScore += cardValueConversion(dealerHand[i]);
+                }
+                else {
+                    aceCount += 1;
+                    aces.add(dealerHand[i]);
+                }
+            }
+            for (int i = 0; i < aceCount; i++) {
+                dealerScore += cardValueConversion(aces.get(i));
+            }
         }
     }
 

@@ -116,7 +116,7 @@ public class FriendsUtilities {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                FriendsUtilities.getInstance().removeFriend(removingFriend.getFriendshipId(), builder.getContext());
+                getInstance().removeFriend(removingFriend.getFriendshipId(), builder.getContext());
                 dialog.dismiss();
             }
         });

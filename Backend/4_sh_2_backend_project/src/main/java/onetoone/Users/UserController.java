@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import onetoone.Friends.FriendshipRepository;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,8 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    FriendshipRepository friendshipRepository;
 
     private String success = "{\"message\":\"success\"}";
     private String failure = "{\"message\":\"failure\"}";
@@ -160,6 +163,10 @@ public class UserController {
         if (userRepository.findById(id) == null) {
             return failure;
         }
+
+        // make sure to remove friendships that this user was a part of!
+        friendshipRepository.deleteByRequesterIdOrReceiverId(id, id);
+
         userRepository.deleteById(id);
         if (userRepository.findById(id) == null) {
             return success;
@@ -196,24 +203,4 @@ public class UserController {
         userRepository.save(user);
         return user;
     }
-
-    /*
-    static class loginMessage {
-        boolean success;
-        String message;
-
-        public loginMessage(boolean success, String message) {
-            this.success = success;
-            this.message = message;
-        }
-
-        public boolean getSuccess() {
-            return success;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
-    */
 }

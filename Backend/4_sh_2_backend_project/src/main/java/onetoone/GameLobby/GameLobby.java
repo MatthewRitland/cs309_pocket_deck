@@ -19,10 +19,9 @@ public class GameLobby {
 
 
     // there are many users in one game lobby
-    @OneToMany
-    @JoinColumn(nullable = false)
-    private List<User> usersList; //todo should this be a user list in this class, or leave that to a
-    // group membership like in messaging?
+    //@OneToMany
+    //@JoinColumn(nullable = false)
+    //todo should be a group membership like in messaging?
 
     // there is one card game for one game lobby
     @OneToOne

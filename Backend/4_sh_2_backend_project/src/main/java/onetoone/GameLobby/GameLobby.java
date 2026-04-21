@@ -17,12 +17,6 @@ public class GameLobby {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-
-    // there are many users in one game lobby
-    //@OneToMany
-    //@JoinColumn(nullable = false)
-    //todo should be a group membership like in messaging?
-
     // there is one card game for one game lobby
     @OneToOne
     @JoinColumn(nullable = false)
@@ -30,14 +24,20 @@ public class GameLobby {
 
     private boolean isInviteOnly;
 
+
     public GameLobby() {
-        // figure out rest of logic.
     }
 
 
     // =============================== Getters and Setters for each field ================================== //
 
     public int getId() { return this.id; }
+
+    public CardGame getCardGame() { return this.cardGame; }
+    public void setCardGame(CardGame cardGame) { this.cardGame = cardGame; }
+
+    public boolean getIsInviteOnly() { return this.isInviteOnly; }
+    public void setIsInviteOnly(boolean isInviteOnly) { this.isInviteOnly = isInviteOnly; }
 }
 
 

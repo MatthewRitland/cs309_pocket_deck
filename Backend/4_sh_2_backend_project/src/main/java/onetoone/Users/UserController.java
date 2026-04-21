@@ -37,7 +37,7 @@ public class UserController {
         return userRepository.findAll();
     }
 
-    @Operation(summary = "Lists a single user", description = "Returns a complete user from the database")
+    @Operation(summary = "Returns a single user from user Id", description = "Returns a complete user from the database")
     @ApiResponses(value =  {
             @ApiResponse(responseCode = "200", description = "Successfully returned user",
                 content = { @Content(mediaType = "application/json",
@@ -49,6 +49,25 @@ public class UserController {
     @GetMapping(path = "/users/{id}")
     User getUserById(@Parameter(description = "id of user to get") @PathVariable int id) {
         User user = userRepository.findById(id);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        return user;
+    }
+
+
+    @Operation(summary = "Returns a single user from username", description = "Returns a complete user from the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfully returned user",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "failed to return complete user",
+                    content = @Content),
+    })
+    @GetMapping(path = "/users/{username}")
+    User getUserByUsername(@Parameter(description = "username of user to get") @PathVariable String username) {
+        User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }

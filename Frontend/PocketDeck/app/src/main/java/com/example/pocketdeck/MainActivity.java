@@ -18,11 +18,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.pocketdeck.friends.FriendsScreen;
 import com.example.pocketdeck.messaging.GroupsListActivity;
-
-import com.example.pocketdeck.messaging.GroupsListActivity;
-import com.example.pocketdeck.messaging.MessagingView;
 
 public class MainActivity extends AppCompatActivity {
 

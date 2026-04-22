@@ -1,4 +1,4 @@
-package com.example.pocketdeck.friends;
+package com.example.pocketdeck;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,8 +11,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.pocketdeck.UserUtilities;
-import com.example.pocketdeck.VolleyCommand;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

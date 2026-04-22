@@ -1,4 +1,4 @@
-package com.example.pocketdeck.friends;
+package com.example.pocketdeck;
 
 import androidx.annotation.NonNull;
 

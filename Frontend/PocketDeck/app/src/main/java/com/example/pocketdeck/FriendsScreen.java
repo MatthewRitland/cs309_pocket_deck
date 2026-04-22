@@ -1,4 +1,4 @@
-package com.example.pocketdeck.friends;
+package com.example.pocketdeck;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -13,20 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.pocketdeck.R;
-import com.example.pocketdeck.UserUtilities;
-import com.example.pocketdeck.VolleyCommand;
 import com.google.android.material.tabs.TabLayout;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**

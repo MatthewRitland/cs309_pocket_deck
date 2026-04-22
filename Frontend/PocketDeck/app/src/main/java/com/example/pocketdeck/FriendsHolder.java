@@ -1,4 +1,4 @@
-package com.example.pocketdeck.friends;
+package com.example.pocketdeck;
 
 import android.view.MenuItem;
 import android.view.View;
@@ -8,8 +8,6 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.pocketdeck.R;
 
 public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.OnMenuItemClickListener {
 

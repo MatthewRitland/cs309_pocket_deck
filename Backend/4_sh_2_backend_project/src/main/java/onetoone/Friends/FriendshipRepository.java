@@ -21,7 +21,19 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Integer>
     // find a 'Friendship' that exists between requester and receiver Users
     Friendship findByRequesterIdAndReceiverId(int requesterId, int receiverId);
 
+    // used to find all received pending friend requetss for a user
+    List<Friendship> findByReceiverIdAndFriendshipStatus(int receiverId, FriendshipStatus status);
+
+    // used to find all friend requests sent by a user
+    List<Friendship> findByRequesterIdAndFriendshipStatus(int requesterId, FriendshipStatus status);
+
+    // for accepted friends, where the user may have been the sender or id, AND friendshipStatus is FRIEND (they're friends)
+    List<Friendship> findByRequesterIdAndFriendshipStatusOrReceiverIdAndFriendshipStatus(int requesterId, FriendshipStatus status1, int receiverId, FriendshipStatus status2);
+
     @Transactional
     void deleteById(int id);
 
+    // used to delete friendships before deleting a user (the same user id will be entered for both params)
+    @Transactional
+    void deleteByRequesterIdOrReceiverId(int requesterId, int receiverId);
 }

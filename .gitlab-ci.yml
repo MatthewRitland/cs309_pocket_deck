@@ -2,6 +2,8 @@ stages:             # these stages (jobs) forms the CICD pipeline
   - mavenbuild      # this is a JOB to build your Springboot application
   - maventest       # this is a JOB to run tests in your Springboot application (it's okay you don't have any test for now)
   - mavendeploy     # this is a JOB to deploy your Springboot application on your server
+  - androidBuild
+  - androidTest
 
 maven-build:            
   stage: mavenbuild     # one of the stages listed above
@@ -32,6 +34,39 @@ maven-test:
     changes:
       - Backend/**/*       # more specifically - only when changes are made inside the 'Backend' folder
 
+android-build: #this is another job
+  image: afirefly/android-ci:java17      		# this is a directive to DOCKER
+  stage: androidBuild
+  tags:
+   - frontend_tag         					#this is LINK to the docker runner on the remote-server        
+  before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - chmod +x ./Frontend/PocketDeck/gradlew			#change directory to where you have ‘gradlew’ in your android directory
+  script:
+    - cd Frontend/PocketDeck					#change directory to where you have your android application
+    - ./gradlew assemble
+  only:
+    refs:
+      - main
+    changes:
+      - Frontend/**/*
+
+android-test:
+  image: afirefly/android-ci:java17      		# this is a directive to DOCKER
+  stage: androidTest
+  tags:
+   - frontend_tag         					#this is LINK to the docker runner on the remote-server        
+  before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - chmod +x ./Frontend/PocketDeck/gradlew			#change directory to where you have ‘gradlew’ in your android directory
+  script:
+    - cd Frontend/PocketDeck					#change directory to where you have your android application
+    - ./gradlew assemble
+  only:
+    refs:
+      - main
+    changes:
+      - Frontend/**/*
 
 auto-deploy:
   stage: mavendeploy  #do make a stage with same name!

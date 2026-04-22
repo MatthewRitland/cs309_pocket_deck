@@ -94,17 +94,46 @@ public class FriendshipController {
     }
 
 
-    @Operation(summary = "Lists of a user's friendships", description = "returns a list from the database of all friendship objects that belong to a user")
+    @Operation(summary = "Lists a user's pending incoming friend requests", description = "returns a list of friendship objects where the user is the receiver and the status is PENDING")
     @ApiResponses(value =  {
-            @ApiResponse(responseCode = "200", description = "Successfully returned a list of a user's friendships",
+            @ApiResponse(responseCode = "200", description = "Successfully returned a list of pending received requests",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Friendship.class))
                     })
     })
-    // gets and returns all friendships for a user (no matter friendship status)
-    @GetMapping(path = "/friendships/received/{userId}")
-    List <Friendship> getReceivedRequests(@Parameter(description = "id of the user who's list of friendships will be given") @PathVariable int userId) {
-        return friendshipRepository.findByReceiverId(userId);
+    // returns a list of a users received friend requests that are PENDING
+    @GetMapping(path = "/friendships/requests/received/{userId}")
+    List <Friendship> getPendingReceivedRequests(@Parameter(description = "id of the user receiving the pending friend requests") @PathVariable int userId) {
+        return friendshipRepository.findByReceiverIdAndFriendshipStatus(userId, FriendshipStatus.PENDING);
+    }
+
+
+    @Operation(summary = "Lists a user's pending outgoing friend requests", description = "returns a list of friendship objects where the user is the requester and the status is PENDING")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfully returned a list of pending sent requests",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Friendship.class))
+                    })
+    })
+    // returns a list of a users sent friend requests THAT ARE PENDING
+    @GetMapping(path = "/friendships/requests/sent/{userId}")
+    List <Friendship> getPendingSentRequests(@Parameter(description = "id of the user who sent the pending friend requests") @PathVariable int userId) {
+        return friendshipRepository.findByRequesterIdAndFriendshipStatus(userId, FriendshipStatus.PENDING);
+    }
+
+
+    @Operation(summary = "Lists a user's accepted friends", description = "returns a list of friendship objects where the user is either the requester or receiver, and the status is FRIEND")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfully returned a list of accepted friends",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Friendship.class))
+                    })
+    })
+    // returns a list of the users current friendships
+    @GetMapping(path = "/friendships/accepted/{userId}")
+    List <Friendship> getAcceptedRequests(@Parameter(description = "id of the user whose friends list is being retrieved") @PathVariable int userId) {
+        return friendshipRepository.findByRequesterIdAndFriendshipStatusOrReceiverIdAndFriendshipStatus(userId,
+                FriendshipStatus.FRIEND, userId, FriendshipStatus.FRIEND);
     }
 
 
@@ -134,16 +163,6 @@ public class FriendshipController {
         return friendshipRepository.save(friendship);
     }
 
-
-    /*
-    // TODO: implement an endpoint for blocking
-    // may want to consider if we even want this, as it turned out to be harder than I thought, and doesn't yield
-    // too much for the app...    (do we want PENDING, FRIEND, BLOCKED, or just PENDING, FRIEND
-
-
-     */
-
-
     @Operation(summary = "Deletes/Unfriends a friendship between two users", description = "Removes a friendship object from the database between two users")
     @ApiResponses(value =  {
             @ApiResponse(responseCode = "200", description = "Successfully deleted the friendship object",
@@ -163,10 +182,10 @@ public class FriendshipController {
         }
 
         // delete the friendship
-        // TODO: this should probably also clean up/do some other things (cascading?)
-        //
-        //
-        // once ready, then finally delete
+        // DO NOT DO ANYTHING WITH CASCADE. cascading a delete would mean to automatically delete the objects within
+        // the deleted object, so deleting a friendship would also delete the users within it, which is not good.
+        // Additionally, when deleting a user FROM THE DELETE ENDPOINT in UserController, then all friendships with
+        // that user are deleted. NOTE that this assumes that user deletion will only occur from a request to that endpoint.
         friendshipRepository.deleteById(friendshipId);
         return success;
     }

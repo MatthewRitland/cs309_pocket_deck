@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import onetoone.Friends.FriendshipRepository;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,8 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    FriendshipRepository friendshipRepository;
 
     private String success = "{\"message\":\"success\"}";
     private String failure = "{\"message\":\"failure\"}";
@@ -37,7 +40,7 @@ public class UserController {
         return userRepository.findAll();
     }
 
-    @Operation(summary = "Lists a single user", description = "Returns a complete user from the database")
+    @Operation(summary = "Returns a single user from user Id", description = "Returns a complete user from the database")
     @ApiResponses(value =  {
             @ApiResponse(responseCode = "200", description = "Successfully returned user",
                 content = { @Content(mediaType = "application/json",
@@ -49,6 +52,25 @@ public class UserController {
     @GetMapping(path = "/users/{id}")
     User getUserById(@Parameter(description = "id of user to get") @PathVariable int id) {
         User user = userRepository.findById(id);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        return user;
+    }
+
+
+    @Operation(summary = "Returns a single user from username", description = "Returns a complete user from the database")
+    @ApiResponses(value =  {
+            @ApiResponse(responseCode = "200", description = "Successfully returned user",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "failed to return complete user",
+                    content = @Content),
+    })
+    @GetMapping(path = "/users/{username}")
+    User getUserByUsername(@Parameter(description = "username of user to get") @PathVariable String username) {
+        User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
@@ -141,6 +163,10 @@ public class UserController {
         if (userRepository.findById(id) == null) {
             return failure;
         }
+
+        // make sure to remove friendships that this user was a part of!
+        friendshipRepository.deleteByRequesterIdOrReceiverId(id, id);
+
         userRepository.deleteById(id);
         if (userRepository.findById(id) == null) {
             return success;
@@ -177,24 +203,4 @@ public class UserController {
         userRepository.save(user);
         return user;
     }
-
-    /*
-    static class loginMessage {
-        boolean success;
-        String message;
-
-        public loginMessage(boolean success, String message) {
-            this.success = success;
-            this.message = message;
-        }
-
-        public boolean getSuccess() {
-            return success;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
-    */
 }

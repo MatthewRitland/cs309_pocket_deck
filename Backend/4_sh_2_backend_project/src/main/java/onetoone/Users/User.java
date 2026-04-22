@@ -32,6 +32,8 @@ public class User {
 
     public User(String username, String password) {
         this.username = username;
+        //@JsonIgnore//may want to include this later so that the passwords aren't shown... does
+        // frontend rely on this being sent? It's a nice finishing touch for demo 4.
         this.password = password;
         this.status = UserStatus.OFFLINE;
 

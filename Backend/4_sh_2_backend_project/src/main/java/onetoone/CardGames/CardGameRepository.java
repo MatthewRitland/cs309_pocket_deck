@@ -13,4 +13,6 @@ public interface CardGameRepository extends JpaRepository<CardGame, Integer>{
     void deleteById(int id);
 
     boolean existsByGameName (String gameName);
+
+    boolean existsById (int id);
 }

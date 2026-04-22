@@ -59,6 +59,7 @@ public class GameSocket {
     private static Map<String, Session> usernameSessionMap = new Hashtable<>();
     private GameHistory gameHistory;
     private static Game cardGame;
+    private static boolean gameOver;
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username, @PathParam("game") String game) throws IOException {
@@ -73,7 +74,7 @@ public class GameSocket {
     public void onMessage(Session session, String message, @PathParam("game") String game) throws IOException, ParseException {
         JSONObject json = (JSONObject) new JSONParser().parse(message);
         if (json.get("messageType").equals("join_game")) {
-            if (!(users.size() == 0) && cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {
+            if (cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {
                 try {
                     logger.info((String) json.get("username"));
                     JSONObject mes = new JSONObject();
@@ -94,6 +95,7 @@ public class GameSocket {
                 players[i] = users.get(i);
             }
             cardGame = new BlackJack(cardGameRepository.findByGameName(game), players);
+            gameOver = false;
             for (int i = 0; i < users.size(); i++) {
                 try {
                     logger.info(users.get(i).getUsername());
@@ -104,7 +106,7 @@ public class GameSocket {
                     e.printStackTrace();
                 }
             }
-        } else if (json.get("messageType").equals("action_made")) {
+        } else if (json.get("messageType").equals("action_made") && !gameOver) {
             if (sessionUsernameMap.get(session).equals(cardGame.getCurrentPlayer().getUsername())) {
                 if (json.get("move").equals("hit")) {
                     cardGame.takeTurn(Actions.HIT);
@@ -153,6 +155,7 @@ public class GameSocket {
         output.put("currentTurn", cardGame.getTurn());
         if (cardGame.checkGameProgress()) {
             output.put("gamePhase", "finished");
+            gameOver = true;
         } else {
             output.put("gamePhase", "in progress");
         }
@@ -201,6 +204,15 @@ public class GameSocket {
     @OnClose
     public void onClose(Session session) throws IOException {
         logger.info("Entered into Close");
+        String username = sessionUsernameMap.get(session);
+        recordGame(session);
+        logger.info(username);
+        sessionUsernameMap.remove(session);
+        usernameSessionMap.remove(username);
+        logger.info(String.valueOf(users.remove(userRepo.findByUsername(username))));
+    }
+
+    private void recordGame (Session session) {
         gameHistory.setTimeGameCompleted(LocalDateTime.now());
         gameHistory.setTimeGameDuration(Duration.between(gameHistory.getTimeGameStarted(), gameHistory.getTimeGameCompleted()));
         Result result = cardGame.getWinners()[cardGame.findPlayer(userRepo.findByUsername(sessionUsernameMap.get(session)))];
@@ -214,24 +226,14 @@ public class GameSocket {
             gameHistory.setGameResult(GameHistoryResult.VICTORY);
         }
         gameHistoryRepository.save(gameHistory);
-        String username = sessionUsernameMap.get(session);
-        logger.info(username);
-        sessionUsernameMap.remove(session);
-        usernameSessionMap.remove(username);
-        logger.info(String.valueOf(users.remove(userRepo.findByUsername(username))));
-        for (int i = 0; i < users.size(); i++) {
-            logger.info(users.get(i).getUsername());
-        }
     }
+
 
 
     @OnError
     public void onError(Session session, Throwable throwable) {
         // Do error handling here
         logger.info("Entered into Error");
-        for (int i = 0; i < users.size(); i++) {
-            logger.info(users.get(i).getUsername());
-        }
         throwable.printStackTrace();
     }
 }

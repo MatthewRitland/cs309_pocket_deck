@@ -243,7 +243,7 @@ public class AccountSettings extends AppCompatActivity {
     }
 
     /**
-     * Helper function. Checks with the user whether or not they want to
+     * Checks with the user whether or not they want to
      * log out and, if so, fully logs the user out of their account.
      */
     private void logOutUser() {
@@ -280,7 +280,7 @@ public class AccountSettings extends AppCompatActivity {
     }
 
     /**
-     * Helper function. Confirms choice of deletion with user and
+     * Confirms choice of deletion with user and
      * requests the server delete the user object. Handles response.
      */
     private void deleteUserAccount() {

@@ -121,7 +121,7 @@ public class GameNoteController {
                     content = @Content),
     })
     @DeleteMapping ("/gameNotes/{id}")
-    public String deleteGameNote (@PathVariable int id) {
+    public String deleteGameNote (@Parameter(description = "id of game note")@PathVariable int id) {
         if (!gameNoteRepo.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "could not find note");
         }

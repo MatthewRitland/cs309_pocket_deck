@@ -1,4 +1,4 @@
-package com.example.pocketdeck.messaging;
+package com.example.pocketdeck;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,11 +16,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.pocketdeck.R;
-import com.example.pocketdeck.UserUtilities;
-import com.example.pocketdeck.VolleyCommand;
-import com.example.pocketdeck.WebsocketListener;
 
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;

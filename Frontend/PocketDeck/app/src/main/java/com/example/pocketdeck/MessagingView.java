@@ -1,4 +1,4 @@
-package com.example.pocketdeck.messaging;
+package com.example.pocketdeck;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,10 +11,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.pocketdeck.R;
-import com.example.pocketdeck.UserUtilities;
-import com.example.pocketdeck.WebsocketListener;
 
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;

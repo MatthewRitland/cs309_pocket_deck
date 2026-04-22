@@ -60,7 +60,7 @@ public class FriendsUtilities {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
-
+                        acceptedListReceived(jsonArray, activeContext);
                     }
                 },
                 volleyError -> currentListener.onActionFail(volleyError.getMessage())
@@ -73,7 +73,7 @@ public class FriendsUtilities {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
-                        updateRequests(jsonArray, activeContext);
+                        acceptedListReceived(jsonArray, activeContext);
                     }
                 },
                 volleyError -> currentListener.onActionFail(volleyError.getMessage())
@@ -104,9 +104,26 @@ public class FriendsUtilities {
     }
 
 
+    private JSONArray firstFriendsArray;
+    private void acceptedListReceived(JSONArray array, Context currentContext) {
+        if (firstFriendsArray == null) {
+            firstFriendsArray = array;
+            return;
+        }
 
-    private void friendsListReceived() {
+        UserUtilities userUtils = new UserUtilities(currentContext);
 
+        try {
+            List<Friend> friends1 = parseFriendsList(array, userUtils.getSavedId());
+            List<Friend> friends2 = parseFriendsList(firstFriendsArray, userUtils.getSavedId());
+
+            friendsList = new ArrayList<Friend>();
+
+            friendsList.addAll(friends1);
+            friendsList.addAll(friends2);
+        } catch (Exception e) {
+            currentListener.onActionFail("Error parsing received friends list");
+        }
     }
 
     /**
@@ -126,12 +143,7 @@ public class FriendsUtilities {
                         currentListener.onActionSuccess("Friend request sent.");
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        currentListener.onActionFail(error.getMessage());
-                    }
-                }
+                error -> currentListener.onActionFail(error.getMessage())
         );
 
         VolleyCommand.getInstance(activeContext).addToRequestQueue(requestSend);
@@ -155,13 +167,7 @@ public class FriendsUtilities {
                         currentListener.onActionSuccess("Friend removed");
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        currentListener.onActionFail("Issue removing friend");
-                    }
-                }
+                error -> currentListener.onActionFail("Issue removing friend")
         );
 
         VolleyCommand.getInstance(activeContext).addToRequestQueue(requestDelete);
@@ -204,13 +210,7 @@ public class FriendsUtilities {
                         fetchRelationships(activeContext);
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // Send toast
-                        currentListener.onActionFail(error.getMessage());
-                    }
-                }
+                error -> currentListener.onActionFail(error.getMessage())
         );
 
         VolleyCommand.getInstance(activeContext).addToRequestQueue(requestAccept);
@@ -269,6 +269,30 @@ public class FriendsUtilities {
         }
     }
 
+    private void updateRequests(JSONArray response, Context activeContext) {
+        UserUtilities userUtils = new UserUtilities(activeContext);
+
+        requestList = new ArrayList<Friend>();
+
+        try {
+           List<Friend> friends = parseFriendsList(response, userUtils.getSavedId());
+           requestList.addAll(friends);
+           currentListener.onFriendsUpdated();
+        } catch (Exception e) {
+            currentListener.onActionFail("Failed in updating friends list");
+        }
+    }
+
+    private List<Friend> parseFriendsList(JSONArray friendshipList, long userId) throws JSONException{
+        List<Friend> friends = new ArrayList<Friend>();
+        for (int i = 0; i < friendshipList.length(); i++) {
+            JSONObject friendship = friendshipList.getJSONObject(i);
+            Friend friend = parseFriendFromJson(friendship, userId);
+            friends.add(friend);
+        }
+        return friends;
+    }
+
     private Friend parseFriendFromJson(JSONObject friendship, long userId) throws JSONException {
         String friendshipStatus = friendship.getString("friendshipStatus");
         JSONObject requester = friendship.getJSONObject("requester");
@@ -285,24 +309,6 @@ public class FriendsUtilities {
         long relationId = friendship.getLong("id");
 
         return new Friend(friendName, friendId, relationId, requested, friendshipStatus.equals("PENDING"));
-    }
-
-    private void updateRequests(JSONArray response, Context activeContext) {
-        UserUtilities userUtils = new UserUtilities(activeContext);
-
-        requestList = new ArrayList<Friend>();
-
-        try {
-            for (int i = 0; i < response.length(); i++) {
-                JSONObject object = (JSONObject)response.get(i);
-                Friend friend = parseFriendFromJson(object, userUtils.getSavedId());
-                requestList.add(friend);
-            }
-
-            currentListener.onFriendsUpdated();
-        } catch (Exception e) {
-            currentListener.onActionFail("Failed in updating friends list");
-        }
     }
 
     public interface ResponseListener {

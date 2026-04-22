@@ -6,7 +6,7 @@ stages:             # these stages (jobs) forms the CICD pipeline
 maven-build:            
   stage: mavenbuild     # one of the stages listed above
   tags:                 # to specify which runner to execute this job
-    - matthew_tag    # change to your runner's tag
+    - springboot_tag    # change to your runner's tag
   script:               # what to execute for this job
     - cd Backend/4_sh_2_backend_project        # change 'Backend' to to where you have the pom.xml (do not add / in the beginning)
     - mvn package       # maven package
@@ -15,20 +15,20 @@ maven-build:
     - Backend/4_sh_2_backend_project/target/*.jar
   only:
     refs:
-      - 31-matthew_cicd            # only to trigger the pipeline when changes are pushed to '31-matthew_cicd'
+      - main           # only to trigger the pipeline when changes are pushed to 'main'
     changes:
       - Backend/**/*       # more specifically - only when changes are made inside the 'Backend' folder
 
 maven-test:             
   stage: maventest     # one of the stages listed above
   tags:
-     - matthew_tag   # change to your runner's tag
+     - springboot_tag   # change to your runner's tag
   script:
      - cd Backend/4_sh_2_backend_project       # change 'Backend' to to where you have the pom.xml (do not add / in the beginning)
      - mvn test         # maven test
   only:
     refs:
-      - 31-matthew_cicd           # only to trigger the pipeline when changes are pushed to '31-matthew_cicd'
+      - main          # only to trigger the pipeline when changes are pushed to 'main'
     changes:
       - Backend/**/*       # more specifically - only when changes are made inside the 'Backend' folder
 

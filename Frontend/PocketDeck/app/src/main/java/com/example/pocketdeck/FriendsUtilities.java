@@ -13,6 +13,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -49,6 +50,65 @@ public class FriendsUtilities {
         currentListener = null;
     }
 
+    public void fetchAcceptedFriends(long receiverId, Context activeContext) {
+        String requestPath = URL_FRIENDS_PATH + "requests/received/" + receiverId;
+
+        JsonArrayRequest sentRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                requestPath,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+
+                    }
+                },
+                volleyError -> currentListener.onActionFail(volleyError.getMessage())
+        );
+
+        JsonArrayRequest receivedRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                requestPath,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+                        updateRequests(jsonArray, activeContext);
+                    }
+                },
+                volleyError -> currentListener.onActionFail(volleyError.getMessage())
+        );
+    }
+
+    public void fetchFriendRequests(long receiverId, Context activeContext){
+        String requestPath = URL_FRIENDS_PATH + "requests/received/" + receiverId;
+        requestList = new ArrayList<Friend>();
+
+        JsonArrayRequest volleyRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                requestPath,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) {
+                        updateRequests(jsonArray, activeContext);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        currentListener.onActionFail(volleyError.getMessage());
+                    }
+                }
+        );
+    }
+
+
+
+    private void friendsListReceived() {
+
+    }
+
     /**
      * Sends a friend request to a user of the specified ID. (Create)
      * @param receiverId User ID of the requested friend.
@@ -63,7 +123,6 @@ public class FriendsUtilities {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        // TODO: Handle response object (Friend object)
                         currentListener.onActionSuccess("Friend request sent.");
                     }
                 },
@@ -192,23 +251,7 @@ public class FriendsUtilities {
         try {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject object = (JSONObject)response.get(i);
-                String friendshipStatus = object.getString("friendshipStatus");
-                JSONObject requester = object.getJSONObject("requester");
-                JSONObject receiver = object.getJSONObject("receiver");
-
-                JSONObject friendObject;
-                boolean requested = requester.getLong("id") == userUtils.getSavedId();
-
-                if (requested) friendObject = receiver;
-                else friendObject = requester;
-
-                String friendName = friendObject.getString("username");
-                long friendId = friendObject.getLong("id");
-                long relationId = object.getLong("id");
-                Log.d("FriendsScreen", Long.toString(relationId));
-
-                // PENDING or FRIEND
-                Friend friend = new Friend(friendName, friendId, relationId, requested, friendshipStatus.equals("PENDING"));
+                Friend friend = parseFriendFromJson(object, userUtils.getSavedId());
 
                 if (friend.getPending()) {
                     //Log.d("FriendsScreen", "REQUEST-" + friend.toString());
@@ -218,6 +261,42 @@ public class FriendsUtilities {
                     //Log.d("FriendsScreen", "FRIEND-" + friend.toString());
                     friendsList.add(friend);
                 }
+            }
+
+            currentListener.onFriendsUpdated();
+        } catch (Exception e) {
+            currentListener.onActionFail("Failed in updating friends list");
+        }
+    }
+
+    private Friend parseFriendFromJson(JSONObject friendship, long userId) throws JSONException {
+        String friendshipStatus = friendship.getString("friendshipStatus");
+        JSONObject requester = friendship.getJSONObject("requester");
+        JSONObject receiver = friendship.getJSONObject("receiver");
+
+        JSONObject friendObject;
+        boolean requested = requester.getLong("id") == userId;
+
+        if (requested) friendObject = receiver;
+        else friendObject = requester;
+
+        String friendName = friendObject.getString("username");
+        long friendId = friendObject.getLong("id");
+        long relationId = friendship.getLong("id");
+
+        return new Friend(friendName, friendId, relationId, requested, friendshipStatus.equals("PENDING"));
+    }
+
+    private void updateRequests(JSONArray response, Context activeContext) {
+        UserUtilities userUtils = new UserUtilities(activeContext);
+
+        requestList = new ArrayList<Friend>();
+
+        try {
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject object = (JSONObject)response.get(i);
+                Friend friend = parseFriendFromJson(object, userUtils.getSavedId());
+                requestList.add(friend);
             }
 
             currentListener.onFriendsUpdated();

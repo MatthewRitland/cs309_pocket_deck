@@ -14,7 +14,7 @@
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.1.4</version>
   </parent>
-  <name>one-to-one</name>
+  <name>PocketDeck</name>
 
   <properties>
     <java.version>17</java.version>

@@ -2,6 +2,7 @@ package onetoone;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import onetoone.Users.User;
 import onetoone.Users.UserRepository;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +37,8 @@ public class MatthewSystemTest {
 		RestAssured.port = port;
 		RestAssured.baseURI = "http://localhost";
 	}
+	int userId = 0;
+
 
 	@Test
 	public void createUserTest() {
@@ -63,7 +66,8 @@ public class MatthewSystemTest {
 			JSONObject returnObj = new JSONObject(returnString);
 
 			//assertEquals(<expectedValue>, <keyFromJSON>)
-			assertEquals(userRepo.findByUsername("SystemTestUserRESTRICTED").getId(), returnObj.getInt("id"));
+			userId = userRepo.findByUsername("SystemTestUserRESTRICTED").getId(); // use userId for @After delete
+			assertEquals(userId, returnObj.getInt("id"));
 			assertEquals("SystemTestUserRESTRICTED", returnObj.getString("username"));
 			assertEquals("1234", returnObj.getString("password"));
 			assertEquals("OFFLINE", returnObj.getString("userStatus"));
@@ -74,18 +78,114 @@ public class MatthewSystemTest {
 	}
 
 
+	@Test
+	public void createDuplicateUserTest() {
+		// create this test user in the DB
+		User testUser = new User("SystemTestUserDuplicateRESTRICTED", "1234");
+		userRepo.save(testUser);
+		userId = testUser.getId();
+
+		// using Response, NOW try to create a new user  w/ duplicate username
+		Response response = RestAssured.given().
+				header("Content-Type", "application/json").
+				header("charset","utf-8").
+				body("{" +
+						"\"username\"" + " : " + "\"SystemTestUserDuplicateRESTRICTED\"," +
+						"\"password\"" + " : " + "\"5678\"" +
+						"}").
+				when().
+				post("/signup");
+
+
+		// Check status code
+		int statusCode = response.getStatusCode();
+		assertEquals(409, statusCode);
+	}
+
+
+	@Test
+	public void ReadUserTest() {
+		// create this test user in the DB
+		User testUser = new User("SystemTestUserReadRESTRICTED", "1234");
+		userRepo.save(testUser);
+		userId = testUser.getId();
+
+		Response response = RestAssured.given().
+				header("Content-Type", "application/json").
+				header("charset","utf-8").
+				when().
+				get("/users/" + userId);
+
+
+		// Check status code
+		int statusCode = response.getStatusCode();
+		assertEquals(200, statusCode);
+
+		String returnString = response.getBody().asString();
+		try {
+			JSONObject returnObj = new JSONObject(returnString);
+
+			assertEquals(userId, returnObj.getInt("id"));
+			assertEquals("SystemTestUserReadRESTRICTED", returnObj.getString("username"));
+			assertEquals("1234", returnObj.getString("password"));
+			assertEquals("OFFLINE", returnObj.getString("userStatus"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
 
 
 
-	// make sure this is reached if others aren't working!
+
+
+	@Test
+	public void UpdateUserTest() {
+		// create this test user in the DB
+		User testUser = new User("SystemTestUserUpdateRESTRICTED", "1234");
+		userRepo.save(testUser);
+		userId = testUser.getId();
+
+		Response response = RestAssured.given().
+				header("Content-Type", "application/json").
+				header("charset","utf-8").
+				body("{" +
+						"\"username\"" + " : " + "\"SystemTestUserUpdateRESTRICTEDUpdated\"," +
+						"\"password\"" + " : " + "\"5678\"," +
+						"\"userStatus\"" + " : " + "\"ONLINE\"" +
+						"}").
+				when().
+				put("/users/" + userId);
+
+
+		// Check status code
+		int statusCode = response.getStatusCode();
+		assertEquals(200, statusCode);
+
+		String returnString = response.getBody().asString();
+		try {
+			JSONObject returnObj = new JSONObject(returnString);
+
+			assertEquals(userId, returnObj.getInt("id"));
+			assertEquals("SystemTestUserUpdateRESTRICTEDUpdated", returnObj.getString("username"));
+			assertEquals("5678", returnObj.getString("password"));
+			assertEquals("ONLINE", returnObj.getString("userStatus"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	@Test
 	public void deleteUserTest() {
-		Response response = RestAssured.given().
-				//header("Content-Type", "application/json"). // don't need this, not sending a body
-				//header("charset","utf-8").
-				when().
-				delete("/users/" + userRepo.findByUsername("SystemTestUserRESTRICTED").getId());
+		// create this test user in the DB
+		User testUser = new User("SystemTestUserDeleteRESTRICTED", "1234");
+		userRepo.save(testUser);
+		userId = testUser.getId();
 
+		// actual delete test
+		Response response = RestAssured.given().
+				when().
+				delete("/users/" + userId);
 
 		// Check status code
 		int statusCode = response.getStatusCode();
@@ -99,6 +199,23 @@ public class MatthewSystemTest {
 			assertEquals("success", returnObj.getString("message"));
 		} catch (JSONException e) {
 			e.printStackTrace();
+		}
+	}
+
+	// runs after each test to clean it up
+	@After
+	public void cleanUp() {
+		if (userId != 0) {
+			try {
+				// check if user exists before trying to delete to avoid errors
+				if (userRepo.existsById(userId)) {
+					userRepo.deleteById(userId);
+				}
+			} catch (Exception e) {
+				System.out.println("Test cleanUp() failed for userId " + userId + ": " + e.getMessage());
+			} finally {
+				userId = 0;
+			}
 		}
 	}
 

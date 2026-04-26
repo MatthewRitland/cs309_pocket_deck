@@ -68,7 +68,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "failed to return complete user",
                     content = @Content),
     })
-    @GetMapping(path = "/users/{username}")
+    @GetMapping(path = "/users/username/{username}")
     User getUserByUsername(@Parameter(description = "username of user to get") @PathVariable String username) {
         User user = userRepository.findByUsername(username);
         if (user == null) {

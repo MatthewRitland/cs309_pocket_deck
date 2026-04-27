@@ -5,7 +5,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>coms309</groupId>
-  <artifactId>onetoone</artifactId>
+  <artifactId>PocketDeck</artifactId>
   <version>1.0.0</version>
 
   <!-- To make it a spring boot project -->
@@ -14,7 +14,7 @@
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.1.4</version>
   </parent>
-  <name>one-to-one</name>
+  <name>PocketDeck</name>
 
   <properties>
     <java.version>17</java.version>

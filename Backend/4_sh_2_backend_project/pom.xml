@@ -5,7 +5,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>coms309</groupId>
-  <artifactId>onetoone</artifactId>
+  <artifactId>PocketDeck</artifactId>
   <version>1.0.0</version>
 
   <!-- To make it a spring boot project -->
@@ -14,14 +14,10 @@
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.1.4</version>
   </parent>
-  <name>one-to-one</name>
+  <name>PocketDeck</name>
 
   <properties>
-
-    <!-- Generic properties -->
-<!--    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
-<!--    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>-->
-<!--    <java.version>11</java.version>-->
+    <java.version>17</java.version>
   </properties>
 
   <dependencies>
@@ -72,6 +68,23 @@
       <artifactId>json-simple</artifactId>
       <version>1.1.1</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+
 
 
   </dependencies>

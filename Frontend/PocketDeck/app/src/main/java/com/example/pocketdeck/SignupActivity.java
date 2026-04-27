@@ -1,10 +1,5 @@
 package com.example.pocketdeck;
 
-/**
- * Class for handling the logic of the Signup screen.
- * @author Raine McKellar with some code snippets by Mack Quinn
- */
-
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -25,6 +20,10 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class for handling the logic of the Signup screen.
+ * @author Raine McKellar & Mack Quinn
+ */
 public class SignupActivity extends AppCompatActivity{
 
     private EditText nameInput, passwordInput, confirmPasswordInput;
@@ -152,6 +151,9 @@ public class SignupActivity extends AppCompatActivity{
         VolleyCommand.getInstance(this).addToRequestQueue(create_user_request);
     }
 
+    /**
+     * Function for resuming music.
+     */
     @Override
     protected void onResume() {
         super.onResume();

@@ -2,8 +2,12 @@ package PocketDeck.Requests;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
+import PocketDeck.GameLobby.GameLobby;
+import PocketDeck.GameLobby.GameLobbyMembership;
+import PocketDeck.GameLobby.GameLobbyMembershipRepository;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
@@ -27,6 +31,8 @@ public class RequestSocket {
 
     private static UserRepository userRepo;
 
+    private static GameLobbyMembershipRepository memberRepo;
+
     @Autowired
     public void setRequestRepository(RequestRepository repo) {
         requestRepo = repo;
@@ -35,6 +41,8 @@ public class RequestSocket {
     public void setUserRepository(UserRepository repo) {
         userRepo = repo;
     }
+    @Autowired
+    public void setGameLobbyMembershipRepository(GameLobbyMembershipRepository repo) { memberRepo = repo; }
 
     private final Logger logger = LoggerFactory.getLogger(RequestSocket.class);
     private static Map<Session, String> sessionUsernameMap = new Hashtable<>();
@@ -76,6 +84,11 @@ public class RequestSocket {
             List<Request> reqs = requestRepo.findByRequestedIdAndRequesterId(requested.getId(), requester.getId());
             reqs.get(reqs.size() - 1).setStatus(RequestStatus.ACCEPTED);
             requestRepo.save(reqs.get(reqs.size() - 1));
+            GameLobby lobby = memberRepo.findById(requester.getId());
+            GameLobbyMembership member = new GameLobbyMembership();
+            member.setGameLobbyMember(requested);
+            member.setGameLobby(lobby);
+            memberRepo.save(member);
         }
         if (message.startsWith("reject")) {
             User requested = userRepo.findByUsername(username);

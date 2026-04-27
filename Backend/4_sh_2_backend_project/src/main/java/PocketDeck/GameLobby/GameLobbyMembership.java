@@ -21,4 +21,32 @@ public class GameLobbyMembership {
     @ManyToOne
     @JoinColumn (nullable = false)
     private GameLobby gameLobby;
+
+    public long getId () {
+        return id;
+    }
+
+    public User getGameLobbyMember() {
+        return gameLobbyMember;
+    }
+
+    public void setGameLobbyMember(User gameLobbyMember) {
+        this.gameLobbyMember = gameLobbyMember;
+    }
+
+    public GameLobbyPlayerRole getPlayerRole() {
+        return playerRole;
+    }
+
+    public void setPlayerRole(GameLobbyPlayerRole playerRole) {
+        this.playerRole = playerRole;
+    }
+
+    public GameLobby getGameLobby() {
+        return gameLobby;
+    }
+
+    public void setGameLobby(GameLobby gameLobby) {
+        this.gameLobby = gameLobby;
+    }
 }

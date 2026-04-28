@@ -15,7 +15,7 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
     public ImageView userIcon;
     public Button primaryButton, secondaryButton;
     public ImageButton menuButton;
-    private Friend holderFriend;
+    private FriendObject holderFriend;
 
     public FriendsHolder(View view) {
         super(view);
@@ -27,7 +27,7 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
         menuButton = view.findViewById(R.id.friendMenuButton);
     }
 
-    public void setHolderView(Friend friend) {
+    public void setHolderView(FriendObject friend) {
         /* Friend Properties */
         usernameLabel.setText(friend.getFriendName());
         statusLabel.setText(friend.getFriendStatus());

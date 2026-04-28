@@ -11,11 +11,11 @@ import java.util.List;
 
 public class FriendsListAdapter extends RecyclerView.Adapter<FriendsHolder>{
 
-    private List<Friend> friends;
+    private List<FriendObject> friends;
     private boolean isRequests;
     private FriendsScreen screenRef;
 
-    public FriendsListAdapter(List<Friend> friends, boolean isRequests, FriendsScreen screen) {
+    public FriendsListAdapter(List<FriendObject> friends, boolean isRequests, FriendsScreen screen) {
         this.friends = friends;
         this.isRequests = isRequests;
         this.screenRef = screen;
@@ -30,7 +30,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull FriendsHolder holder, int position) {
-        Friend holderFriend = friends.get(position);
+        FriendObject holderFriend = friends.get(position);
         holder.setHolderView(holderFriend);
     }
 

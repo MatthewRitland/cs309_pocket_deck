@@ -2,7 +2,7 @@ package com.example.pocketdeck;
 
 import androidx.annotation.NonNull;
 
-public class Friend {
+public class FriendObject {
     private final String friendName;
     private final long friendId;
     private final String friendStatus;
@@ -10,11 +10,11 @@ public class Friend {
     private final long friendshipId;
     private final boolean pendingFriendship;
 
-    public Friend(String name, long id, long friendshipId, boolean requested, boolean pending) {
+    public FriendObject(String name, long id, long friendshipId, boolean requested, boolean pending) {
         this(name, id, friendshipId, "", requested, pending);
     }
 
-    public Friend(String name, long id, long friendshipId, String status, boolean requested, boolean pending) {
+    public FriendObject(String name, long id, long friendshipId, String status, boolean requested, boolean pending) {
         this.friendName = name;
         this.friendId = id;
         this.friendshipId = friendshipId;

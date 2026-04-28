@@ -22,7 +22,7 @@ import java.util.List;
 public class FriendsUtilities {
     private static FriendsUtilities friendsUtilities;
     static final String URL_FRIENDS_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/friendships/";
-    private List<Friend> friendsList, requestList;
+    private List<FriendObject> friendsList, requestList;
     private ResponseListener currentListener;
 
     private FriendsUtilities() { }
@@ -35,9 +35,9 @@ public class FriendsUtilities {
         return friendsUtilities;
     }
 
-    public List<Friend> getFriends() { return friendsList; }
+    public List<FriendObject> getFriends() { return friendsList; }
 
-    public List<Friend> getRequests() { return requestList; }
+    public List<FriendObject> getRequests() { return requestList; }
 
     public void setListener(ResponseListener newListener) {
         if (currentListener != null) { disconnectListener(); }
@@ -82,7 +82,7 @@ public class FriendsUtilities {
 
     public void fetchFriendRequests(long receiverId, Context activeContext){
         String requestPath = URL_FRIENDS_PATH + "requests/received/" + receiverId;
-        requestList = new ArrayList<Friend>();
+        requestList = new ArrayList<FriendObject>();
 
         JsonArrayRequest volleyRequest = new JsonArrayRequest(
                 Request.Method.GET,
@@ -114,10 +114,10 @@ public class FriendsUtilities {
         UserUtilities userUtils = new UserUtilities(currentContext);
 
         try {
-            List<Friend> friends1 = parseFriendsList(array, userUtils.getSavedId());
-            List<Friend> friends2 = parseFriendsList(firstFriendsArray, userUtils.getSavedId());
+            List<FriendObject> friends1 = parseFriendsList(array, userUtils.getSavedId());
+            List<FriendObject> friends2 = parseFriendsList(firstFriendsArray, userUtils.getSavedId());
 
-            friendsList = new ArrayList<Friend>();
+            friendsList = new ArrayList<FriendObject>();
 
             friendsList.addAll(friends1);
             friendsList.addAll(friends2);
@@ -173,7 +173,7 @@ public class FriendsUtilities {
         VolleyCommand.getInstance(activeContext).addToRequestQueue(requestDelete);
     }
 
-    public void confirmRemoval(Friend removingFriend, Context activeContext) {
+    public void confirmRemoval(FriendObject removingFriend, Context activeContext) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activeContext);
         builder.setTitle("Are you sure you want to unfriend " + removingFriend.getFriendName() + "?");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -245,13 +245,13 @@ public class FriendsUtilities {
     private void updateFriendships(JSONArray response, Context activeContext) {
         UserUtilities userUtils = new UserUtilities(activeContext);
 
-        friendsList = new ArrayList<Friend>();
-        requestList = new ArrayList<Friend>();
+        friendsList = new ArrayList<FriendObject>();
+        requestList = new ArrayList<FriendObject>();
 
         try {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject object = (JSONObject)response.get(i);
-                Friend friend = parseFriendFromJson(object, userUtils.getSavedId());
+                FriendObject friend = parseFriendFromJson(object, userUtils.getSavedId());
 
                 if (friend.getPending()) {
                     //Log.d("FriendsScreen", "REQUEST-" + friend.toString());
@@ -272,10 +272,10 @@ public class FriendsUtilities {
     private void updateRequests(JSONArray response, Context activeContext) {
         UserUtilities userUtils = new UserUtilities(activeContext);
 
-        requestList = new ArrayList<Friend>();
+        requestList = new ArrayList<FriendObject>();
 
         try {
-           List<Friend> friends = parseFriendsList(response, userUtils.getSavedId());
+           List<FriendObject> friends = parseFriendsList(response, userUtils.getSavedId());
            requestList.addAll(friends);
            currentListener.onFriendsUpdated();
         } catch (Exception e) {
@@ -283,17 +283,17 @@ public class FriendsUtilities {
         }
     }
 
-    private List<Friend> parseFriendsList(JSONArray friendshipList, long userId) throws JSONException{
-        List<Friend> friends = new ArrayList<Friend>();
+    private List<FriendObject> parseFriendsList(JSONArray friendshipList, long userId) throws JSONException{
+        List<FriendObject> friends = new ArrayList<FriendObject>();
         for (int i = 0; i < friendshipList.length(); i++) {
             JSONObject friendship = friendshipList.getJSONObject(i);
-            Friend friend = parseFriendFromJson(friendship, userId);
+            FriendObject friend = parseFriendFromJson(friendship, userId);
             friends.add(friend);
         }
         return friends;
     }
 
-    private Friend parseFriendFromJson(JSONObject friendship, long userId) throws JSONException {
+    private FriendObject parseFriendFromJson(JSONObject friendship, long userId) throws JSONException {
         String friendshipStatus = friendship.getString("friendshipStatus");
         JSONObject requester = friendship.getJSONObject("requester");
         JSONObject receiver = friendship.getJSONObject("receiver");
@@ -308,7 +308,7 @@ public class FriendsUtilities {
         long friendId = friendObject.getLong("id");
         long relationId = friendship.getLong("id");
 
-        return new Friend(friendName, friendId, relationId, requested, friendshipStatus.equals("PENDING"));
+        return new FriendObject(friendName, friendId, relationId, requested, friendshipStatus.equals("PENDING"));
     }
 
     public interface ResponseListener {

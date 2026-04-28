@@ -108,7 +108,7 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
 
     private void setFriendsView() {
         // Request view
-        List<Friend> sendFriends = FriendsUtilities.getInstance().getFriends();
+        List<FriendObject> sendFriends = FriendsUtilities.getInstance().getFriends();
         addFriendButton.setVisibility(View.VISIBLE);
         if (inReceivedView) {
             addFriendButton.setVisibility(View.INVISIBLE);

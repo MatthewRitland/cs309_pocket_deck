@@ -24,10 +24,10 @@ import org.json.JSONObject;
 public class GamePlayScreen extends AppCompatActivity implements WebsocketListener {
 
     //update later
-    //private static final String WS_URL = "ws://coms-3090-025.class.las.iastate.edu:8080/";
+    // private static final String WS_URL = "ws://coms-3090-025.class.las.iastate.edu:8080/";
 
     //test for personal ws server
-    private static final String WS_URL = "ws://10.0.2.2:8080/game/test1/blackjack";
+    //private static final String WS_URL = "ws://10.0.2.2:8080/game/test1/blackjack";
     private TextView statusText;
     private TextView centerText;
     private Button moveButton1;
@@ -96,7 +96,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             public void onClick(View v) {
                 try {
                     JSONObject object = new JSONObject();
-                    object.put("message_type", "start_game");
+                    object.put("messageType", "start_game");
                     webSocketManager.sendMessage(object.toString());
                     startGameButton.setVisibility(View.GONE);
                 } catch (Exception e) {
@@ -133,8 +133,8 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
 
         webSocketManager = WebsocketManager.getInstance();
         webSocketManager.setWebSocketListener(this);
-        //webSocketManager.connectWebSocket(websocketUrlBuilder());
-        webSocketManager.connectWebSocket(WS_URL);
+        webSocketManager.connectWebSocket(websocketUrlBuilder());
+        //webSocketManager.connectWebSocket(WS_URL);
 
     }
     //Websocket connected successfully
@@ -153,7 +153,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         try {
             String username = userUtilities.getSavedUsername();
             JSONObject object = new JSONObject();
-            object.put("message_type", "join_game");
+            object.put("messageType", "join_game");
             object.put("username", username);
             webSocketManager.sendMessage(object.toString());
 
@@ -209,7 +209,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         try {
             //receive the message
             JSONObject object = new JSONObject(message);
-            String messageType = object.optString("message_type", object.optString("messageType", ".."));
+            String messageType = object.optString("messageType", "...");
             String gamePhase = object.optString("gamePhase", "lobby");
 
             //so you only see the start button before the game starts
@@ -533,8 +533,8 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
     private void updateMove(String moveMade) {
         try {
             JSONObject object = new JSONObject();
-            object.put("message_type", "action_made");
-            object.put("move", moveMade);
+            object.put("messageType", "action_made");
+            object.put("move", moveMade.toLowerCase());
 
             webSocketManager.sendMessage(object.toString());
 

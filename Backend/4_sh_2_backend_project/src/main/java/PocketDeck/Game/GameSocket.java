@@ -179,6 +179,11 @@ public class GameSocket {
             JSONObject player = new JSONObject();
             player.put("seat", i);
             player.put("username", cardGame.getPlayers()[i].getUsername());
+            if (cardGame.getClass().equals(BlackJack.class)) {
+                BlackJack temp = (BlackJack) cardGame;
+                player.put("stood", String.valueOf(temp.getStood()[i]));
+                player.put("busted", String.valueOf(temp.isBusted(cardGame.getPlayers()[i])));
+            }
             if (cardGame.getPlayers()[i].getUsername().equals(username)) {
                 JSONArray array = new JSONArray();
                 int cardCount = cardGame.getCardAmount(cardGame.getPlayers()[i]);

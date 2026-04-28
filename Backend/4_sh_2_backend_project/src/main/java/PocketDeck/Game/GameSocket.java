@@ -140,14 +140,26 @@ public class GameSocket {
                     break;
                 }
             }
-            Card[] tempHand = new Card[1];
-            tempHand[0] = dealerHand[0];
-            JSONObject card = new JSONObject();
-            card.put("suit", tempHand[0].getSuit().toString());
-            card.put("value", tempHand[0].getValue().toString());
-            array.add(card);
-            output.put("centerCards", array);
-            output.put("centerHidden", cardCount - 1);
+            if (!cardGame.checkGameProgress()) {
+                Card tempHand = new Card();
+                tempHand = dealerHand[0];
+                JSONObject card = new JSONObject();
+                card.put("suit", tempHand.getSuit().toString());
+                card.put("value", tempHand.getValue().toString());
+                array.add(card);
+                output.put("centerCards", array);
+                output.put("centerHidden", cardCount - 1);
+            }
+            else {
+                for (int i = 0; i < cardCount; i++) {
+                    JSONObject card = new JSONObject();
+                    card.put("suit", dealerHand[i].getSuit().toString());
+                    card.put("value", dealerHand[i].getValue().toString());
+                    array.add(card);
+                }
+                output.put("centerCards", array);
+                output.put("centerHidden", 0);
+            }
         }
         output.put("yourSeat", cardGame.findPlayer(userRepo.findByUsername(username)));
         output.put("currentTurn", cardGame.getTurn());

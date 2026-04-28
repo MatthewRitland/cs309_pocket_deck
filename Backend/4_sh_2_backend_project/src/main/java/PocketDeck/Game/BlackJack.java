@@ -209,6 +209,13 @@ public class BlackJack extends Game{
         }
     }
 
+    public boolean isBusted (User player) {
+        if (scores[findPlayer(player)] > MAX_SCORE) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean checkGameProgress () {
         for (int i = 0; i < stood.length; i++) {
             if (!stood[i]) {

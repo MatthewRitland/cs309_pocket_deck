@@ -20,6 +20,13 @@ import android.widget.Toast;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import android.app.AlertDialog;
+import android.view.View;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import org.json.JSONException;
 
 public class GamePlayScreen extends AppCompatActivity implements WebsocketListener {
 
@@ -28,6 +35,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
 
     //test for personal ws server
     //private static final String WS_URL = "ws://10.0.2.2:8080/game/test1/blackjack";
+    private Button notesButton;
     private TextView statusText;
     private TextView centerText;
     private Button moveButton1;
@@ -76,6 +84,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         TableCardsL = findViewById(R.id.TableCardsL);
         playerCardsL = findViewById(R.id.playerCardsLayout);
         otherPlayersText = findViewById(R.id.otherPlayersText);
+        notesButton = findViewById(R.id.notesButton);
 
         statusText.setText("Connecting...");
         centerText.setText("Waiting for game");
@@ -128,6 +137,13 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
                 } else {
                     updateMove(moveButton3.getText().toString().toLowerCase());
                 }
+            }
+        });
+
+        notesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNotesPopup();
             }
         });
 
@@ -541,6 +557,52 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void showNotesPopup() {
+        int userId = userUtilities.getSavedId();
+        int gameId = userUtilities.getSelectedGameId();
+
+        String url = "http://coms-3090-025.class.las.iastate.edu:8080/gameNotes/" + userId + "/" + gameId;
+
+        JsonArrayRequest request = new JsonArrayRequest(
+                Request.Method.GET,
+                url,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        String notesText = "";
+
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+                                JSONObject note = response.getJSONObject(i);
+                                notesText += "- " + note.getString("text") + "\n\n";
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        if (notesText.isEmpty()) {
+                            notesText = "No notes for this game yet.";
+                        }
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(GamePlayScreen.this);
+                        builder.setTitle("Game Notes");
+                        builder.setMessage(notesText);
+                        builder.setPositiveButton("Close", null);
+                        builder.show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        statusText.setText("Could not load notes");
+                    }
+                }
+        );
+
+        VolleyCommand.getInstance(this).addToRequestQueue(request);
     }
 
     @Override

@@ -15,7 +15,7 @@
         android:theme="@style/Theme.PocketDeck"
         android:usesCleartextTraffic="true" >
         <activity
-            android:name=".messaging.MessagingView"
+            android:name=".MessagingView"
             android:exported="false" />
         <activity
             android:name=".FriendsScreen"
@@ -43,11 +43,11 @@
             android:exported="true"
             android:label="@string/title_activity_signin" />
         <activity
-            android:name=".messaging.GroupsListActivity"
+            android:name=".GroupsListActivity"
             android:exported="true"
             android:label="GroupsListActivity" />
         <activity
-            android:name=".messaging.GroupOptionsActivity"
+            android:name=".GroupOptionsActivity"
             android:exported="true"
             android:label="GroupOptionsActivity"/>
         <activity

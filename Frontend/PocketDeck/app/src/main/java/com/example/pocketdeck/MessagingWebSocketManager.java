@@ -1,8 +1,6 @@
-package com.example.pocketdeck.messaging;
+package com.example.pocketdeck;
 
 import android.util.Log;
-
-import com.example.pocketdeck.WebsocketListener;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;

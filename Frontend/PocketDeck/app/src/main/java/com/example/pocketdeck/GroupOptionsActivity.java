@@ -1,4 +1,4 @@
-package com.example.pocketdeck.messaging;
+package com.example.pocketdeck;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,8 +9,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.pocketdeck.R;
 
 import org.json.JSONObject;
 

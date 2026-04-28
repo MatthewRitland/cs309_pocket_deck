@@ -71,6 +71,7 @@ public class GameSocket {
     public void onMessage(Session session, String message, @PathParam("game") String game) throws IOException, ParseException {
         JSONObject json = (JSONObject) new JSONParser().parse(message);
         if (json.get("messageType").equals("join_game")) {
+            logger.info(game);
             if (cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {
                 try {
                     logger.info((String) json.get("username"));
@@ -139,14 +140,26 @@ public class GameSocket {
                     break;
                 }
             }
-            Card[] tempHand = new Card[1];
-            tempHand[0] = dealerHand[0];
-            JSONObject card = new JSONObject();
-            card.put("suit", tempHand[0].getSuit().toString());
-            card.put("value", tempHand[0].getValue().toString());
-            array.add(card);
-            output.put("centerCards", array);
-            output.put("centerHidden", cardCount - 1);
+            if (!cardGame.checkGameProgress()) {
+                Card tempHand = new Card();
+                tempHand = dealerHand[0];
+                JSONObject card = new JSONObject();
+                card.put("suit", tempHand.getSuit().toString());
+                card.put("value", tempHand.getValue().toString());
+                array.add(card);
+                output.put("centerCards", array);
+                output.put("centerHidden", cardCount - 1);
+            }
+            else {
+                for (int i = 0; i < cardCount; i++) {
+                    JSONObject card = new JSONObject();
+                    card.put("suit", dealerHand[i].getSuit().toString());
+                    card.put("value", dealerHand[i].getValue().toString());
+                    array.add(card);
+                }
+                output.put("centerCards", array);
+                output.put("centerHidden", 0);
+            }
         }
         output.put("yourSeat", cardGame.findPlayer(userRepo.findByUsername(username)));
         output.put("currentTurn", cardGame.getTurn());
@@ -166,6 +179,11 @@ public class GameSocket {
             JSONObject player = new JSONObject();
             player.put("seat", i);
             player.put("username", cardGame.getPlayers()[i].getUsername());
+            if (cardGame.getClass().equals(BlackJack.class)) {
+                BlackJack temp = (BlackJack) cardGame;
+                player.put("stood", String.valueOf(temp.getStood()[i]));
+                player.put("busted", String.valueOf(temp.isBusted(cardGame.getPlayers()[i])));
+            }
             if (cardGame.getPlayers()[i].getUsername().equals(username)) {
                 JSONArray array = new JSONArray();
                 int cardCount = cardGame.getCardAmount(cardGame.getPlayers()[i]);

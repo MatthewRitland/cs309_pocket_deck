@@ -3,6 +3,8 @@ package PocketDeck.Game;
 import PocketDeck.CardGames.CardGame;
 import PocketDeck.Users.User;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class BlackJack extends Game{
@@ -40,6 +42,8 @@ public class BlackJack extends Game{
     public Card[] getDealerHand () {
         return dealerHand;
     }
+
+    public boolean[] getStood () { return stood; }
 
     private int cardValueConversion (User player, Card card) {
         Value value = card.getValue();
@@ -80,7 +84,12 @@ public class BlackJack extends Game{
             return 10;
         }
         else if (value.equals(Value.ACE)) {
-            return 11;
+            if (scores[findPlayer(player)] + 11 > MAX_SCORE) {
+                return 1;
+            }
+            else {
+                return 11;
+            }
         }
         return 0;
     }
@@ -152,7 +161,21 @@ public class BlackJack extends Game{
                 }
                 Random ran = new Random();
                 dealerHand[cardCount] = getDeck()[ran.nextInt(52)];
-                dealerScore += cardValueConversion(dealerHand[cardCount]);
+                dealerScore = 0;
+                int aceCount = 0;
+                ArrayList<Card> aces = new ArrayList<>();
+                for (int i = 0; i < cardCount; i++) {
+                    if (!dealerHand[i].getValue().equals(Value.ACE)) {
+                        dealerScore += cardValueConversion(dealerHand[i]);
+                    }
+                    else {
+                        aceCount += 1;
+                        aces.add(dealerHand[i]);
+                    }
+                }
+                for (int i = 0; i < aceCount; i++) {
+                    dealerScore += cardValueConversion(aces.get(i));
+                }
             }
         }
         else {
@@ -170,8 +193,29 @@ public class BlackJack extends Game{
             }
             Random ran = new Random();
             dealerHand[cardCount] = getDeck()[ran.nextInt(52)];
-            dealerScore += cardValueConversion(dealerHand[cardCount]);
+            dealerScore = 0;
+            int aceCount = 0;
+            ArrayList<Card> aces = new ArrayList<>();
+            for (int i = 0; i < cardCount; i++) {
+                if (!dealerHand[i].getValue().equals(Value.ACE)) {
+                    dealerScore += cardValueConversion(dealerHand[i]);
+                }
+                else {
+                    aceCount += 1;
+                    aces.add(dealerHand[i]);
+                }
+            }
+            for (int i = 0; i < aceCount; i++) {
+                dealerScore += cardValueConversion(aces.get(i));
+            }
         }
+    }
+
+    public boolean isBusted (User player) {
+        if (scores[findPlayer(player)] > MAX_SCORE) {
+            return true;
+        }
+        return false;
     }
 
     public boolean checkGameProgress () {
@@ -211,25 +255,25 @@ public class BlackJack extends Game{
             }
             else if (action.equals(Actions.HIT)) {
                 Card drawn = draw();
-                scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), drawn);
+                scores[currentPlayerLocation] = 0;
+                int cardCount = getCardAmount(getCurrentPlayer());
+                Card[] currentHand = getCurrentPlayerHand();
+                int aceCount = 0;
+                ArrayList<Card> aces = new ArrayList<>();
+                for (int i = 0; i < cardCount; i++) {
+                    if (!currentHand[i].getValue().equals(Value.ACE)) {
+                        scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), currentHand[i]);
+                    }
+                    else {
+                        aceCount += 1;
+                        aces.add(currentHand[i]);
+                    }
+                }
+                for (int i = 0; i < aceCount; i++) {
+                        scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), aces.get(i));
+                }
                 if (scores[currentPlayerLocation] > MAX_SCORE) {
-                    Card[] currentHand = getCurrentPlayerHand();
-                    int cardCount = 0;
-                    for (cardCount = 0; cardCount < currentHand.length; cardCount++) {
-                        if (currentHand[cardCount] == null) {
-                            break;
-                        }
-                    }
-                    for (int i = 0; i < cardCount; i++) {
-                        if (currentHand[i].getValue().equals(Value.ACE)) {
-                            if (scores[currentPlayerLocation] > MAX_SCORE && scores[currentPlayerLocation] - 10 <= MAX_SCORE) {
-                                scores[currentPlayerLocation] -= 10;
-                            }
-                        }
-                    }
-                    if (scores[currentPlayerLocation] > MAX_SCORE) {
-                        stood[currentPlayerLocation] = true;
-                    }
+                    stood[currentPlayerLocation] = true;
                 }
             }
         }

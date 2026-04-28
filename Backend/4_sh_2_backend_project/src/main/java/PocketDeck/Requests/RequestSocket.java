@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
+import PocketDeck.GameLobby.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
@@ -27,6 +29,11 @@ public class RequestSocket {
 
     private static UserRepository userRepo;
 
+    private static GameLobbyRepository gameLobbyRepo;
+    private static GameLobbyMembershipRepository gameLobbyMembershipRepo;
+    private static ObjectMapper objectMapper; // VERY helpful for converting JSON strings into java objects!!
+
+
     @Autowired
     public void setRequestRepository(RequestRepository repo) {
         requestRepo = repo;
@@ -34,6 +41,14 @@ public class RequestSocket {
     @Autowired
     public void setUserRepository(UserRepository repo) {
         userRepo = repo;
+    }
+    @Autowired
+    public void setGameLobbyRepository(GameLobbyRepository repo) {gameLobbyRepo = repo; }
+    @Autowired
+    public void setGameLobbyMembershipRepository(GameLobbyMembershipRepository repo) { gameLobbyMembershipRepo = repo; }
+    @Autowired
+    public void setObjectMapper(ObjectMapper mapper) {
+        objectMapper = mapper; // used for RequestMessageData
     }
 
     private final Logger logger = LoggerFactory.getLogger(RequestSocket.class);
@@ -43,7 +58,7 @@ public class RequestSocket {
     @OnOpen
     public void onOpen (Session session, @PathParam("username") String username) throws IOException {
         logger.info("Entered into open");
-        sessionUsernameMap.put(session, username);
+        sessionUsernameMap.put(session, username); // a list of sessions linked by usernames (strings)
         usernameSessionMap.put(username, session);
     }
 
@@ -51,35 +66,97 @@ public class RequestSocket {
     public void onMessage (Session session, String message) throws IOException {
         logger.info("Entered into Message: Got Message:" + message);
         String username = sessionUsernameMap.get(session);
-        if (message.startsWith("invite")) {
-            try {
-                logger.info(message.substring(7));
-                usernameSessionMap.get(message.substring(7)).getBasicRemote().sendText(username +
-                        " invites you to a game");
+
+        try {
+            RequestMessageData payload = objectMapper.readValue(message, RequestMessageData.class);
+            RequestMessageAction action = payload.getAction();
+            String targetUsername = payload.getTargetUsername();
+
+            if (action == null || targetUsername == null) {
+                session.getBasicRemote().sendText("invalid message input, missing action or targetUsername");
+                return;
             }
-            catch (IOException e) {
+
+            if (action == RequestMessageAction.INVITE) {
+                logger.info("target user to INVITE is: " + targetUsername);
+                User requester = userRepo.findByUsername(username);
+                User requested = userRepo.findByUsername(targetUsername);
+
+                // make sure there isn't a lobby invite already pending between them
+                if (requester != null && requested != null) {
+                    Request existingCheck = requestRepo.findByRequestedIdAndRequesterIdAndStatus(requested.getId(), requester.getId(), RequestStatus.PENDING);
+                    if (existingCheck != null && existingCheck.getStatus() == RequestStatus.PENDING) {
+                        session.getBasicRemote().sendText("An invite to this user is already pending!");
+                        return;
+                    }
+
+                    Session requestedSession = usernameSessionMap.get(targetUsername);
+                    if (requestedSession != null) {
+                        requestedSession.getBasicRemote().sendText(username + " invites you to a lobby!");
+                    }
+
+                    Request request = new Request();
+                    request.setRequester(userRepo.findByUsername(username));
+                    request.setRequested(userRepo.findByUsername(targetUsername));
+                    request.setStatus(RequestStatus.PENDING);
+
+                    // if no id was provided in the payload, it defaulted to 0. will be > 0 if correctly given
+                    if (payload.getGameLobbyId() > 0) {
+                        GameLobby gameLobby = gameLobbyRepo.findById(payload.getGameLobbyId());
+                        request.setGameLobby(gameLobby);
+                    }
+                    requestRepo.save(request);
+                }
+            }
+
+            else if (action == RequestMessageAction.ACCEPT) {
+                User requested = userRepo.findByUsername(username);
+                User requester = userRepo.findByUsername(targetUsername);
+
+                if (requested != null && requester != null) {
+                    Request request = requestRepo.findByRequestedIdAndRequesterIdAndStatus(requested.getId(), requester.getId(), RequestStatus.PENDING);
+                    if (request != null) {
+                        GameLobbyMembership existingMember = gameLobbyMembershipRepo.findByGameLobbyMemberId(requested.getId());
+                        if (existingMember != null) {
+                            // if they're already in a lobby and about to join a new one, them remove them from the existing lobby
+                            gameLobbyMembershipRepo.delete(existingMember);
+                        }
+
+                        request.setStatus(RequestStatus.ACCEPTED);
+                        requestRepo.save(request);
+
+                        if (request.getGameLobby() != null) {
+                            GameLobbyMembership newMember = new GameLobbyMembership(requested, request.getGameLobby(), GameLobbyMembershipRole.PLAYER);
+                            gameLobbyMembershipRepo.save(newMember);
+                            Session requesterSession = usernameSessionMap.get(targetUsername);
+                            if (requesterSession != null) {
+                                requesterSession.getBasicRemote().sendText(username + " accepted your lobby invitation!");
+                            }
+                        }
+                    }
+                }
+            }
+
+            else if (action == RequestMessageAction.REJECT) {
+                User requested = userRepo.findByUsername(username);
+                User requester = userRepo.findByUsername(targetUsername);
+
+                if (requested != null && requester != null) {
+                    Request request = requestRepo.findByRequestedIdAndRequesterIdAndStatus(requested.getId(), requester.getId(), RequestStatus.PENDING);
+                    if (request != null) {
+                        request.setStatus(RequestStatus.REJECTED); // instead of deleting, status is set as rejected.
+                        requestRepo.save(request);
+                        Session requesterSession = usernameSessionMap.get(targetUsername);
+                        if (requesterSession != null) {
+                            requesterSession.getBasicRemote().sendText(username + " denied your lobby invitation :(");
+                        }
+                    }
+                }
+            }
+
+        } catch (IOException e) {
                 logger.info("Exception: " + e.getMessage().toString());
                 e.printStackTrace();
-            }
-            Request request = new Request();
-            request.setRequester(userRepo.findByUsername(username));
-            request.setRequested(userRepo.findByUsername(message.substring(7)));
-            request.setStatus(RequestStatus.PENDING);
-            requestRepo.save(request);
-        }
-        if (message.startsWith("accept")) {
-            User requested = userRepo.findByUsername(username);
-            User requester = userRepo.findByUsername(message.substring(7));
-            Request req = requestRepo.findByRequestedIdAndRequesterId(requested.getId(), requester.getId());
-            req.setStatus(RequestStatus.ACCEPTED);
-            requestRepo.save(req);
-        }
-        if (message.startsWith("reject")) {
-            User requested = userRepo.findByUsername(username);
-            User requester = userRepo.findByUsername(message.substring(7));
-            Request req = requestRepo.findByRequestedIdAndRequesterId(requested.getId(), requester.getId());
-            req.setStatus(RequestStatus.REJECTED);
-            requestRepo.save(req);
         }
     }
 

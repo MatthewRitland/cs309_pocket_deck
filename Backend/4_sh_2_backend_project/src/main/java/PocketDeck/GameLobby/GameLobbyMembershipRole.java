@@ -1,7 +1,7 @@
 package PocketDeck.GameLobby;
 
-public enum GameLobbyPlayerRole {
-    OWNER_PLAYER,
+public enum GameLobbyMembershipRole {
+    OWNER_MEMBER,
     PLAYER,
     SPECTATOR
 }

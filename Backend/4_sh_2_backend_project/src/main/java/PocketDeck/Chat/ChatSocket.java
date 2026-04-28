@@ -85,7 +85,7 @@ public class ChatSocket {
 		logger.info("Entered into Message: Got Message:" + recievedJSON);
 		String username = sessionUsernameMap.get(session);
 		ChatMessageData payload = new ChatMessageData();
-		payload.setMessageAction(MessageAction.DEBUG);
+		payload.setMessageAction(ChatMessageAction.DEBUG);
 		payload.setMessageContent("Something went wrong. This is a fake debugging message");
 
 		try {
@@ -110,7 +110,7 @@ public class ChatSocket {
 			return;
 		}
 
-		switch(payload.getAction()) {
+		switch(payload.getMessageAction()) {
 			//TODO CURRENTLY THINKING OF REMOVING, JUST JUST THE GroupChatController endpoint for this!
 			case GET_CHAT_HISTORY:
 				handleGetChatHistory(username, payload);

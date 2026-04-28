@@ -11,15 +11,15 @@ public class GameLobby {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // there is one card game for one game lobby
-    @OneToOne
+    // there are many cardgames in the GameLobby table.
+    @ManyToOne
     @JoinColumn(nullable = false)
     private CardGame cardGame;
 
     private boolean isInviteOnly;
 
-
     public GameLobby() {
+        this.isInviteOnly = true; // will be private by default
     }
 
 

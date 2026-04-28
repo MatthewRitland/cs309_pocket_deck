@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private Button accountButton;
     private Button settingsButton;
     private Button playButton;
-
     private Button modeButton;
 
     /**
@@ -156,6 +155,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.nav_messaging) {
             Intent i = new Intent(MainActivity.this, GroupsListActivity.class);
+            startActivity(i);
+        }
+
+        if (id == R.id.nav_notes) {
+            Intent i = new Intent(MainActivity.this, GameNotes.class);
             startActivity(i);
         }
 

@@ -34,8 +34,8 @@ public class GameModes extends AppCompatActivity {
 
     private CardView pokerCard;
     private CardView blackjackCard;
-    private CardView futureCard1;
-    private CardView futureCard2;
+    private CardView garbage;
+    private CardView solitaire;
     private Button backButton;
 
     private UserUtilities userUtilities;
@@ -61,8 +61,8 @@ public class GameModes extends AppCompatActivity {
         userUtilities = new UserUtilities(GameModes.this);
         pokerCard = findViewById(R.id.pokerCard);
         blackjackCard = findViewById(R.id.blackjackCard);
-        futureCard1 = findViewById(R.id.futureCard1);
-        futureCard2 = findViewById(R.id.futureCard2);
+        garbage = findViewById(R.id.futureCard1);
+        solitaire = findViewById(R.id.futureCard2);
         backButton = findViewById(R.id.backButton);
 
         // go back to main
@@ -80,6 +80,7 @@ public class GameModes extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 userUtilities.setSelectedGame("Poker");
+                userUtilities.setSelectedGameID(1);
 
                 Intent i = new Intent(GameModes.this, MainActivity.class);
                 startActivity(i);
@@ -91,6 +92,7 @@ public class GameModes extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 userUtilities.setSelectedGame("Blackjack");
+                userUtilities.setSelectedGameID(2);
 
                 Intent i = new Intent(GameModes.this, MainActivity.class);
                 startActivity(i);
@@ -98,19 +100,21 @@ public class GameModes extends AppCompatActivity {
         });
 
         // future game card 1
-        futureCard1.setOnClickListener(new View.OnClickListener() {
+        garbage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //userUtilities.setSelectedGame("");
+                userUtilities.setSelectedGame("garbage");
+                userUtilities.setSelectedGameID(3);
 
             }
         });
 
         // future game card 2
-        futureCard2.setOnClickListener(new View.OnClickListener() {
+        solitaire.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //userUtilities.setSelectedGame("");
+                userUtilities.setSelectedGame("solitaire");
+                userUtilities.setSelectedGameID(4);
 
             }
         });

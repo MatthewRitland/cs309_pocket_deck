@@ -56,8 +56,10 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
                 // TODO: REPLACE LATER!!!
                 if (tab.getText().toString().equals("Friends")) {
                     inReceivedView = false;
+                    FriendsUtilities.getInstance().fetchAcceptedFriends(userUtils.getSavedId(),FriendsScreen.this);
                 } else {
                     inReceivedView = true;
+                    FriendsUtilities.getInstance().fetchFriendRequests(userUtils.getSavedId(),FriendsScreen.this);
                 }
 
                 setFriendsView();

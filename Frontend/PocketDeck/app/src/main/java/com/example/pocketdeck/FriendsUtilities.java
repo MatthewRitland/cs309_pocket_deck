@@ -51,11 +51,12 @@ public class FriendsUtilities {
     }
 
     public void fetchAcceptedFriends(long receiverId, Context activeContext) {
-        String requestPath = URL_FRIENDS_PATH + "requests/received/" + receiverId;
+        String receivedPath = URL_FRIENDS_PATH + "requests/received/" + receiverId;
+        String requestedPath = URL_FRIENDS_PATH + "requests/sent/" + receiverId;
 
         JsonArrayRequest sentRequest = new JsonArrayRequest(
                 Request.Method.GET,
-                requestPath,
+                requestedPath,
                 null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -68,7 +69,7 @@ public class FriendsUtilities {
 
         JsonArrayRequest receivedRequest = new JsonArrayRequest(
                 Request.Method.GET,
-                requestPath,
+                receivedPath,
                 null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -221,25 +222,12 @@ public class FriendsUtilities {
      */
     public void fetchRelationships(Context activeContext) {
         UserUtilities userUtils = new UserUtilities(activeContext);
-        String friendshipPath = URL_FRIENDS_PATH + "received/" + userUtils.getSavedId();
 
+        friendsList = new ArrayList<FriendObject>();
+        requestList = new ArrayList<FriendObject>();
 
-        JsonArrayRequest getFriendsRequest = new JsonArrayRequest(
-                Request.Method.GET,
-                friendshipPath,
-                null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        updateFriendships(response, activeContext);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) { }
-                }
-        );
-        VolleyCommand.getInstance(activeContext).addToRequestQueue(getFriendsRequest);
+        fetchFriendRequests(userUtils.getSavedId(), activeContext);
+        fetchAcceptedFriends(userUtils.getSavedId(), activeContext);
     }
 
     private void updateFriendships(JSONArray response, Context activeContext) {

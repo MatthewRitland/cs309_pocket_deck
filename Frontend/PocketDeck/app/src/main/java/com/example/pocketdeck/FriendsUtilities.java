@@ -11,6 +11,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +23,7 @@ import java.util.List;
 public class FriendsUtilities {
     private static FriendsUtilities friendsUtilities;
     static final String URL_FRIENDS_PATH = "http://coms-3090-025.class.las.iastate.edu:8080/friendships/";
+    static final String URL_USER_USERNAME = "http://coms-3090-025.class.las.iastate.edu:8080/users/username/";
     private List<FriendObject> friendsList, requestList;
     private ResponseListener currentListener;
 
@@ -108,6 +110,34 @@ public class FriendsUtilities {
         );
 
         VolleyCommand.getInstance(activeContext).addToRequestQueue(volleyRequest);
+    }
+
+    public void sendFriendRequest(long requesterId, String receiverUsername, Context activeContext) {
+        String userByNamePath = URL_USER_USERNAME + receiverUsername;
+        JsonObjectRequest userRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                userByNamePath,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            long userId = response.getLong("id");
+                            sendFriendRequest(requesterId, userId, activeContext);
+
+                        } catch (Exception e) {
+                            currentListener.onActionFail(e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        currentListener.onActionFail(error.getMessage());
+                    }
+                }
+        );
+        VolleyCommand.getInstance(activeContext).addToRequestQueue(userRequest);
     }
 
     /**

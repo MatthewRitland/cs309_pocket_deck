@@ -78,10 +78,10 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
     public void friendRequestPopup() {
         // Create a friend request popup.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter the Friend's User ID (temp)");
+        builder.setTitle("Enter the Friend's Username");
         // TODO: USERNAME INSTEAD
         EditText usernameInput = new EditText(this);
-        usernameInput.setHint("User ID");
+        usernameInput.setHint("Username");
         builder.setView(usernameInput);
         builder.setPositiveButton("Send Request", new DialogInterface.OnClickListener() {
             @Override
@@ -90,13 +90,8 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
                 // NOTE: There currently isn't any functionality to get the user from a name available.
                 // TODO: HTTP REQUEST to find the User ID by their name.
                 String input = usernameInput.getText().toString().trim();
-                Long id = Long.parseLong(input);
-                if (id == null) {
-                    Toast.makeText(FriendsScreen.this, "Input is not a valid user ID.", Toast.LENGTH_SHORT).show();
-                } else {
-                    FriendsUtilities.getInstance().sendFriendRequest(userUtils.getSavedId(), id, FriendsScreen.this);
-                    dialog.dismiss();
-                }
+                FriendsUtilities.getInstance().sendFriendRequest(userUtils.getSavedId(), input, FriendsScreen.this);
+                dialog.dismiss();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

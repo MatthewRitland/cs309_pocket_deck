@@ -64,6 +64,10 @@ public class FriendsHolder extends RecyclerView.ViewHolder implements PopupMenu.
         }
         else {
             primaryButton.setText("Message");
+            
+            // While direct messaging isn't implemented
+            primaryButton.setVisibility(View.INVISIBLE);
+
             primaryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

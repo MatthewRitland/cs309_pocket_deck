@@ -50,9 +50,11 @@ public class FriendsUtilities {
         currentListener = null;
     }
 
-    public void fetchAcceptedFriends(long receiverId, Context activeContext) {
+    public void fetchFriendRequests(long receiverId, Context activeContext) {
         String receivedPath = URL_FRIENDS_PATH + "requests/received/" + receiverId;
         String requestedPath = URL_FRIENDS_PATH + "requests/sent/" + receiverId;
+
+        requestList = new ArrayList<>();
 
         JsonArrayRequest sentRequest = new JsonArrayRequest(
                 Request.Method.GET,
@@ -61,7 +63,7 @@ public class FriendsUtilities {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
-                        acceptedListReceived(jsonArray, activeContext);
+                        updateRequested(jsonArray, activeContext);
                     }
                 },
                 volleyError -> currentListener.onActionFail(volleyError.getMessage())
@@ -74,15 +76,17 @@ public class FriendsUtilities {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
-                        acceptedListReceived(jsonArray, activeContext);
+                        updateRequested(jsonArray, activeContext);
                     }
                 },
                 volleyError -> currentListener.onActionFail(volleyError.getMessage())
         );
+        VolleyCommand.getInstance(activeContext).addToRequestQueue(sentRequest);
+        VolleyCommand.getInstance(activeContext).addToRequestQueue(receivedRequest);
     }
 
-    public void fetchFriendRequests(long receiverId, Context activeContext){
-        String requestPath = URL_FRIENDS_PATH + "requests/received/" + receiverId;
+    public void fetchAcceptedFriends(long receiverId, Context activeContext){
+        String requestPath = URL_FRIENDS_PATH + "accepted/" + receiverId;
         requestList = new ArrayList<FriendObject>();
 
         JsonArrayRequest volleyRequest = new JsonArrayRequest(
@@ -92,7 +96,7 @@ public class FriendsUtilities {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
-                        updateRequests(jsonArray, activeContext);
+                        updateAccepted(jsonArray, activeContext);
                     }
                 },
                 new Response.ErrorListener() {
@@ -102,29 +106,8 @@ public class FriendsUtilities {
                     }
                 }
         );
-    }
 
-
-    private JSONArray firstFriendsArray;
-    private void acceptedListReceived(JSONArray array, Context currentContext) {
-        if (firstFriendsArray == null) {
-            firstFriendsArray = array;
-            return;
-        }
-
-        UserUtilities userUtils = new UserUtilities(currentContext);
-
-        try {
-            List<FriendObject> friends1 = parseFriendsList(array, userUtils.getSavedId());
-            List<FriendObject> friends2 = parseFriendsList(firstFriendsArray, userUtils.getSavedId());
-
-            friendsList = new ArrayList<FriendObject>();
-
-            friendsList.addAll(friends1);
-            friendsList.addAll(friends2);
-        } catch (Exception e) {
-            currentListener.onActionFail("Error parsing received friends list");
-        }
+        VolleyCommand.getInstance(activeContext).addToRequestQueue(volleyRequest);
     }
 
     /**
@@ -230,42 +213,29 @@ public class FriendsUtilities {
         fetchAcceptedFriends(userUtils.getSavedId(), activeContext);
     }
 
-    private void updateFriendships(JSONArray response, Context activeContext) {
+    private void updateAccepted(JSONArray response, Context activeContext) {
         UserUtilities userUtils = new UserUtilities(activeContext);
 
         friendsList = new ArrayList<FriendObject>();
-        requestList = new ArrayList<FriendObject>();
 
         try {
-            for (int i = 0; i < response.length(); i++) {
-                JSONObject object = (JSONObject)response.get(i);
-                FriendObject friend = parseFriendFromJson(object, userUtils.getSavedId());
-
-                if (friend.getPending()) {
-                    //Log.d("FriendsScreen", "REQUEST-" + friend.toString());
-                    requestList.add(friend);
-                } else {
-                    // Friend
-                    //Log.d("FriendsScreen", "FRIEND-" + friend.toString());
-                    friendsList.add(friend);
-                }
-            }
-
+            List<FriendObject> friends = parseFriendsList(response, userUtils.getSavedId());
+            friendsList.addAll(friends);
             currentListener.onFriendsUpdated();
         } catch (Exception e) {
             currentListener.onActionFail("Failed in updating friends list");
         }
     }
 
-    private void updateRequests(JSONArray response, Context activeContext) {
+    private void updateRequested(JSONArray response, Context activeContext) {
         UserUtilities userUtils = new UserUtilities(activeContext);
 
-        requestList = new ArrayList<FriendObject>();
+        //friendsList = new ArrayList<FriendObject>();
 
         try {
-           List<FriendObject> friends = parseFriendsList(response, userUtils.getSavedId());
-           requestList.addAll(friends);
-           currentListener.onFriendsUpdated();
+            List<FriendObject> friends = parseFriendsList(response, userUtils.getSavedId());
+            requestList.addAll(friends);
+            currentListener.onFriendsUpdated();
         } catch (Exception e) {
             currentListener.onActionFail("Failed in updating friends list");
         }

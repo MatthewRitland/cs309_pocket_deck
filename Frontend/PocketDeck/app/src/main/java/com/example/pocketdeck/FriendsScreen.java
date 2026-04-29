@@ -62,7 +62,7 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
                     FriendsUtilities.getInstance().fetchFriendRequests(userUtils.getSavedId(),FriendsScreen.this);
                 }
 
-                setFriendsView();
+                //setFriendsView();
             }
 
             @Override
@@ -110,11 +110,13 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
 
     private void setFriendsView() {
         // Request view
-        List<FriendObject> sendFriends = FriendsUtilities.getInstance().getFriends();
+        List<FriendObject> sendFriends;
         addFriendButton.setVisibility(View.VISIBLE);
         if (inReceivedView) {
             addFriendButton.setVisibility(View.INVISIBLE);
             sendFriends = FriendsUtilities.getInstance().getRequests();
+        } else {
+            sendFriends = FriendsUtilities.getInstance().getFriends();
         }
 
         FriendsListAdapter adapter = new FriendsListAdapter(sendFriends, inReceivedView, this);

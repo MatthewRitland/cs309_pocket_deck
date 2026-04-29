@@ -63,7 +63,7 @@ public class FriendsUtilities {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
-                        updateRequested(jsonArray, activeContext);
+                        updateRequested(jsonArray, activeContext, false);
                     }
                 },
                 volleyError -> currentListener.onActionFail(volleyError.getMessage())
@@ -76,7 +76,7 @@ public class FriendsUtilities {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray jsonArray) {
-                        updateRequested(jsonArray, activeContext);
+                        updateRequested(jsonArray, activeContext, true);
                     }
                 },
                 volleyError -> currentListener.onActionFail(volleyError.getMessage())
@@ -227,14 +227,18 @@ public class FriendsUtilities {
         }
     }
 
-    private void updateRequested(JSONArray response, Context activeContext) {
+    private void updateRequested(JSONArray response, Context activeContext, boolean appendBefore) {
         UserUtilities userUtils = new UserUtilities(activeContext);
 
         //friendsList = new ArrayList<FriendObject>();
 
         try {
             List<FriendObject> friends = parseFriendsList(response, userUtils.getSavedId());
-            requestList.addAll(friends);
+            if (appendBefore) {
+                requestList.addAll(0,friends);
+            } else {
+                requestList.addAll(friends);
+            }
             currentListener.onFriendsUpdated();
         } catch (Exception e) {
             currentListener.onActionFail("Failed in updating friends list");

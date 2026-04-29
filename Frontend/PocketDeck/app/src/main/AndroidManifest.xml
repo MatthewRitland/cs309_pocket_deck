@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -13,12 +13,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PocketDeck"
-        android:usesCleartextTraffic="true" >
+        android:usesCleartextTraffic="true">
         <activity
-            android:name=".MessagingView"
+            android:name=".GameNotes"
             android:exported="false" />
         <activity
-            android:name=".FriendsScreen"
+            android:name=".MessagingView"
             android:exported="false" />
         <activity
             android:name=".GameModes"
@@ -47,12 +47,8 @@
             android:exported="true"
             android:label="GroupsListActivity" />
         <activity
-            android:name=".GroupOptionsActivity"
-            android:exported="true"
-            android:label="GroupOptionsActivity"/>
-        <activity
             android:name=".MainActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -140,4 +140,9 @@ public class UserUtilities {
         return preferences.getString("selectedGame", "Blackjack");
     }
 
+    public void setSelectedGameID(int gameId) {
+        preferences.edit().putInt("selectedGameId", gameId).apply();
+    }
+
+    public int getSelectedGameId() {return preferences.getInt("selectedGameId", -1); }
 }

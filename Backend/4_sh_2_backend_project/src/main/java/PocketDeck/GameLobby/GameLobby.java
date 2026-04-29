@@ -19,7 +19,7 @@ public class GameLobby {
     private boolean isInviteOnly;
 
     public GameLobby() {
-        this.isInviteOnly = true; // will be private by default
+        this.isInviteOnly = true; // will be invite only by default
     }
 
 

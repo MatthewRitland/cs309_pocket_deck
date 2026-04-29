@@ -212,6 +212,10 @@ public class GameSocket {
                 array.add(cardGame.getWinners()[j].toString());
             }
             output.put("winners", array);
+            if (cardGame.getClass().equals(BlackJack.class)) {
+                BlackJack temp = (BlackJack) cardGame;
+                logger.info(String.valueOf(temp.getDealerScore()));
+            }
         }
         return output;
     }

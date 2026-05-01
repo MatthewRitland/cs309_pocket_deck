@@ -237,7 +237,13 @@ public class GameSocket {
 
     private void recordGame (Session session) {
         gameHistory.setTimeGameCompleted(LocalDateTime.now());
-        gameHistory.setTimeGameDuration(Duration.between(gameHistory.getTimeGameStarted(), gameHistory.getTimeGameCompleted()));
+        Duration duration = Duration.between(gameHistory.getTimeGameStarted(), gameHistory.getTimeGameCompleted());
+        if (duration.getSeconds() >= 60) {
+            gameHistory.setTimeGameDuration(duration.toMinutes());
+        }
+        else {
+            gameHistory.setTimeGameDuration(duration.getSeconds());
+        }
         Result result = cardGame.getWinners()[cardGame.findPlayer(userRepo.findByUsername(sessionUsernameMap.get(session)))];
         if (result.equals(Result.DRAW)) {
             gameHistory.setGameResult(GameHistoryResult.DRAW);

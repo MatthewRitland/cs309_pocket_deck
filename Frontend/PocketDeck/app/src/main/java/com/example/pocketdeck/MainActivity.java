@@ -158,6 +158,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(i);
         }
 
+        if (id == R.id.nav_friends) {
+            Intent i = new Intent(MainActivity.this, FriendsScreen.class);
+            startActivity(i);
+        }
+
         if (id == R.id.nav_notes) {
             Intent i = new Intent(MainActivity.this, GameNotes.class);
             startActivity(i);

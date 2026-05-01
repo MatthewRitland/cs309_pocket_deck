@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //open the file named userLoggedInCheck to check login status from LoginActivity
                 SharedPreferences preferences = getSharedPreferences("userPreferences", MODE_PRIVATE);
-                //isLoggedIn is stored in the file and if it doesnt exist set it to false.
+                //isLoggedIn is stored in the file and if it gdoesnt exist set it to false.
                 boolean loggedIn = preferences.getBoolean("isLoggedIn", false);
 
 
@@ -102,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
                 // if logged in go to the gameplay screen if not then
                 if(loggedIn) {
-                    Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
+                    //Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
+                    Intent i = new Intent(MainActivity.this, LobbyScreen.class);
                     startActivity(i);
                 } else {
                     Intent i = new Intent(MainActivity.this, LoginActivity.class);

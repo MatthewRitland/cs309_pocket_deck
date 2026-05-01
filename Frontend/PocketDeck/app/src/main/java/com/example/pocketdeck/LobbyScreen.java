@@ -21,6 +21,7 @@ public class LobbyScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
+
         /* Get UI elements */
         inviteButton = findViewById(R.id.lobby_inviteButton);
         readyButton = findViewById(R.id.lobby_readyButton);

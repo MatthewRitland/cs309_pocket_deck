@@ -22,7 +22,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;	// SBv3
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
-public class MatthewSystemTest {
+public class MatthewUserSystemTest {
 
 	@Autowired
 	UserRepository userRepo;

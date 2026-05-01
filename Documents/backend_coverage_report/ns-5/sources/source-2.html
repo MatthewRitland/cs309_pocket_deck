@@ -1,0 +1,367 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BlackJack</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">PocketDeck.Game</a>
+</div>
+
+<h1>Coverage Summary for Class: BlackJack (PocketDeck.Game)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BlackJack</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/124)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/143)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package PocketDeck.Game;
+&nbsp;
+&nbsp;import PocketDeck.CardGames.CardGame;
+&nbsp;import PocketDeck.Users.User;
+&nbsp;
+&nbsp;import java.util.Random;
+&nbsp;
+&nbsp;public class BlackJack extends Game{
+&nbsp;    private int[] scores;
+&nbsp;    private int dealerScore;
+&nbsp;    private Card[] dealerHand;
+&nbsp;    private boolean[] stood;
+&nbsp;    private final static int MAX_SCORE = 21;
+&nbsp;
+<b class="nc">&nbsp;    public BlackJack () {</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public BlackJack (CardGame gameRules, User[] players) {
+<b class="nc">&nbsp;        super (gameRules, players, 30);</b>
+<b class="nc">&nbsp;        scores = new int[players.length];</b>
+<b class="nc">&nbsp;        dealerHand = new Card[30];</b>
+<b class="nc">&nbsp;        stood = new boolean[players.length];</b>
+<b class="nc">&nbsp;        dealerScore = 0;</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; players.length; i++) {</b>
+<b class="nc">&nbsp;            scores[i] = 0;</b>
+<b class="nc">&nbsp;            stood[i] = false;</b>
+<b class="nc">&nbsp;            draw();</b>
+<b class="nc">&nbsp;            draw();</b>
+<b class="nc">&nbsp;            scores[i] = cardValueConversion(getCard(getCurrentPlayer(), 0)) + cardValueConversion(getCard(getCurrentPlayer(), 1));</b>
+<b class="nc">&nbsp;            nextPlayer();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        dealerTurn();</b>
+<b class="nc">&nbsp;        dealerTurn();</b>
+<b class="nc">&nbsp;        Actions[] actions = new Actions[2];</b>
+<b class="nc">&nbsp;        actions[0] = Actions.STAND;</b>
+<b class="nc">&nbsp;        actions[1] = Actions.HIT;</b>
+<b class="nc">&nbsp;        this.setPossibleActions(actions);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Card[] getDealerHand () {
+<b class="nc">&nbsp;        return dealerHand;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private int cardValueConversion (User player, Card card) {
+<b class="nc">&nbsp;        Value value = card.getValue();</b>
+<b class="nc">&nbsp;        if (value.equals(Value.TWO)) {</b>
+<b class="nc">&nbsp;            return 2;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.THREE)) {</b>
+<b class="nc">&nbsp;            return 3;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.FOUR)) {</b>
+<b class="nc">&nbsp;            return 4;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.FIVE)) {</b>
+<b class="nc">&nbsp;            return 5;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.SIX)) {</b>
+<b class="nc">&nbsp;            return 6;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.SEVEN)) {</b>
+<b class="nc">&nbsp;            return 7;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.EIGHT)) {</b>
+<b class="nc">&nbsp;            return 8;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.NINE)) {</b>
+<b class="nc">&nbsp;            return 9;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.TEN)) {</b>
+<b class="nc">&nbsp;            return 10;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.JACK)) {</b>
+<b class="nc">&nbsp;            return 10;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.QUEEN)) {</b>
+<b class="nc">&nbsp;            return 10;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.KING)) {</b>
+<b class="nc">&nbsp;            return 10;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.ACE)) {</b>
+<b class="nc">&nbsp;            return 11;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private int cardValueConversion (Card card) {
+<b class="nc">&nbsp;        Value value = card.getValue();</b>
+<b class="nc">&nbsp;        if (value.equals(Value.TWO)) {</b>
+<b class="nc">&nbsp;            return 2;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.THREE)) {</b>
+<b class="nc">&nbsp;            return 3;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.FOUR)) {</b>
+<b class="nc">&nbsp;            return 4;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.FIVE)) {</b>
+<b class="nc">&nbsp;            return 5;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.SIX)) {</b>
+<b class="nc">&nbsp;            return 6;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.SEVEN)) {</b>
+<b class="nc">&nbsp;            return 7;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.EIGHT)) {</b>
+<b class="nc">&nbsp;            return 8;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.NINE)) {</b>
+<b class="nc">&nbsp;            return 9;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.TEN)) {</b>
+<b class="nc">&nbsp;            return 10;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.JACK)) {</b>
+<b class="nc">&nbsp;            return 10;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.QUEEN)) {</b>
+<b class="nc">&nbsp;            return 10;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.KING)) {</b>
+<b class="nc">&nbsp;            return 10;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (value.equals(Value.ACE)) {</b>
+<b class="nc">&nbsp;            if (dealerScore + 11 &gt; MAX_SCORE) {</b>
+<b class="nc">&nbsp;                return 1;</b>
+&nbsp;            }
+&nbsp;            else {
+<b class="nc">&nbsp;                return 11;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void dealerTurn () {
+&nbsp;        Card currentCard;
+<b class="nc">&nbsp;        int cardCount = 0;</b>
+<b class="nc">&nbsp;        if (dealerHand.length &gt; 2) {</b>
+<b class="nc">&nbsp;            if (dealerScore &lt; 17) {</b>
+<b class="nc">&nbsp;                cardCount = 0;</b>
+<b class="nc">&nbsp;                currentCard = dealerHand[cardCount];</b>
+<b class="nc">&nbsp;                while (currentCard != null &amp;&amp; cardCount &lt; dealerHand.length) {</b>
+<b class="nc">&nbsp;                    cardCount += 1;</b>
+<b class="nc">&nbsp;                    if (cardCount &lt; dealerHand.length) {</b>
+<b class="nc">&nbsp;                        currentCard = dealerHand[cardCount];</b>
+&nbsp;                    }
+&nbsp;                }
+<b class="nc">&nbsp;                if (dealerHand.length &lt;= cardCount) {</b>
+&nbsp;                    return;
+&nbsp;                }
+<b class="nc">&nbsp;                Random ran = new Random();</b>
+<b class="nc">&nbsp;                dealerHand[cardCount] = getDeck()[ran.nextInt(52)];</b>
+<b class="nc">&nbsp;                dealerScore += cardValueConversion(dealerHand[cardCount]);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        else {
+<b class="nc">&nbsp;            if (dealerHand[cardCount] == null ) {</b>
+<b class="nc">&nbsp;                currentCard = dealerHand[cardCount];</b>
+<b class="nc">&nbsp;                while (currentCard != null &amp;&amp; cardCount &lt; dealerHand.length) {</b>
+<b class="nc">&nbsp;                    cardCount += 1;</b>
+<b class="nc">&nbsp;                    if (cardCount &lt; dealerHand.length) {</b>
+<b class="nc">&nbsp;                        currentCard = dealerHand[cardCount];</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            if (dealerHand.length &lt;= cardCount) {</b>
+&nbsp;                return;
+&nbsp;            }
+<b class="nc">&nbsp;            Random ran = new Random();</b>
+<b class="nc">&nbsp;            dealerHand[cardCount] = getDeck()[ran.nextInt(52)];</b>
+<b class="nc">&nbsp;            dealerScore += cardValueConversion(dealerHand[cardCount]);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean checkGameProgress () {
+<b class="nc">&nbsp;        for (int i = 0; i &lt; stood.length; i++) {</b>
+<b class="nc">&nbsp;            if (!stood[i]) {</b>
+<b class="nc">&nbsp;                return false;</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void checkWinners () {
+<b class="nc">&nbsp;        for (int i = 0; i &lt; getWinners().length; i++) {</b>
+<b class="nc">&nbsp;            if (dealerScore &gt; MAX_SCORE) {</b>
+<b class="nc">&nbsp;                setWinner(i, Result.WIN);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            else if (scores[i] &gt; MAX_SCORE) {</b>
+<b class="nc">&nbsp;                setWinner(i, Result.LOSE);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            else if (scores[i] == dealerScore) {</b>
+<b class="nc">&nbsp;                setWinner(i, Result.DRAW);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            else if (scores[i] &gt; dealerScore) {</b>
+<b class="nc">&nbsp;                setWinner(i, Result.WIN);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            else if (scores[i] &lt; dealerScore) {</b>
+<b class="nc">&nbsp;                setWinner(i, Result.LOSE);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void takeTurn (Actions action) {
+<b class="nc">&nbsp;        int currentPlayerLocation = findCurrentPlayer();</b>
+<b class="nc">&nbsp;        if (!stood[currentPlayerLocation]) {</b>
+<b class="nc">&nbsp;            if (action.equals(Actions.STAND)) {</b>
+<b class="nc">&nbsp;                stood[currentPlayerLocation] = true;</b>
+&nbsp;            }
+<b class="nc">&nbsp;            else if (action.equals(Actions.HIT)) {</b>
+<b class="nc">&nbsp;                Card drawn = draw();</b>
+<b class="nc">&nbsp;                scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), drawn);</b>
+<b class="nc">&nbsp;                if (scores[currentPlayerLocation] &gt; MAX_SCORE) {</b>
+<b class="nc">&nbsp;                    Card[] currentHand = getCurrentPlayerHand();</b>
+<b class="nc">&nbsp;                    int cardCount = 0;</b>
+<b class="nc">&nbsp;                    for (cardCount = 0; cardCount &lt; currentHand.length; cardCount++) {</b>
+<b class="nc">&nbsp;                        if (currentHand[cardCount] == null) {</b>
+&nbsp;                            break;
+&nbsp;                        }
+&nbsp;                    }
+<b class="nc">&nbsp;                    for (int i = 0; i &lt; cardCount; i++) {</b>
+<b class="nc">&nbsp;                        if (currentHand[i].getValue().equals(Value.ACE)) {</b>
+<b class="nc">&nbsp;                            if (scores[currentPlayerLocation] &gt; MAX_SCORE &amp;&amp; scores[currentPlayerLocation] - 10 &lt;= MAX_SCORE) {</b>
+<b class="nc">&nbsp;                                scores[currentPlayerLocation] -= 10;</b>
+&nbsp;                            }
+&nbsp;                        }
+&nbsp;                    }
+<b class="nc">&nbsp;                    if (scores[currentPlayerLocation] &gt; MAX_SCORE) {</b>
+<b class="nc">&nbsp;                        stood[currentPlayerLocation] = true;</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        if (currentPlayerLocation == getPlayers().length - 1) {</b>
+<b class="nc">&nbsp;            dealerTurn();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (currentPlayerLocation == getPlayers().length - 1) {</b>
+<b class="nc">&nbsp;            this.setTurn(this.getTurn() + 1);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (!checkGameProgress()) {</b>
+<b class="nc">&nbsp;            nextPlayer();</b>
+<b class="nc">&nbsp;            while(stood[findCurrentPlayer()]) {</b>
+<b class="nc">&nbsp;                nextPlayer();</b>
+&nbsp;            }
+&nbsp;            return;
+&nbsp;        }
+<b class="nc">&nbsp;        checkWinners();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-05-01 10:46</div>
+</div>
+</body>
+</html>

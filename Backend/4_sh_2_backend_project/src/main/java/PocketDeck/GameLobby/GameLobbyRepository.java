@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface GameLobbyRepository extends JpaRepository<GameLobby, Integer> {
     GameLobby findById(int id);
 
+    boolean existsById(int gameLobbyId);
+
     @Transactional
     void deleteById(int id);
 

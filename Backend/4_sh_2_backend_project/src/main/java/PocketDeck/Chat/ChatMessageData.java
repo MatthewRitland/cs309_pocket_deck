@@ -5,7 +5,7 @@ package PocketDeck.Chat;
 public class ChatMessageData {
     //private String sender; //who sent this message content?
 
-    private MessageAction action; // will be SEND, LEAVE... is the action the user wants inside of a @OnMessage
+    private ChatMessageAction action; // will be SEND, LEAVE... is the action the user wants inside of a @OnMessage
     private String messageContent;
     private Long groupChatId; //what group does this message content belong to?
 
@@ -15,8 +15,8 @@ public class ChatMessageData {
     //public String getSender() { return this.sender; }
     //public void setSender(String sender) { this.sender = sender; }
 
-    public MessageAction getAction() { return this.action; }
-    public void setMessageAction(MessageAction action) { this.action = action; }
+    public ChatMessageAction getMessageAction() { return this.action; }
+    public void setMessageAction(ChatMessageAction action) { this.action = action; }
 
     public String getMessageContent() { return this.messageContent; }
     public void setMessageContent(String messageContent) { this.messageContent = messageContent; }

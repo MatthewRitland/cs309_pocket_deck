@@ -1,0 +1,210 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CardGameController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">PocketDeck.CardGames</a>
+</div>
+
+<h1>Coverage Summary for Class: CardGameController (PocketDeck.CardGames)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CardGameController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5.6%
+  </span>
+  <span class="absValue">
+    (1/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package PocketDeck.CardGames;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class CardGameController {</b>
+&nbsp;    @Autowired
+&nbsp;    CardGameRepository cardGameRepository;
+&nbsp;
+&nbsp;    @Operation(summary = &quot;lists all card games&quot;, description = &quot;returns a list from the database of all CardGame objects&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;successfully returned a list of all CardGames&quot;,
+&nbsp;            content = {@Content(mediaType=&quot;application/json&quot;,
+&nbsp;                schema = @Schema(implementation = CardGame.class))
+&nbsp;            })
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/cardGames&quot;)
+&nbsp;    List&lt;CardGame&gt; getAllCardGames () {
+<b class="nc">&nbsp;        return cardGameRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;lists one CardGame&quot;, description = &quot;returns one CardGame from the databse found via id&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;successfully returned a CardGame&quot;,
+&nbsp;                    content = {@Content(mediaType=&quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = CardGame.class))
+&nbsp;                    })
+&nbsp;    })
+&nbsp;    @GetMapping(&quot;/cardGames/{id}&quot;)
+&nbsp;    CardGame getCardGameById (@Parameter(description = &quot;id of CardGame&quot;) @PathVariable int id) {
+<b class="nc">&nbsp;        return cardGameRepository.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;creates a CardGame&quot;, description = &quot;saves a CardGame to the database and returns whether is was successful or not&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;successfully added a CardGame to the database&quot;,
+&nbsp;                    content = {@Content(mediaType=&quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = CardGame.class))
+&nbsp;                    })
+&nbsp;    })
+&nbsp;    @PostMapping(&quot;/cardGames&quot;)
+&nbsp;    String createCardGame (@Parameter(description = &quot;CardGame object to save&quot;)@RequestBody CardGame game) {
+<b class="nc">&nbsp;        if (game == null) {</b>
+<b class="nc">&nbsp;            return &quot;{\&quot;message\&quot;:\&quot;game was not created\&quot;}&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        cardGameRepository.save(game);</b>
+<b class="nc">&nbsp;        return &quot;{\&quot;message\&quot;:\&quot;game was created and saved\&quot;}&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;updates an existing CardGame&quot;, description = &quot;updates an existing CardGame from the database, then returns it&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;successfully returned the updated CardGame&quot;,
+&nbsp;                    content = {@Content(mediaType=&quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = CardGame.class))
+&nbsp;                    })
+&nbsp;    })
+&nbsp;    @PutMapping(&quot;/cardGames/{id}&quot;)
+&nbsp;    CardGame updateCardGame (@Parameter(description = &quot;id of CardGame to update&quot;)@PathVariable int id, @Parameter(description = &quot;CardGame object to update with&quot;)@RequestBody CardGame game) {
+<b class="nc">&nbsp;        CardGame existingGame = cardGameRepository.findById(id);</b>
+<b class="nc">&nbsp;        if (existingGame == null) {</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        existingGame.setGameName(game.getGameName());</b>
+<b class="nc">&nbsp;        existingGame.setMaxPlayers(game.getMaxPlayers());</b>
+<b class="nc">&nbsp;        existingGame.setMinPlayers(game.getMinPlayers());</b>
+<b class="nc">&nbsp;        existingGame.setTurnTimeLimit(game.getTurnTimeLimit());</b>
+&nbsp;
+<b class="nc">&nbsp;        cardGameRepository.save(existingGame);</b>
+&nbsp;
+<b class="nc">&nbsp;        return cardGameRepository.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;deletes a CardGame&quot;, description = &quot;deletes a CardGame from the database, found via id, then returns a message&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;successfully deleted a CardGame&quot;,
+&nbsp;                    content = {@Content(mediaType=&quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = CardGame.class))
+&nbsp;                    })
+&nbsp;    })
+&nbsp;    @DeleteMapping(&quot;/cardGames/{id}&quot;)
+&nbsp;    String deleteCardGame (@Parameter(description = &quot;id of CardGame to delete&quot;)@PathVariable int id) {
+<b class="nc">&nbsp;        cardGameRepository.deleteById(id);</b>
+<b class="nc">&nbsp;        return &quot;{\&quot;message\&quot;:\&quot;game was deleted\&quot;}&quot;;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-05-01 10:46</div>
+</div>
+</body>
+</html>

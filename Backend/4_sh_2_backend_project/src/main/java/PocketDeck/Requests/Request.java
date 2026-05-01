@@ -1,4 +1,5 @@
 package PocketDeck.Requests;
+import PocketDeck.GameLobby.GameLobby;
 import jakarta.persistence.*;
 import PocketDeck.Users.User;
 
@@ -16,6 +17,11 @@ public class Request {
     @ManyToOne
     @JoinColumn(nullable = false)
     private User requested;
+
+    // being used for game lobby invites
+    @ManyToOne
+    @JoinColumn(nullable = false) // can be null if being used for non-gameLobby things later (change to Integer)
+    private GameLobby gameLobby;
 
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
@@ -39,6 +45,10 @@ public class Request {
     public void setRequested(User requested) {
         this.requested = requested;
     }
+
+    public GameLobby getGameLobby() { return gameLobby; }
+
+    public void setGameLobby(GameLobby gameLobby) { this.gameLobby = gameLobby; }
 
     public RequestStatus getStatus() {
         return status;

@@ -31,7 +31,8 @@ public class GameHistory {
 
     private LocalDateTime timeGameStarted;
     private LocalDateTime timeGameCompleted;
-    private long timeGameDuration;
+    private long minutes;
+    private long seconds;
 
     // TODO
     // should probably have some variable called "game mode" to see the game mode. Should this be done here or
@@ -82,9 +83,21 @@ public class GameHistory {
     public void setTimeGameCompleted(LocalDateTime timeGameCompleted) { this.timeGameCompleted = timeGameCompleted; }
 
 
-    public long getTimeGameDuration() { return timeGameDuration; }
-    public void setTimeGameDuration(long timeGameDuration) { this.timeGameDuration = timeGameDuration; }
+    public long getMinutes() {
+        return minutes;
+    }
 
+    public void setMinutes(long minutes) {
+        this.minutes = minutes;
+    }
+
+    public long getSeconds() {
+        return seconds;
+    }
+
+    public void setSeconds(long seconds) {
+        this.seconds = seconds;
+    }
 
     public GameHistoryResult getGameResult() { return this.gameResult; }
     public void setGameResult(GameHistoryResult gameResult) { this.gameResult = gameResult; }

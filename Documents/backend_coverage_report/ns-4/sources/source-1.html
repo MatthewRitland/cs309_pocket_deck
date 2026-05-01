@@ -1,0 +1,196 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Friendship</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">PocketDeck.Friends</a>
+</div>
+
+<h1>Coverage Summary for Class: Friendship (PocketDeck.Friends)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Friendship</td>
+<td class="coverageStat">
+  <span class="percent">
+    9.1%
+  </span>
+  <span class="absValue">
+    (1/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    7.1%
+  </span>
+  <span class="absValue">
+    (1/14)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Friendship$HibernateInstantiator$23FeLTuy</td>
+  </tr>
+  <tr>
+    <td class="name">Friendship$HibernateProxy$NvIR49QY</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    9.1%
+  </span>
+  <span class="absValue">
+    (1/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    7.1%
+  </span>
+  <span class="absValue">
+    (1/14)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package PocketDeck.Friends;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import PocketDeck.Users.User;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;
+&nbsp;/* DO NOT THINK OF THIS AS A PERSON, THINK OF IT AS THE SOCIAL CONSTRUCT, i.e. WHAT A &#39;FRIENDSHIP&#39; IS!*/
+&nbsp;@Entity
+&nbsp;public class Friendship {
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private int id;
+&nbsp;
+&nbsp;    // joincolumn specifies there is a foreign key, and allows me to define that the key CAN NOT be null,
+&nbsp;    // since there must be at least 2 entities (users) for a relationship/friendship
+&nbsp;    @ManyToOne
+&nbsp;    @JoinColumn(nullable = false)
+&nbsp;    private User requester;
+&nbsp;
+&nbsp;    @ManyToOne
+&nbsp;    @JoinColumn(nullable = false)
+&nbsp;    private User receiver;
+&nbsp;
+&nbsp;    private LocalDate dateBefriended;
+&nbsp;
+&nbsp;    @Enumerated(EnumType.STRING)
+&nbsp;    FriendshipStatus friendshipStatus;
+&nbsp;
+<b class="nc">&nbsp;    public Friendship(User requester, User receiver) {</b>
+<b class="nc">&nbsp;        this.requester = requester;</b>
+<b class="nc">&nbsp;        this.receiver = receiver;</b>
+<b class="nc">&nbsp;        this.friendshipStatus = FriendshipStatus.PENDING; // won&#39;t be reached if empty constructor is used</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    public Friendship() {</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // =============================== Getters and Setters for each field ================================== //
+&nbsp;
+&nbsp;    public int getId() {
+<b class="nc">&nbsp;        return this.id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public User getRequester() {
+<b class="nc">&nbsp;        return this.requester;</b>
+&nbsp;    }
+&nbsp;    public void setRequester(User requester) {
+<b class="nc">&nbsp;        this.requester = requester;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public User getReceiver() {
+<b class="nc">&nbsp;        return this.receiver;</b>
+&nbsp;    }
+&nbsp;    public void setReceiver(User receiver) {
+<b class="nc">&nbsp;        this.receiver = receiver;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public LocalDate getDateBefriended() {
+<b class="nc">&nbsp;        return this.dateBefriended;</b>
+&nbsp;    }
+&nbsp;    public void setDateBefriended(LocalDate dateBefriended) {
+<b class="nc">&nbsp;        this.dateBefriended = dateBefriended;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public FriendshipStatus getFriendshipStatus() {
+<b class="nc">&nbsp;        return this.friendshipStatus;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setFriendshipStatus(FriendshipStatus friendshipStatus) {
+<b class="nc">&nbsp;        this.friendshipStatus = friendshipStatus;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-05-01 10:46</div>
+</div>
+</body>
+</html>

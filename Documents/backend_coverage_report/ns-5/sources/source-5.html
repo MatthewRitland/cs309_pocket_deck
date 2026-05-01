@@ -1,0 +1,352 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GameSocket</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">PocketDeck.Game</a>
+</div>
+
+<h1>Coverage Summary for Class: GameSocket (PocketDeck.Game)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GameSocket</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    45.5%
+  </span>
+  <span class="absValue">
+    (5/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/48)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.5%
+  </span>
+  <span class="absValue">
+    (8/123)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package PocketDeck.Game;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.time.Duration;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;import jakarta.websocket.*;
+&nbsp;import jakarta.websocket.server.PathParam;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;
+&nbsp;import PocketDeck.CardGames.CardGameRepository;
+&nbsp;import PocketDeck.GameHistory.GameHistory;
+&nbsp;import PocketDeck.GameHistory.GameHistoryRepository;
+&nbsp;import PocketDeck.GameHistory.GameHistoryResult;
+&nbsp;import PocketDeck.Users.UserRepository;
+&nbsp;import PocketDeck.Users.User;
+&nbsp;import org.json.simple.parser.ParseException;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;
+&nbsp;import org.json.simple.JSONObject;
+&nbsp;import org.json.simple.parser.JSONParser;
+&nbsp;import org.json.simple.JSONArray;
+&nbsp;
+&nbsp;@Controller
+&nbsp;@ServerEndpoint(value = &quot;/game/{username}/{game}&quot;)
+<b class="fc">&nbsp;public class GameSocket {</b>
+&nbsp;
+&nbsp;    private static GameHistoryRepository gameHistoryRepository;
+&nbsp;
+&nbsp;    private static UserRepository userRepo;
+&nbsp;
+&nbsp;    private static CardGameRepository cardGameRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public void setGameHistoryRepository(GameHistoryRepository repo) {
+<b class="fc">&nbsp;        gameHistoryRepository = repo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public void setUserRepository(UserRepository repo) {
+<b class="fc">&nbsp;        userRepo = repo;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    public void setCardGameRepository(CardGameRepository repo) {
+<b class="fc">&nbsp;        cardGameRepository = repo;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    private final Logger logger = LoggerFactory.getLogger(GameSocket.class);</b>
+<b class="fc">&nbsp;    private static Map&lt;Session, String&gt; sessionUsernameMap = new Hashtable&lt;&gt;();</b>
+<b class="fc">&nbsp;    private static ArrayList&lt;User&gt; users = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;    private static Map&lt;String, Session&gt; usernameSessionMap = new Hashtable&lt;&gt;();</b>
+&nbsp;    private GameHistory gameHistory;
+&nbsp;    private static Game cardGame;
+&nbsp;    private static boolean gameOver;
+&nbsp;
+&nbsp;    @OnOpen
+&nbsp;    public void onOpen(Session session, @PathParam(&quot;username&quot;) String username, @PathParam(&quot;game&quot;) String game) throws IOException {
+<b class="nc">&nbsp;        logger.info(&quot;Entered into open&quot;);</b>
+<b class="nc">&nbsp;        sessionUsernameMap.put(session, username);</b>
+<b class="nc">&nbsp;        usernameSessionMap.put(username, session);</b>
+&nbsp;
+<b class="nc">&nbsp;        gameHistory = new GameHistory(userRepo.findByUsername(username), cardGameRepository.findByGameName(game));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @OnMessage
+&nbsp;    public void onMessage(Session session, String message, @PathParam(&quot;game&quot;) String game) throws IOException, ParseException {
+<b class="nc">&nbsp;        JSONObject json = (JSONObject) new JSONParser().parse(message);</b>
+<b class="nc">&nbsp;        if (json.get(&quot;messageType&quot;).equals(&quot;join_game&quot;)) {</b>
+<b class="nc">&nbsp;            if (cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    logger.info((String) json.get(&quot;username&quot;));</b>
+<b class="nc">&nbsp;                    JSONObject mes = new JSONObject();</b>
+<b class="nc">&nbsp;                    mes.put(&quot;messageType&quot;, &quot;message&quot;);</b>
+<b class="nc">&nbsp;                    mes.put(&quot;text&quot;, &quot;Game full&quot;);</b>
+<b class="nc">&nbsp;                    usernameSessionMap.get((String) json.get(&quot;username&quot;)).getBasicRemote().sendText((mes.toJSONString()));</b>
+&nbsp;                } catch (IOException e) {
+<b class="nc">&nbsp;                    logger.info(&quot;Exception: &quot; + e.getMessage().toString());</b>
+<b class="nc">&nbsp;                    e.printStackTrace();</b>
+&nbsp;                    return;
+&nbsp;                }
+&nbsp;            } else {
+<b class="nc">&nbsp;                users.add(userRepo.findByUsername((String) json.get(&quot;username&quot;)));</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } else if (json.get(&quot;messageType&quot;).equals(&quot;start_game&quot;)) {</b>
+<b class="nc">&nbsp;            User[] players = new User[users.size()];</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; players.length; i++) {</b>
+<b class="nc">&nbsp;                players[i] = users.get(i);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            cardGame = new BlackJack(cardGameRepository.findByGameName(game), players);</b>
+<b class="nc">&nbsp;            gameOver = false;</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; users.size(); i++) {</b>
+&nbsp;                try {
+<b class="nc">&nbsp;                    logger.info(users.get(i).getUsername());</b>
+<b class="nc">&nbsp;                    JSONObject output = makeOutput(game, users.get(i).getUsername());</b>
+<b class="nc">&nbsp;                    usernameSessionMap.get(users.get(i).getUsername()).getBasicRemote().sendText(output.toJSONString());</b>
+&nbsp;                } catch (IOException e) {
+<b class="nc">&nbsp;                    logger.info(&quot;Exception: &quot; + e.getMessage().toString());</b>
+<b class="nc">&nbsp;                    e.printStackTrace();</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;        } else if (json.get(&quot;messageType&quot;).equals(&quot;action_made&quot;) &amp;&amp; !gameOver) {</b>
+<b class="nc">&nbsp;            if (sessionUsernameMap.get(session).equals(cardGame.getCurrentPlayer().getUsername())) {</b>
+<b class="nc">&nbsp;                if (json.get(&quot;move&quot;).equals(&quot;hit&quot;)) {</b>
+<b class="nc">&nbsp;                    cardGame.takeTurn(Actions.HIT);</b>
+<b class="nc">&nbsp;                } else if (json.get(&quot;move&quot;).equals(&quot;stand&quot;)) {</b>
+<b class="nc">&nbsp;                    cardGame.takeTurn(Actions.STAND);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                for (int i = 0; i &lt; users.size(); i++) {</b>
+&nbsp;                    try {
+<b class="nc">&nbsp;                        logger.info(users.get(i).getUsername());</b>
+<b class="nc">&nbsp;                        JSONObject output = makeOutput(game, users.get(i).getUsername());</b>
+<b class="nc">&nbsp;                        usernameSessionMap.get(users.get(i).getUsername()).getBasicRemote().sendText(output.toJSONString());</b>
+&nbsp;                    } catch (IOException e) {
+<b class="nc">&nbsp;                        logger.info(&quot;Exception: &quot; + e.getMessage().toString());</b>
+<b class="nc">&nbsp;                        e.printStackTrace();</b>
+&nbsp;                    }
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private JSONObject makeOutput (String game, String username) {
+<b class="nc">&nbsp;        JSONObject output = new JSONObject();</b>
+<b class="nc">&nbsp;        output.put(&quot;messageType&quot;, &quot;game_state&quot;);</b>
+<b class="nc">&nbsp;        output.put(&quot;gameName&quot;, game);</b>
+<b class="nc">&nbsp;        output.put(&quot;status&quot;, &quot;Seat &quot; + cardGame.findCurrentPlayer() + &quot; turn&quot;);</b>
+<b class="nc">&nbsp;        if (cardGame.getClass().equals(BlackJack.class)) {</b>
+<b class="nc">&nbsp;            BlackJack temp = (BlackJack) cardGame;</b>
+<b class="nc">&nbsp;            JSONArray array = new JSONArray();</b>
+<b class="nc">&nbsp;            Card[] dealerHand = temp.getDealerHand();</b>
+&nbsp;            int cardCount;
+<b class="nc">&nbsp;            for (cardCount = 0; cardCount &lt; dealerHand.length; cardCount++) {</b>
+<b class="nc">&nbsp;                if (dealerHand[cardCount] == null) {</b>
+&nbsp;                    break;
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            Card[] tempHand = new Card[1];</b>
+<b class="nc">&nbsp;            tempHand[0] = dealerHand[0];</b>
+<b class="nc">&nbsp;            JSONObject card = new JSONObject();</b>
+<b class="nc">&nbsp;            card.put(&quot;suit&quot;, tempHand[0].getSuit().toString());</b>
+<b class="nc">&nbsp;            card.put(&quot;value&quot;, tempHand[0].getValue().toString());</b>
+<b class="nc">&nbsp;            array.add(card);</b>
+<b class="nc">&nbsp;            output.put(&quot;centerCards&quot;, array);</b>
+<b class="nc">&nbsp;            output.put(&quot;centerHidden&quot;, cardCount - 1);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        output.put(&quot;yourSeat&quot;, cardGame.findPlayer(userRepo.findByUsername(username)));</b>
+<b class="nc">&nbsp;        output.put(&quot;currentTurn&quot;, cardGame.getTurn());</b>
+<b class="nc">&nbsp;        if (cardGame.checkGameProgress()) {</b>
+<b class="nc">&nbsp;            output.put(&quot;gamePhase&quot;, &quot;finished&quot;);</b>
+<b class="nc">&nbsp;            gameOver = true;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            output.put(&quot;gamePhase&quot;, &quot;in progress&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        JSONArray actionArray = new JSONArray();</b>
+<b class="nc">&nbsp;        Actions[] actions = cardGame.getPossibleActions();</b>
+<b class="nc">&nbsp;        actionArray.add(actions[0].toString());</b>
+<b class="nc">&nbsp;        actionArray.add(actions[1].toString());</b>
+<b class="nc">&nbsp;        output.put(&quot;actions&quot;, actionArray);</b>
+<b class="nc">&nbsp;        JSONArray players = new JSONArray();</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; users.size(); i++) {</b>
+<b class="nc">&nbsp;            JSONObject player = new JSONObject();</b>
+<b class="nc">&nbsp;            player.put(&quot;seat&quot;, i);</b>
+<b class="nc">&nbsp;            player.put(&quot;username&quot;, cardGame.getPlayers()[i].getUsername());</b>
+<b class="nc">&nbsp;            if (cardGame.getPlayers()[i].getUsername().equals(username)) {</b>
+<b class="nc">&nbsp;                JSONArray array = new JSONArray();</b>
+<b class="nc">&nbsp;                int cardCount = cardGame.getCardAmount(cardGame.getPlayers()[i]);</b>
+<b class="nc">&nbsp;                Card[] playerHand = cardGame.getPlayerHand(cardGame.getPlayers()[i]);</b>
+<b class="nc">&nbsp;                Card[] tempHand = new Card[cardCount];</b>
+<b class="nc">&nbsp;                for (int j = 0; j &lt; cardCount; j++) {</b>
+<b class="nc">&nbsp;                    tempHand[j] = playerHand[j];</b>
+&nbsp;                }
+<b class="nc">&nbsp;                for (int j = 0; j &lt; cardCount; j++) {</b>
+<b class="nc">&nbsp;                    JSONObject card = new JSONObject();</b>
+<b class="nc">&nbsp;                    card.put(&quot;suit&quot;, tempHand[j].getSuit().toString());</b>
+<b class="nc">&nbsp;                    card.put(&quot;value&quot;, tempHand[j].getValue().toString());</b>
+<b class="nc">&nbsp;                    array.add(card);</b>
+&nbsp;                }
+<b class="nc">&nbsp;                player.put(&quot;cards&quot;, array);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                player.put(&quot;cards&quot;, &quot;[]&quot;);</b>
+<b class="nc">&nbsp;                player.put(&quot;hiddenCount&quot;, cardGame.getCardAmount(users.get(i)));</b>
+&nbsp;            }
+<b class="nc">&nbsp;            players.add(player);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        output.put(&quot;players&quot;, players);</b>
+<b class="nc">&nbsp;        if (cardGame.checkGameProgress()) {</b>
+<b class="nc">&nbsp;            JSONArray array = new JSONArray();</b>
+<b class="nc">&nbsp;            for (int j = 0; j &lt; cardGame.getPlayers().length; j++) {</b>
+<b class="nc">&nbsp;                array.add(cardGame.getWinners()[j].toString());</b>
+&nbsp;            }
+<b class="nc">&nbsp;            output.put(&quot;winners&quot;, array);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return output;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @OnClose
+&nbsp;    public void onClose(Session session) throws IOException {
+<b class="nc">&nbsp;        logger.info(&quot;Entered into Close&quot;);</b>
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+<b class="nc">&nbsp;        recordGame(session);</b>
+<b class="nc">&nbsp;        logger.info(username);</b>
+<b class="nc">&nbsp;        sessionUsernameMap.remove(session);</b>
+<b class="nc">&nbsp;        usernameSessionMap.remove(username);</b>
+<b class="nc">&nbsp;        logger.info(String.valueOf(users.remove(userRepo.findByUsername(username))));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void recordGame (Session session) {
+<b class="nc">&nbsp;        gameHistory.setTimeGameCompleted(LocalDateTime.now());</b>
+<b class="nc">&nbsp;        gameHistory.setTimeGameDuration(Duration.between(gameHistory.getTimeGameStarted(), gameHistory.getTimeGameCompleted()));</b>
+<b class="nc">&nbsp;        Result result = cardGame.getWinners()[cardGame.findPlayer(userRepo.findByUsername(sessionUsernameMap.get(session)))];</b>
+<b class="nc">&nbsp;        if (result.equals(Result.DRAW)) {</b>
+<b class="nc">&nbsp;            gameHistory.setGameResult(GameHistoryResult.DRAW);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (result.equals(Result.LOSE)) {</b>
+<b class="nc">&nbsp;            gameHistory.setGameResult(GameHistoryResult.DEFEAT);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        else if (result.equals(Result.WIN)) {</b>
+<b class="nc">&nbsp;            gameHistory.setGameResult(GameHistoryResult.VICTORY);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        gameHistoryRepository.save(gameHistory);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    @OnError
+&nbsp;    public void onError(Session session, Throwable throwable) {
+&nbsp;        // Do error handling here
+<b class="nc">&nbsp;        logger.info(&quot;Entered into Error&quot;);</b>
+<b class="nc">&nbsp;        throwable.printStackTrace();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-05-01 10:46</div>
+</div>
+</body>
+</html>

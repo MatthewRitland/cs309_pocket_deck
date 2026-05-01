@@ -183,10 +183,13 @@ public class GameSocket {
             if (cardGame.getClass().equals(BlackJack.class)) {
                 BlackJack temp = (BlackJack) cardGame;
                 player.put("stood", String.valueOf(temp.getStood()[i]));
-                player.put("busted", String.valueOf(temp.isBusted(cardGame.getPlayers()[i])));
             }
             if (cardGame.getPlayers()[i].getUsername().equals(username)) {
                 JSONArray array = new JSONArray();
+                if (cardGame.getClass().equals(BlackJack.class)) {
+                    BlackJack temp = (BlackJack) cardGame;
+                    player.put("busted", String.valueOf(temp.isBusted(cardGame.getPlayers()[i])));
+                }
                 int cardCount = cardGame.getCardAmount(cardGame.getPlayers()[i]);
                 Card[] playerHand = cardGame.getPlayerHand(cardGame.getPlayers()[i]);
                 Card[] tempHand = new Card[cardCount];

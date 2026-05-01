@@ -20,7 +20,7 @@ public class LobbyScreen extends AppCompatActivity {
         /* Standard Initialization */
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-
+        setContentView(R.layout.activity_game_lobby);
 
         /* Get UI elements */
         inviteButton = findViewById(R.id.lobby_inviteButton);

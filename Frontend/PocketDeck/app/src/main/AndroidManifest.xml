@@ -18,6 +18,9 @@
             android:name=".GameNotes"
             android:exported="false" />
         <activity
+            android:name=".LobbyScreen"
+            android:exported="false" />
+        <activity
             android:name=".MessagingView"
             android:exported="false" />
         <activity

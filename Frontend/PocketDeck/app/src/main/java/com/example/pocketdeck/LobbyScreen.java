@@ -49,8 +49,12 @@ public class LobbyScreen extends AppCompatActivity {
     }
 
     private void updateReadyBtnDisplay() {
-        if (localUserReady) { readyButton.setText("Ready"); }
-        else { readyButton.setText("Unready"); }
+        if (localUserReady) {
+            readyButton.setText("Unready");
+        }
+        else {
+            readyButton.setText("Ready");
+        }
     }
 
     private void onReadyClicked() {

@@ -45,6 +45,8 @@ public class BlackJack extends Game{
 
     public boolean[] getStood () { return stood; }
 
+    public int getDealerScore () { return dealerScore; }
+
     private int cardValueConversion (User player, Card card) {
         Value value = card.getValue();
         if (value.equals(Value.TWO)) {
@@ -164,7 +166,7 @@ public class BlackJack extends Game{
                 dealerScore = 0;
                 int aceCount = 0;
                 ArrayList<Card> aces = new ArrayList<>();
-                for (int i = 0; i < cardCount; i++) {
+                for (int i = 0; i < cardCount + 1; i++) {
                     if (!dealerHand[i].getValue().equals(Value.ACE)) {
                         dealerScore += cardValueConversion(dealerHand[i]);
                     }
@@ -196,7 +198,7 @@ public class BlackJack extends Game{
             dealerScore = 0;
             int aceCount = 0;
             ArrayList<Card> aces = new ArrayList<>();
-            for (int i = 0; i < cardCount; i++) {
+            for (int i = 0; i < cardCount + 1; i++) {
                 if (!dealerHand[i].getValue().equals(Value.ACE)) {
                     dealerScore += cardValueConversion(dealerHand[i]);
                 }

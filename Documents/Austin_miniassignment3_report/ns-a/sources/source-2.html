@@ -1,0 +1,321 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">PocketDeck.Users</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (PocketDeck.Users)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    62.5%
+  </span>
+  <span class="absValue">
+    (5/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    42.3%
+  </span>
+  <span class="absValue">
+    (11/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.8%
+  </span>
+  <span class="absValue">
+    (26/45)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package PocketDeck.Users;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import PocketDeck.Friends.FriendshipRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.server.ResponseStatusException;
+&nbsp;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class UserController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    UserRepository userRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    FriendshipRepository friendshipRepository;
+&nbsp;
+<b class="fc">&nbsp;    private String success = &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+<b class="fc">&nbsp;    private String failure = &quot;{\&quot;message\&quot;:\&quot;failure\&quot;}&quot;;</b>
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Lists all users&quot;, description = &quot;Returns a complete list of all users from the database&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully returned list&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = User.class))
+&nbsp;            }),
+&nbsp;    })
+&nbsp;    @GetMapping(path = &quot;/users&quot;)
+&nbsp;    List&lt;User&gt; getAllUsers() {
+<b class="nc">&nbsp;        return userRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Returns a single user from user Id&quot;, description = &quot;Returns a complete user from the database&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully returned user&quot;,
+&nbsp;                content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                        schema = @Schema(implementation = User.class))
+&nbsp;            }),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;failed to return complete user&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
+&nbsp;    @GetMapping(path = &quot;/users/{id}&quot;)
+&nbsp;    User getUserById(@Parameter(description = &quot;id of user to get&quot;) @PathVariable int id) {
+<b class="fc">&nbsp;        User user = userRepository.findById(id);</b>
+<b class="pc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;User not found&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return user;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Returns a single user from username&quot;, description = &quot;Returns a complete user from the database&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully returned user&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = User.class))
+&nbsp;                    }),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;failed to return complete user&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
+&nbsp;    @GetMapping(path = &quot;/users/username/{username}&quot;)
+&nbsp;    User getUserByUsername(@Parameter(description = &quot;username of user to get&quot;) @PathVariable String username) {
+<b class="nc">&nbsp;        User user = userRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;User not found&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return user;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Creates a user&quot;, description = &quot;Creates and stores a newly created user to the database&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully created user&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = User.class))
+&nbsp;                    }),
+&nbsp;            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;username or password is invalid&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;409&quot;, description = &quot;Username already in use&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
+&nbsp;    // sign up feature
+&nbsp;    @PostMapping(path = &quot;/signup&quot;)
+&nbsp;    User createUser(@Parameter(description = &quot;user object to create&quot;)@RequestBody User user) {
+&nbsp;        // is it a valid request? (is overall request empty? stopped w/ user == null,
+&nbsp;        // or username or password is missing.)
+<b class="pc">&nbsp;        if (user == null || user.getUsername() == null || user.getPassword() == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;username or password is invalid&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // does this username already have an account?
+<b class="fc">&nbsp;        if (userRepository.existsByUsername(user.getUsername())) {</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;Username already in use&quot;);</b>
+&nbsp;        }
+&nbsp;        // since the user was passed here, and NOT created through the constructor,
+&nbsp;        // need to assign the status here before saving it to the DB
+<b class="fc">&nbsp;        user.setUserStatus(UserStatus.OFFLINE);</b>
+&nbsp;
+&nbsp;        // otherwise will be unique and valid, so save the new user
+<b class="fc">&nbsp;        userRepository.save(user);</b>
+&nbsp;
+&nbsp;        // return a success message, user is now in the database, return the id that user has
+&nbsp;        // so frontend can call it after creation.
+<b class="fc">&nbsp;        return user;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Edits a user&#39;s information &quot;, description = &quot;Edits and user in the database&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully edited user&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = User.class))
+&nbsp;                    }),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User was not found&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;409&quot;, description = &quot;Username already in use&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
+&nbsp;    @PutMapping(&quot;/users/{id}&quot;)
+&nbsp;    User updateUser(@Parameter(description = &quot;id of user to update&quot;)@PathVariable int id,
+&nbsp;                    @Parameter(description = &quot;new user info to replace the old one&quot;)@RequestBody User request) {
+<b class="fc">&nbsp;        User user = userRepository.findById(id);</b>
+&nbsp;
+&nbsp;        // check if user was found by id, and if not throw an exception. (don&#39;t want to update a non-existent user)
+<b class="pc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;User not found&quot;);</b>
+&nbsp;        }
+&nbsp;        // if username already exists for a user with a separate id, then throw an exception
+<b class="pc">&nbsp;        else if (userRepository.existsByUsernameAndIdNot(request.getUsername(), id)) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.CONFLICT, &quot;Username already in use&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // updating the user
+<b class="fc">&nbsp;        user.setUsername(request.getUsername());</b>
+<b class="fc">&nbsp;        user.setPassword(request.getPassword());</b>
+<b class="pc">&nbsp;        if (request.getUserStatus() != null) {</b>
+<b class="fc">&nbsp;            user.setUserStatus(request.getUserStatus());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // save the user to the database
+<b class="fc">&nbsp;        userRepository.save(user);</b>
+&nbsp;
+&nbsp;        // finally, return the updated user object to frontend
+<b class="fc">&nbsp;        return user;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes a user&quot;, description = &quot;Removes a user that was stored in the database by their ID&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;returns a success/fail string&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;text/plain&quot;)})
+&nbsp;    })
+&nbsp;    @DeleteMapping(path = &quot;/users/{id}&quot;)
+&nbsp;        // delete the user that matches the id
+&nbsp;    String deleteUser(@PathVariable int id) {
+<b class="pc">&nbsp;        if (userRepository.findById(id) == null) {</b>
+<b class="nc">&nbsp;            return failure;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // make sure to remove friendships that this user was a part of!
+<b class="fc">&nbsp;        friendshipRepository.deleteByRequesterIdOrReceiverId(id, id);</b>
+&nbsp;
+<b class="fc">&nbsp;        userRepository.deleteById(id);</b>
+<b class="pc">&nbsp;        if (userRepository.findById(id) == null) {</b>
+<b class="fc">&nbsp;            return success;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return failure;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Operation(summary = &quot;Authenticates a user&quot;, description = &quot;Confirms given info with info stored in the database&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully authenticated info&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = User.class))
+&nbsp;                    }),
+&nbsp;            @ApiResponse(responseCode = &quot;400&quot;, description = &quot;User was not given correctly&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;401&quot;, description = &quot;Invalid credentials&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
+&nbsp;    @PostMapping(&quot;/login&quot;)
+&nbsp;    User login(@Parameter(description = &quot;User info to attempt authentication with&quot;)@RequestBody User request) {
+<b class="nc">&nbsp;        User user = userRepository.findByUsername(request.getUsername());</b>
+<b class="nc">&nbsp;        if (user == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;User not found&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // make sure that password is correct, throw an exception  otherwise.
+<b class="nc">&nbsp;        else if (!user.getPassword().equals(request.getPassword())) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;Incorrect password&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // otherwise, login successful, and return the user object to the frontend
+<b class="nc">&nbsp;        user.setUserStatus(UserStatus.ONLINE);</b>
+<b class="nc">&nbsp;        userRepository.save(user);</b>
+<b class="nc">&nbsp;        return user;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-05-01 21:00</div>
+</div>
+</body>
+</html>

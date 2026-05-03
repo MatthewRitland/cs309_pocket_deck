@@ -183,10 +183,13 @@ public class GameSocket {
             if (cardGame.getClass().equals(BlackJack.class)) {
                 BlackJack temp = (BlackJack) cardGame;
                 player.put("stood", String.valueOf(temp.getStood()[i]));
-                player.put("busted", String.valueOf(temp.isBusted(cardGame.getPlayers()[i])));
             }
             if (cardGame.getPlayers()[i].getUsername().equals(username)) {
                 JSONArray array = new JSONArray();
+                if (cardGame.getClass().equals(BlackJack.class)) {
+                    BlackJack temp = (BlackJack) cardGame;
+                    player.put("busted", String.valueOf(temp.isBusted(cardGame.getPlayers()[i])));
+                }
                 int cardCount = cardGame.getCardAmount(cardGame.getPlayers()[i]);
                 Card[] playerHand = cardGame.getPlayerHand(cardGame.getPlayers()[i]);
                 Card[] tempHand = new Card[cardCount];
@@ -234,7 +237,9 @@ public class GameSocket {
 
     private void recordGame (Session session) {
         gameHistory.setTimeGameCompleted(LocalDateTime.now());
-        gameHistory.setTimeGameDuration(Duration.between(gameHistory.getTimeGameStarted(), gameHistory.getTimeGameCompleted()));
+        Duration duration = Duration.between(gameHistory.getTimeGameStarted(), gameHistory.getTimeGameCompleted());
+        gameHistory.setMinutes(duration.toMinutes());
+        gameHistory.setSeconds(duration.getSeconds() - (gameHistory.getMinutes() * 60));
         Result result = cardGame.getWinners()[cardGame.findPlayer(userRepo.findByUsername(sessionUsernameMap.get(session)))];
         if (result.equals(Result.DRAW)) {
             gameHistory.setGameResult(GameHistoryResult.DRAW);

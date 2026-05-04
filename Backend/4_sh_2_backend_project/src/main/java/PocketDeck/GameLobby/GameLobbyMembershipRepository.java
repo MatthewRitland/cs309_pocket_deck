@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface    GameLobbyMembershipRepository extends JpaRepository<GameLobbyMembership, Integer> {
+public interface GameLobbyMembershipRepository extends JpaRepository<GameLobbyMembership, Integer> {
     GameLobbyMembership findById(int id);
 
     GameLobbyMembership findByGameLobbyMemberId(int userId); // use to make sure that a member is in only ONE lobby at a time

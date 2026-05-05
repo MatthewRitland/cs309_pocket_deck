@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import android.graphics.Color;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,8 +39,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.expandingMenu); // this is the expanding menu top left
+        Toolbar toolbar = findViewById(R.id.expandingMenu);
         setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("PocketDeck");
+        }
+        toolbar.setTitleTextColor(Color.WHITE);
+        if (toolbar.getOverflowIcon() != null) {
+            toolbar.getOverflowIcon().setTint(Color.WHITE);
+        }
+
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

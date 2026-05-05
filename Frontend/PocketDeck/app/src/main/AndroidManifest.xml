@@ -50,6 +50,10 @@
             android:exported="true"
             android:label="GroupsListActivity" />
         <activity
+            android:name=".FriendsScreen"
+            android:exported="false"
+            android:label="FriendsScreen" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

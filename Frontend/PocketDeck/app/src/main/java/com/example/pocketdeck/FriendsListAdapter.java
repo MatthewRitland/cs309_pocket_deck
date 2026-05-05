@@ -12,12 +12,12 @@ import java.util.List;
 public class FriendsListAdapter extends RecyclerView.Adapter<FriendsHolder>{
 
     private List<FriendObject> friends;
-    private boolean isRequests;
+    private int tabIndex;
     private FriendsScreen screenRef;
 
-    public FriendsListAdapter(List<FriendObject> friends, boolean isRequests, FriendsScreen screen) {
+    public FriendsListAdapter(List<FriendObject> friends, int tabIndex, FriendsScreen screen) {
         this.friends = friends;
-        this.isRequests = isRequests;
+        this.tabIndex = tabIndex;
         this.screenRef = screen;
     }
 

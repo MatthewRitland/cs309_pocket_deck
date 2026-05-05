@@ -19,6 +19,9 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class GameHistory extends AppCompatActivity {
 
@@ -84,6 +87,29 @@ public class GameHistory extends AppCompatActivity {
                                 String completed = obj.optString("timeGameCompleted", "N/A");
                                 String duration = obj.optString("timeGameDuration", "N/A");
 
+                                //format the time to look nicer
+                                String formattedStart = started;
+                                String formattedCompleted = completed;
+
+                                try {
+                                    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                                    SimpleDateFormat outputFormat = new SimpleDateFormat("MMM d, yyyy h:mm a", Locale.getDefault());
+
+                                    Date startDate = inputFormat.parse(started);
+                                    Date endDate = inputFormat.parse(completed);
+
+                                    if (startDate != null) {
+                                        formattedStart = outputFormat.format(startDate);
+                                    }
+
+                                    if (endDate != null) {
+                                        formattedCompleted = outputFormat.format(endDate);
+                                    }
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
                                 // get the name
                                 JSONObject cardGameObject = obj.optJSONObject("cardGame");
 
@@ -96,8 +122,7 @@ public class GameHistory extends AppCompatActivity {
                                 }
 
                                 // Build one string to display
-                                String gameInfo = "Game name: " + gameName + "\n" + "Game #" + id + "\n" + "Result: " + result + "\n" + "Started: " + started + "\n" + "Completed: " + completed + "\n" + "Duration: " + duration;
-
+                                String gameInfo = gameName.toUpperCase() + "\n" + "Game #" + id + "\n" + "Result: " + result + "\n" + "Started: " + formattedStart + "\n" + "Completed: " + formattedCompleted;
                                 // Add this game to the list
                                 historyList.add(gameInfo);
 

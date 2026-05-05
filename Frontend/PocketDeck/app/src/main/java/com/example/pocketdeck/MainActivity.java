@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 // if logged in go to the gameplay screen if not then
 
                 //test for lobby stuff
+                /*
                 UserUtilities userUtilities = new UserUtilities(MainActivity.this);
 
                 userUtilities.applyUserObject("test1", "ONLINE", 1);
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 userUtilities.setSelectedGameID(2);
                 userUtilities.setSelectedLobbyId(40);
                 userUtilities.setLobbyOwner(true);
-
+                 */
                 if(loggedIn) {
                     Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
                     startActivity(i);

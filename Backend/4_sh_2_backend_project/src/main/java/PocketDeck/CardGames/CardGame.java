@@ -1,5 +1,6 @@
 package PocketDeck.CardGames;
 
+import PocketDeck.Users.User;
 import jakarta.persistence.*;
 
 @Entity
@@ -57,4 +58,15 @@ public class CardGame {
     public void setTurnTimeLimit(int turnTimeLimit) {
         this.turnTimeLimit = turnTimeLimit;
     }
+    @Override
+    public boolean equals (Object obj) {
+        if (obj.getClass() == this.getClass()) {
+            CardGame temp = (CardGame)obj;
+            if (temp.getId() == this.getId() && temp.getGameName().equals(this.getGameName()) && temp.getMaxPlayers() == this.getMaxPlayers() && temp.getMinPlayers() == this.getMinPlayers() && temp.getTurnTimeLimit() == this.getTurnTimeLimit()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

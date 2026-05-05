@@ -1,8 +1,10 @@
 package PocketDeck;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import PocketDeck.CardGames.CardGameRepository;
+import PocketDeck.GameNotes.GameNote;
 import PocketDeck.GameNotes.GameNoteRepository;
 import PocketDeck.Users.User;
 import PocketDeck.Users.UserRepository;
@@ -38,6 +40,8 @@ public class AustinSystemTest {
     @LocalServerPort
     int port;
 
+    int id = 0;
+
     @Before
     public void setUp() {
         RestAssured.port = port;
@@ -66,6 +70,7 @@ public class AustinSystemTest {
             assertEquals("test1", userObj.getString("username"));
             assertEquals("blackjack", gameObj.getString("gameName"));
             assertEquals("This is a test", returnObj.getString("text"));
+            id = returnObj.getInt("id");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -74,12 +79,25 @@ public class AustinSystemTest {
 
     @Test
     public void updateGameNoteTest () {
+        Response response1 = RestAssured.given().
+                header("Content-Type", "application/json").
+                header("charset","utf-8").
+                body("This is a test but again").
+                when().
+                post("/gameNotes/1/2");
+        try {
+            JSONObject createdNoteJSON = new JSONObject(response1.getBody().asString());
+            id = createdNoteJSON.getInt("id");
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
         Response response = RestAssured.given().
                 header("Content-Type", "application/json").
                 header("charset","utf-8").
                 body("This is a test but again").
                 when().
-                put("/gameNotes/11");
+                put("/gameNotes/" + id);
 
         int statusCode = response.getStatusCode();
         assertEquals(200, statusCode);
@@ -121,5 +139,81 @@ public class AustinSystemTest {
         int statusCode = response.getStatusCode();
         assertEquals(404, statusCode);
 
+    }
+
+    @Test
+    public void getUserTest () {
+        Response response = RestAssured.given().
+                header("Content-Type", "application/json").
+                header("charset","utf-8").
+                when().
+                get("/gameNotes/8");
+
+        int statusCode = response.getStatusCode();
+        assertEquals(200, statusCode);
+        assertNotEquals(null, response);
+    }
+
+    @Test
+    public void getUserGameTest () {
+        Response response = RestAssured.given().
+                header("Content-Type", "application/json").
+                header("charset","utf-8").
+                when().
+                get("/gameNotes/8/2");
+
+        int statusCode = response.getStatusCode();
+        assertEquals(200, statusCode);
+        assertNotEquals(null, response);
+    }
+
+    @Test
+    public void deleteGameNoteTest () {
+        GameNote note = new GameNote("This is a test", userRepo.findById(1), gameRepo.findById(2));
+        noteRepo.save(note);
+        id = note.getId();
+        Response response = RestAssured.given().
+                header("Content-Type", "application/json").
+                header("charset","utf-8").
+                when().
+                delete("/gameNotes/" + id);
+        int statusCode = response.getStatusCode();
+        assertEquals(200, statusCode);
+        String returnString = response.getBody().asString();
+        try {
+            JSONObject returnObj = new JSONObject(returnString);
+            assertEquals("note was successfully deleted", returnObj.getString("message"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void gettersAndSettersTest () {
+        GameNote note = new GameNote ();
+        note.setText("This is a test");
+        assertEquals("This is a test", note.getText());
+        note.setGame(gameRepo.findById(2));
+        assertEquals(gameRepo.findById(2), note.getGame());
+        note.setUser(userRepo.findById(1));
+        assertEquals(userRepo.findById(1), note.getUser());
+        assertEquals("This is a test", note.toString());
+    }
+
+    @After
+    public void cleanUp () {
+        if (id != 0) {
+            try {
+                if (noteRepo.existsById(id)) {
+                    noteRepo.deleteById(id);
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Test cleanUp() failed for noteId " + id + ": " + e.getMessage());
+            }
+            finally {
+                id = 0;
+            }
+        }
     }
 }

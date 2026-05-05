@@ -1,8 +1,10 @@
 package PocketDeck;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import PocketDeck.CardGames.CardGameRepository;
+import PocketDeck.GameNotes.GameNote;
 import PocketDeck.GameNotes.GameNoteRepository;
 import PocketDeck.Users.User;
 import PocketDeck.Users.UserRepository;
@@ -137,6 +139,65 @@ public class AustinSystemTest {
         int statusCode = response.getStatusCode();
         assertEquals(404, statusCode);
 
+    }
+
+    @Test
+    public void getUserTest () {
+        Response response = RestAssured.given().
+                header("Content-Type", "application/json").
+                header("charset","utf-8").
+                when().
+                get("/gameNotes/8");
+
+        int statusCode = response.getStatusCode();
+        assertEquals(200, statusCode);
+        assertNotEquals(null, response);
+    }
+
+    @Test
+    public void getUserGameTest () {
+        Response response = RestAssured.given().
+                header("Content-Type", "application/json").
+                header("charset","utf-8").
+                when().
+                get("/gameNotes/8/2");
+
+        int statusCode = response.getStatusCode();
+        assertEquals(200, statusCode);
+        assertNotEquals(null, response);
+    }
+
+    @Test
+    public void deleteGameNoteTest () {
+        GameNote note = new GameNote("This is a test", userRepo.findById(1), gameRepo.findById(2));
+        noteRepo.save(note);
+        id = note.getId();
+        Response response = RestAssured.given().
+                header("Content-Type", "application/json").
+                header("charset","utf-8").
+                when().
+                delete("/gameNotes/" + id);
+        int statusCode = response.getStatusCode();
+        assertEquals(200, statusCode);
+        String returnString = response.getBody().asString();
+        try {
+            JSONObject returnObj = new JSONObject(returnString);
+            assertEquals("note was successfully deleted", returnObj.getString("message"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void gettersAndSettersTest () {
+        GameNote note = new GameNote ();
+        note.setText("This is a test");
+        assertEquals("This is a test", note.getText());
+        note.setGame(gameRepo.findById(2));
+        assertEquals(gameRepo.findById(2), note.getGame());
+        note.setUser(userRepo.findById(1));
+        assertEquals(userRepo.findById(1), note.getUser());
+        assertEquals("This is a test", note.toString());
     }
 
     @After

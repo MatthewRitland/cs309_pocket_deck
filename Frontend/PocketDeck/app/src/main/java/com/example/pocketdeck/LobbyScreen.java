@@ -104,6 +104,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     public void leaveLobby() {
         WebsocketManager.getInstance().disconnectWebSocket();
         WebsocketManager.getInstance().removeWebSocketListener();
+
         String leaveURL = URL_LOBBY_LEAVE + userUtils.getSavedId();
         JsonObjectRequest leaveRequest = new JsonObjectRequest(
                 Request.Method.DELETE,
@@ -148,6 +149,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
                 users.add(nextUser);
                 Log.d("LobbyScreen", nextUser.toString());
             }
+            activeUserList.setAdapter(new LobbyListAdapter(users));
         } catch (Exception e) {
             // TODO: Handle
         }
@@ -186,7 +188,9 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     }
 
     @Override
-    public void onWebSocketOpen(ServerHandshake handshakedata) { }
+    public void onWebSocketOpen(ServerHandshake handshakedata) {
+        updateMembers();
+    }
 
     @Override
     public void onWebSocketMessage(String message) {

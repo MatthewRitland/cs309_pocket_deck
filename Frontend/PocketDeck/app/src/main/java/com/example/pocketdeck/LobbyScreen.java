@@ -32,7 +32,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
 
     static final String URL_SERVER = "http://coms-3090-025.class.las.iastate.edu:8080";
 
-    static final String URL_LOBBY_WEBSOCKET = URL_SERVER + "/gameLobbies/listenForUpdates/";
+    static final String URL_LOBBY_WEBSOCKET = URL_SERVER + "/gamelobbies/listenForUpdates/";
     static final String URL_LOBBY_CREATE = URL_SERVER + "/gameLobbies/create/";
     static final String URL_LOBBY_LEAVE = URL_SERVER + "/gameLobbies/leave/";
 
@@ -97,7 +97,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     }
 
     private void connectToLobby(long lobbyId) {
-        String webSocketAddress = URL_LOBBY_WEBSOCKET + Long.toString(lobbyId) + "/" + userUtils.getSavedUsername();
+        String webSocketAddress = URL_LOBBY_WEBSOCKET + lobbyId + "/" + userUtils.getSavedUsername();
         WebsocketManager.getInstance().connectWebSocket(URL_LOBBY_WEBSOCKET + Long.toString(lobbyId));
     }
 

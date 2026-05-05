@@ -2,8 +2,6 @@ package PocketDeck;
 
 import PocketDeck.CardGames.CardGame;
 import PocketDeck.CardGames.CardGameRepository;
-import PocketDeck.Game.Card;
-import PocketDeck.Game.Game;
 import PocketDeck.GameLobby.*;
 import PocketDeck.Users.User;
 import PocketDeck.Users.UserRepository;
@@ -25,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
-public class GameLobbySystemTest {
+public class GameHistorySystemTest {
 
 	@Autowired
 	UserRepository userRepo;

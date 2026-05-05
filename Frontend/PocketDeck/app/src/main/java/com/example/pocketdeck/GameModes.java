@@ -36,6 +36,14 @@ public class GameModes extends AppCompatActivity {
     private CardView blackjackCard;
     private CardView garbage;
     private CardView solitaire;
+
+    enum indexedGameModes {
+        NONE,
+        POKER,
+        BLACKJACK,
+        GARBAGE,
+        SOLITAIRE
+    }
     private Button backButton;
 
     private UserUtilities userUtilities;

@@ -152,11 +152,15 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     private void parseMembers(JSONArray membersArray) {
         List<LobbyUser> users = new ArrayList<LobbyUser>();
         try {
+            boolean allReady = true;
             for (int i = 0; i < membersArray.length(); i++) {
                 LobbyUser nextUser = new LobbyUser(membersArray.getJSONObject(i));
                 users.add(nextUser);
+                if (!nextUser.isReady()) allReady = false;
                 Log.d("LobbyScreen", nextUser.toString());
             }
+            if (allReady) allUsersReady();
+            else userUnreadied();
             activeUserList.setAdapter(new LobbyListAdapter(users));
         } catch (Exception e) {
             // TODO: Handle
@@ -172,7 +176,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     private void userUnreadied() {
         if(!allReadied) return;
         allReadied = false;
-
+        updateReadyBtnDisplay();
     }
 
     private void initReadyButton() {
@@ -190,9 +194,31 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     }
 
     private void onReadyClicked() {
-        localUserReady = !localUserReady;
-        // TODO: Send input out to other users
-        updateReadyBtnDisplay();
+        readyButton.setEnabled(false);
+
+        String readyUrl = URL_SERVER + "/gameLobbies/ready/" + userUtils.getSavedId();
+        JsonObjectRequest readyRequest = new JsonObjectRequest(
+                Request.Method.PUT,
+                readyUrl,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            localUserReady = response.getBoolean("isReady");
+                        } catch (Exception e) {}
+                        updateReadyBtnDisplay();
+                        readyButton.setEnabled(true);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        readyButton.setEnabled(true);
+                    }
+                }
+        );
+        VolleyCommand.getInstance(this).addToRequestQueue(readyRequest);
     }
 
     @Override

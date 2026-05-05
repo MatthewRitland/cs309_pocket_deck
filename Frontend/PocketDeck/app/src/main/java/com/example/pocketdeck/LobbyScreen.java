@@ -1,15 +1,18 @@
 package com.example.pocketdeck;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,6 +54,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_game_lobby);
         userUtils = new UserUtilities(this);
+        Requester.getInstance(this).setListener(this);
 
         /* Get UI elements */
         inviteButton = findViewById(R.id.lobby_inviteButton);
@@ -70,7 +74,24 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
         initReadyButton();
         leaveButton.setOnClickListener(v -> { leaveLobby(); });
         inviteButton.setOnClickListener( v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Enter Username");
 
+            EditText usernameInput = new EditText(this);
+            usernameInput.setHint("Username");
+            builder.setView(usernameInput);
+            builder.setPositiveButton("Send Request", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Requester.getInstance(LobbyScreen.this).sendRequest(usernameInput.getText().toString().trim(), currentLobbyId);
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) { dialog.cancel(); }
+            });
+
+            builder.show();
         });
         publicButton.setOnClickListener( v -> { changeLobbyVisibility(); });
 

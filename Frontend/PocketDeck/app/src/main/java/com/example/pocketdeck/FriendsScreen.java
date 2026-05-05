@@ -66,7 +66,7 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
                 } else {
                     tabIndex = 2;
                     FriendsUtilities.getInstance().fetchAcceptedFriends(userUtils.getSavedId(),FriendsScreen.this);
-                    Requester.getInstance(FriendsScreen.this).FetchLastRequests(userUtils.getSavedId(),FriendsScreen.this);
+                    Requester.getInstance(FriendsScreen.this).FetchLastRequests();
                 }
 
                 //setFriendsView();

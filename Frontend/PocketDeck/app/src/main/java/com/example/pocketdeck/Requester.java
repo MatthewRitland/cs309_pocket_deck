@@ -26,6 +26,7 @@ public class Requester {
     private WebsocketListener listener;
     private static Requester activeRequester;
     private WebSocketClient webSocketClient;
+    private Context c;
 
     List<RequestObject> requestList;
 
@@ -34,6 +35,7 @@ public class Requester {
         UserUtilities userUtils = new UserUtilities(c);
         requestList = new ArrayList<RequestObject>();
         openWebSocket(URL_WS_REQUESTS + userUtils.getSavedUsername());
+        this.c = c;
     }
 
     public static Requester getInstance(Context c) {
@@ -44,14 +46,16 @@ public class Requester {
             activeRequester = new Requester(c);
         }
 
-        activeRequester.FetchLastRequests(userUtils.getSavedId(),c);
+        activeRequester.FetchLastRequests();
         return activeRequester;
     }
 
-    public void FetchLastRequests(long filterUserId, Context c) {
+    public void FetchLastRequests() {
+        UserUtilities userUtils = new UserUtilities(c);
+        long userId = userUtils.getSavedId();
         JsonArrayRequest requestUrl = new JsonArrayRequest(
                 Request.Method.GET,
-                URL_REQUESTS_RECEIVED+filterUserId,
+                URL_REQUESTS_RECEIVED+userId,
                 null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -81,6 +85,7 @@ public class Requester {
 
         }
         requestList = requestsTemp;
+        if (listener != null) listener.onWebSocketMessage("UPDATED USERS");
     }
 
     public void setListener(WebsocketListener newListener) {
@@ -111,7 +116,8 @@ public class Requester {
                 @Override
                 public void onMessage(String message) {
                     Log.d("Requester-WS", "Message: " + message);
-                    onMessageSelf(message);
+                    FetchLastRequests();
+
                     if (listener != null) {
                         listener.onWebSocketMessage(message);
                     }
@@ -141,10 +147,6 @@ public class Requester {
         }
     }
 
-    private void onMessageSelf(String message) {
-
-    }
-
     public void closeSocket() {
         webSocketClient.close();
     }
@@ -152,10 +154,12 @@ public class Requester {
     public void sendRequest(String receiverName, long lobbyId) {
         try {
             JSONObject messageObject = new JSONObject();
+
             messageObject.put("action", "INVITE");
             messageObject.put("targetUsername", receiverName);
             messageObject.put("gameLobbyId", lobbyId);
 
+            Log.d("Requester", messageObject.toString());
             sendMessage(messageObject.toString());
         } catch (Exception e) {
             Log.d("Requester", "Error occurred sending request");

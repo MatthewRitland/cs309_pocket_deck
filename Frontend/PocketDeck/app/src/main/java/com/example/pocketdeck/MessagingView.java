@@ -135,6 +135,7 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
 
     @Override
     public void onWebSocketMessage(String message) {
+        Log.d("MessageView","Message received - " + message);
         // Run on UI
         runOnUiThread(() -> {
 
@@ -153,6 +154,7 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
 
                 Message newMessage = new Message(username, messageContents);
                 addMessage(newMessage);
+                Log.d("MessageView","Added message - " + newMessage.getMessage());
             }
 
         });

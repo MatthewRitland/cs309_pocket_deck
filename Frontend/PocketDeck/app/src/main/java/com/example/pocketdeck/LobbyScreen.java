@@ -1,19 +1,45 @@
 package com.example.pocketdeck;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class LobbyScreen extends AppCompatActivity {
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
 
     private Button inviteButton, readyButton, leaveButton;
     private RecyclerView activeUserList;
 
+    static final String URL_SERVER = "http://coms-3090-025.class.las.iastate.edu:8080";
+
+    static final String URL_LOBBY_WEBSOCKET = URL_SERVER + "/gameLobbies/listenForUpdates/";
+    static final String URL_LOBBY_CREATE = URL_SERVER + "/gameLobbies/create/";
+    static final String URL_LOBBY_LEAVE = URL_SERVER + "/gameLobbies/leave/";
+
     private boolean isHost, allReadied, localUserReady;
+    private UserUtilities userUtils;
+
+    private GameLobby currentLobby;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +47,7 @@ public class LobbyScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_game_lobby);
+        userUtils = new UserUtilities(this);
 
         /* Get UI elements */
         inviteButton = findViewById(R.id.lobby_inviteButton);
@@ -29,6 +56,101 @@ public class LobbyScreen extends AppCompatActivity {
 
         /* Initialize UI elements */
         initReadyButton();
+        leaveButton.setOnClickListener(v -> { leaveLobby(); });
+        inviteButton.setOnClickListener( v -> {Log.d("LobbyScreen", "Unfinished");});
+
+        /* Get if creating new lobby */
+        Bundle extraData = getIntent().getExtras();
+        if (extraData == null) {
+            // Create a new lobby
+            createNewLobby();
+        } else {
+            // get lobby-id
+            long lobbyId = extraData.getLong("id");
+            connectToLobby(lobbyId);
+        }
+    }
+
+    private void createNewLobby() {
+        isHost = true;
+        String createURL = URL_LOBBY_CREATE + userUtils.getSavedId() + "/" + userUtils.getSelectedGameId();
+        JsonObjectRequest createRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                createURL,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        GameLobby lobby = new GameLobby(response);
+                        connectToLobby(lobby.getLobbyId());
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(LobbyScreen.this, "Failed to create lobby, " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
+                        leaveLobby();
+                    }
+                }
+        );
+        VolleyCommand.getInstance(this).addToRequestQueue(createRequest);
+    }
+
+    private void connectToLobby(long lobbyId) {
+        String webSocketAddress = URL_LOBBY_WEBSOCKET + Long.toString(lobbyId) + "/" + userUtils.getSavedUsername();
+        WebsocketManager.getInstance().connectWebSocket(URL_LOBBY_WEBSOCKET + Long.toString(lobbyId));
+    }
+
+    public void leaveLobby() {
+        WebsocketManager.getInstance().disconnectWebSocket();
+        WebsocketManager.getInstance().removeWebSocketListener();
+        String leaveURL = URL_LOBBY_LEAVE + userUtils.getSavedId();
+        JsonObjectRequest leaveRequest = new JsonObjectRequest(
+                Request.Method.DELETE,
+                leaveURL,
+                null,
+                response -> {
+                    Intent newScreen = new Intent(LobbyScreen.this, MainActivity.class);
+                    startActivity(newScreen);
+                },
+                error -> {
+                    Toast.makeText(LobbyScreen.this, "Failed to leave", Toast.LENGTH_SHORT).show();
+                    Intent newScreen = new Intent(LobbyScreen.this, MainActivity.class);
+                    startActivity(newScreen);
+                }
+        );
+        VolleyCommand.getInstance(this).addToRequestQueue(leaveRequest);
+    }
+
+    /* Ready Button */
+
+    private void updateMembers() {
+        String membersURL = URL_SERVER + "/gameLobbies/" + currentLobby.getLobbyId() + "/members";
+        JsonArrayRequest membersRequest = new JsonArrayRequest(
+                Request.Method.GET,
+                membersURL,
+                null,
+                this::parseMembers,
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle Error
+                    }
+                }
+        );
+    }
+
+    private void parseMembers(JSONArray membersArray) {
+        List<LobbyUser> users = new ArrayList<LobbyUser>();
+        try {
+            for (int i = 0; i < membersArray.length(); i++) {
+                LobbyUser nextUser = new LobbyUser(membersArray.getJSONObject(i));
+                users.add(nextUser);
+                Log.d("LobbyScreen", nextUser.toString());
+            }
+        } catch (Exception e) {
+            // TODO: Handle
+        }
     }
 
     private void allUsersReady() {
@@ -61,5 +183,91 @@ public class LobbyScreen extends AppCompatActivity {
         localUserReady = !localUserReady;
         // TODO: Send input out to other users
         updateReadyBtnDisplay();
+    }
+
+    @Override
+    public void onWebSocketOpen(ServerHandshake handshakedata) { }
+
+    @Override
+    public void onWebSocketMessage(String message) {
+        /* Send HTTP get request for users and ready status */
+        updateMembers();
+    }
+
+    @Override
+    public void onWebSocketClose(int code, String reason, boolean remote) {}
+
+    @Override
+    public void onWebSocketError(Exception ex) { }
+
+    class GameLobby {
+        private long lobbyId;
+        private int gameMode;
+        private boolean inviteOnly;
+
+        public GameLobby(long id, int mode, boolean inviteOnly) {
+            this.lobbyId = id;
+            this.gameMode = mode;
+            this.inviteOnly = inviteOnly;
+        }
+
+        public GameLobby(JSONObject lobbyObject) {
+            try {
+               this.lobbyId = lobbyObject.getLong("id");
+               JSONObject gameModeObj = lobbyObject.getJSONObject("mode");
+               this.gameMode = gameModeObj.getInt("id");
+               this.inviteOnly = lobbyObject.getBoolean("isInviteOnly");
+            } catch (Exception e) {
+                this.lobbyId = 0;
+                this.gameMode = 0;
+                this.inviteOnly = true;
+            }
+        }
+
+        public long getLobbyId() { return lobbyId; }
+        public int getGameMode() { return gameMode; }
+        public boolean isInviteOnly() { return inviteOnly; }
+    }
+
+    class LobbyUser {
+        private String username;
+        private long userId;
+        private boolean ready;
+        private boolean host;
+
+        public LobbyUser(JSONObject userObject) {
+            try {
+                this.ready = userObject.getBoolean("isReady");
+                this.host = userObject.getString("memberRole").equals("OWNER_MEMBER");
+                JSONObject userInfo = userObject.getJSONObject("gameLobbyMember");
+                this.username = userInfo.getString("username");
+                this.userId = userInfo.getLong("id");
+            } catch (Exception e) {
+                this.ready = false;
+                this.host = false;
+                this.username = "Err";
+                this.userId = 0;
+            }
+        }
+
+        public String getUsername() { return username; }
+        public long getUserId() { return userId; }
+        public boolean isReady() { return ready; }
+        public boolean isHost() { return host; }
+
+        @NonNull
+        @Override
+        public String toString() {
+            String output = username + " ";
+            if (isHost()) output += "- Host ";
+            output += "| ";
+            if (isReady()) {
+                output += "READY";
+            } else {
+                output += "NOT READY";
+            }
+
+            return output;
+        }
     }
 }

@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Message</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">PocketDeck.Chat</a>
+</div>
+
+<h1>Coverage Summary for Class: Message (PocketDeck.Chat)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Message</td>
+<td class="coverageStat">
+  <span class="percent">
+    9.1%
+  </span>
+  <span class="absValue">
+    (1/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    13.3%
+  </span>
+  <span class="absValue">
+    (2/15)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Message$HibernateInstantiator$4ctJskvH</td>
+  </tr>
+  <tr>
+    <td class="name">Message$HibernateProxy$V1brM7PD</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    9.1%
+  </span>
+  <span class="absValue">
+    (1/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    13.3%
+  </span>
+  <span class="absValue">
+    (2/15)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package PocketDeck.Chat;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import PocketDeck.Users.User;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Table(name = &quot;messages&quot;)
+&nbsp;public class Message {
+&nbsp;	@Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private Long id;
+&nbsp;
+&nbsp;    @ManyToOne
+&nbsp;    @JoinColumn (nullable = false)
+&nbsp;    private User user;
+&nbsp;
+&nbsp;    @Lob
+&nbsp;    private String content;
+&nbsp;
+<b class="fc">&nbsp;    @Temporal(TemporalType.TIMESTAMP)</b>
+&nbsp;    @Column(name = &quot;sent&quot;)
+&nbsp;    private Date sent = new Date();
+&nbsp;
+&nbsp;    @ManyToOne
+&nbsp;    @JoinColumn (nullable = false)
+&nbsp;    private GroupChat groupChat;
+&nbsp;	
+<b class="fc">&nbsp;	public Message() {};</b>
+&nbsp;	
+<b class="nc">&nbsp;	public Message(User user, GroupChat groupChat, String content) {</b>
+<b class="nc">&nbsp;		this.user = user;</b>
+<b class="nc">&nbsp;		this.content = content;</b>
+<b class="nc">&nbsp;        this.groupChat = groupChat;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;
+&nbsp;    // =============================== Getters and Setters for each field ================================== //
+&nbsp;    public Long getId() {
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;    //public void setId(Long id) { this.id = id;}
+&nbsp;
+&nbsp;    public User getUser() {
+<b class="nc">&nbsp;        return user;</b>
+&nbsp;    }
+&nbsp;    public void setUser(User user) {
+<b class="nc">&nbsp;        this.user= user;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getContent() {
+<b class="nc">&nbsp;        return content;</b>
+&nbsp;    }
+&nbsp;    public void setContent(String content) {
+<b class="nc">&nbsp;        this.content = content;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Date getSent() {
+<b class="nc">&nbsp;        return sent;</b>
+&nbsp;    }
+&nbsp;    public void setSent(Date sent) {
+<b class="nc">&nbsp;        this.sent = sent;</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    public GroupChat getGroupChat() { return this.groupChat; }</b>
+<b class="nc">&nbsp;    public void setGroupChat(GroupChat groupChat) { this.groupChat = groupChat; }</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-05-01 10:46</div>
+</div>
+</body>
+</html>

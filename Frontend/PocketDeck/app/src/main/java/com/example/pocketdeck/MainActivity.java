@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import android.graphics.Color;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,8 +39,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.expandingMenu); // this is the expanding menu top left
+        Toolbar toolbar = findViewById(R.id.expandingMenu);
         setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("PocketDeck");
+        }
+        toolbar.setTitleTextColor(Color.WHITE);
+        if (toolbar.getOverflowIcon() != null) {
+            toolbar.getOverflowIcon().setTint(Color.WHITE);
+        }
+
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -101,6 +112,17 @@ public class MainActivity extends AppCompatActivity {
                  */
 
                 // if logged in go to the gameplay screen if not then
+
+                //test for lobby stuff
+                /*
+                UserUtilities userUtilities = new UserUtilities(MainActivity.this);
+
+                userUtilities.applyUserObject("test1", "ONLINE", 1);
+                userUtilities.setSelectedGame("blackjack");
+                userUtilities.setSelectedGameID(2);
+                userUtilities.setSelectedLobbyId(40);
+                userUtilities.setLobbyOwner(true);
+                 */
                 if(loggedIn) {
                     //Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
                     Intent i = new Intent(MainActivity.this, LobbyScreen.class);
@@ -156,6 +178,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.nav_messaging) {
             Intent i = new Intent(MainActivity.this, GroupsListActivity.class);
+            startActivity(i);
+        }
+
+        if (id == R.id.nav_friends) {
+            Intent i = new Intent(MainActivity.this, FriendsScreen.class);
             startActivity(i);
         }
 

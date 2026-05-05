@@ -149,7 +149,11 @@ public class GameHistoryController {
         // use Java's 'Duration' to get the duration of the game between start and completion
         record.setGameResult(updateRequest.getGameResult());
         record.setTimeGameCompleted(LocalDateTime.now());
-        record.setTimeGameDuration(Duration.between(record.getTimeGameStarted(), record.getTimeGameCompleted()));
+        long seconds = Duration.between(record.getTimeGameStarted(), record.getTimeGameCompleted()).getSeconds();
+        long minutes = seconds / 60;
+        seconds -= (minutes * 60);
+        record.setMinutes(minutes);
+        record.setSeconds(seconds);
 
         return gameHistoryRepository.save(record);
     }

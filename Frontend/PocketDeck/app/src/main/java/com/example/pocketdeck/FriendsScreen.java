@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +37,7 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_friends);
+        EdgeToEdge.enable(this);
 
         userUtils = new UserUtilities(FriendsScreen.this);
 

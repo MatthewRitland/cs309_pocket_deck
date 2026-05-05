@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +36,7 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_messaging);
+        EdgeToEdge.enable(this);
         messageView = findViewById(R.id.MessagesView);
         groupNameLabel = findViewById(R.id.MessagingGroupName);
         messageTextbox = findViewById(R.id.messageEntryBox);

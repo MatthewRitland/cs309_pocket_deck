@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,8 +41,8 @@ public class GroupsListActivity extends AppCompatActivity implements WebsocketLi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userUtils = new UserUtilities(this);
-
         setContentView(R.layout.activity_message_groups);
+        EdgeToEdge.enable(this);
         MessagingWebSocketManager.getInstance().connectWebSocket(URL_MESSAGING_WEBSOCKET + userUtils.getSavedUsername());
         MessagingWebSocketManager.getInstance().setListener(this);
         /* Get Page Elements */

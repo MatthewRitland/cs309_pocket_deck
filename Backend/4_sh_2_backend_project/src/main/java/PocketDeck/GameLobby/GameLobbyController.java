@@ -67,6 +67,13 @@ public class GameLobbyController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only the lobby owner can start the game");
         }
 
+        List<GameLobbyMembership> memberships = gameLobbyMembershipRepo.findByGameLobbyId(gameLobbyId);
+        for (GameLobbyMembership foundMembership : memberships ) {
+            if (foundMembership.getIsReady()) continue;
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "All members must be ready to start the game");
+
+        }
+
         // can be used by frontend to know when to switch screens. Route all players to game screen
         // DOESN'T ACUTALLY START THE GAME. That is done in "Game" class. This is just useful for changing the screen
         // to the blackjack screen.

@@ -115,11 +115,22 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
         if (tabIndex == 1) {
             addFriendButton.setVisibility(View.INVISIBLE);
             sendFriends = FriendsUtilities.getInstance().getRequests();
-        } else {
+        } else if (tabIndex == 0){
             sendFriends = FriendsUtilities.getInstance().getFriends();
+        } else {
+            // REQUEST VIEW
+            setRequestView();
+            return;
         }
 
         FriendsListAdapter adapter = new FriendsListAdapter(sendFriends, tabIndex, this);
+        friendsView.setLayoutManager(new LinearLayoutManager(this));
+        friendsView.setAdapter(adapter);
+    }
+
+    private void setRequestView() {
+        Requester requester = Requester.getInstance(this);
+        RequestsListAdapter adapter = new RequestsListAdapter(requester.getRequestList());
         friendsView.setLayoutManager(new LinearLayoutManager(this));
         friendsView.setAdapter(adapter);
     }

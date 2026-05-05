@@ -56,6 +56,25 @@ public class GameLobbyController {
     }
 
 
+    @PostMapping(path = "/gameLobbies/{gameLobbyId}/start/{userId}")
+    public String startGame (@PathVariable int gameLobbyId, @PathVariable int userId) {
+        GameLobbyMembership membership = gameLobbyMembershipRepo.findByGameLobbyMemberId(userId);
+
+        if(membership == null || membership.getGameLobby().getId() != gameLobbyId) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not a member of this lobby");
+        }
+        if(membership.getMemberRole() != GameLobbyMembershipRole.OWNER_MEMBER) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Only the lobby owner can start the game");
+        }
+
+        // can be used by frontend to know when to switch screens. Route all players to game screen
+        // DOESN'T ACUTALLY START THE GAME. That is done in "Game" class. This is just useful for changing the screen
+        // to the blackjack screen.
+        GameLobbySocket.broadcastToLobby(gameLobbyId, "{\"type\":\"GAME_START\", \"lobbyId\":" + gameLobbyId + "}");
+        return "{\"message\":\"Game has started\"}";
+    }
+
+
     // return a list of all game lobbies
     @GetMapping (path = "/gameLobbies")
     public List<GameLobby> getGameLobbies() { return gameLobbyRepo.findAll();

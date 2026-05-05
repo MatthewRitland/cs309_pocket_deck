@@ -4,14 +4,12 @@ import PocketDeck.CardGames.CardGame;
 import PocketDeck.CardGames.CardGameRepository;
 import PocketDeck.Game.Card;
 import PocketDeck.Game.Game;
-import PocketDeck.GameLobby.GameLobbyMembership;
-import PocketDeck.GameLobby.GameLobbyMembershipRepository;
-import PocketDeck.GameLobby.GameLobbyMembershipRole;
-import PocketDeck.GameLobby.GameLobbyRepository;
+import PocketDeck.GameLobby.*;
 import PocketDeck.Users.User;
 import PocketDeck.Users.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
@@ -127,6 +125,41 @@ public class GameLobbySystemTest {
 
 
 	@Test
+	public void getAllGameLobbiesTest() {
+		// make a game lobby in case there are none in the db
+		Response createResponse = RestAssured.given().
+				header("Content-Type", "application/json").
+				header("charset","utf-8").
+				when().
+				post("/gameLobbies/create/" + testUserId + "/" + testCardGame1Id);
+
+		try {
+			JSONObject createdObj = new JSONObject(createResponse.getBody().asString());
+			testGameLobbyId = createdObj.getInt("id");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		// Send request and receive response
+		Response getResponse = RestAssured.given().
+				header("Content-Type", "application/json").
+				header("charset","utf-8").
+				when().
+				get("/gameLobbies");
+
+		assertEquals(200, getResponse.getStatusCode());
+		String returnString = getResponse.getBody().asString();
+		try {
+			JSONArray returnArr = new JSONArray(returnString);
+			// so long as it returns at least 1, this method is working
+			assertTrue(returnArr.length() > 0);
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@Test
 	public void changeGameModeTest() {
 		// Send request and receive response
 		Response response = RestAssured.given().
@@ -235,6 +268,31 @@ public class GameLobbySystemTest {
 			gameLobbyMembershipRepo.deleteByGameLobbyMemberId(secondMemberId);
 			userRepo.deleteById(secondMemberId);
 		}
+	}
+
+
+	@Test
+	public void gameLobbyMembershipGettersAndSettersTest() {
+		CardGame testGame = cardGameRepo.findById(testCardGame1Id);
+		User testUser = userRepo.findById(testUserId);
+
+		GameLobby testGameLobby = new GameLobby();
+		testGameLobby.setCardGame(testGame);
+		testGameLobby.setIsInviteOnly(false);
+
+		assertEquals(testGameLobby.getCardGame(), testGame);
+		assertFalse(testGameLobby.getIsInviteOnly());
+
+		GameLobbyMembership testMembership = new GameLobbyMembership(testUser, testGameLobby, GameLobbyMembershipRole.PLAYER);
+		testMembership.setMemberRole(GameLobbyMembershipRole.OWNER_MEMBER);
+		testMembership.setIsReady(true);
+
+		assertEquals(GameLobbyMembershipRole.OWNER_MEMBER, testMembership.getMemberRole());
+		assertTrue(testMembership.getIsReady());
+
+		assertNotNull(testMembership.getGameLobby());
+		assertNotNull(testMembership.getGameLobbyMember());
+
 	}
 
 

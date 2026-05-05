@@ -37,8 +37,8 @@ public class RequestController {
                             schema = @Schema(implementation = Request.class))
                     })
     })
-    @GetMapping("/request/requested/{requestedId}/{requesterId}")
-    Request getRequestsByRequestedAndRequester (@Parameter(description = "id of requested user")@PathVariable int requestedId, @Parameter(description = "id of requester user")@PathVariable int requesterId) {
+    @GetMapping("/request/requested/{requestedId}/{requesterId}/{status}")
+    Request getRequestsByRequestedAndRequester (@Parameter(description = "id of requested user")@PathVariable int requestedId, @Parameter(description = "id of requester user")@PathVariable int requesterId, @Parameter(description = "status of the friend request")@PathVariable RequestStatus status) {
         return requestRepo.findByRequestedIdAndRequesterId(requestedId, requesterId);
     }
 
@@ -52,6 +52,11 @@ public class RequestController {
     @GetMapping("/request/{id}")
     Request getRequestById (@Parameter(description = "id of Request")@PathVariable int id) {
         return requestRepo.findById(id);
+    }
+
+    @GetMapping("/request/requested/{id}")
+    List<Request> getRequestsByRequested (@PathVariable int id) {
+        return requestRepo.findByRequestedId(id);
     }
 
     @Operation(summary = "creates a Request", description = "creates a Request and stores it in the database")

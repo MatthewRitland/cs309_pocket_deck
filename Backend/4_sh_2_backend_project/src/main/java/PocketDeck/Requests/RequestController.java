@@ -54,6 +54,11 @@ public class RequestController {
         return requestRepo.findById(id);
     }
 
+    @GetMapping("/request/requested/{id}")
+    List<Request> getRequestsByRequested (@PathVariable int id) {
+        return requestRepo.findByRequestedId(id);
+    }
+
     @Operation(summary = "creates a Request", description = "creates a Request and stores it in the database")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successfully created a Request",

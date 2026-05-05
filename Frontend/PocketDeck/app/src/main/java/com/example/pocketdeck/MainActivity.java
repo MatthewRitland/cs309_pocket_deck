@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private Button accountButton;
     private Button settingsButton;
     private Button playButton;
-
     private Button modeButton;
 
     /**
@@ -102,6 +101,16 @@ public class MainActivity extends AppCompatActivity {
                  */
 
                 // if logged in go to the gameplay screen if not then
+
+                //test for lobby stuff
+                UserUtilities userUtilities = new UserUtilities(MainActivity.this);
+
+                userUtilities.applyUserObject("test1", "ONLINE", 1);
+                userUtilities.setSelectedGame("blackjack");
+                userUtilities.setSelectedGameID(2);
+                userUtilities.setSelectedLobbyId(40);
+                userUtilities.setLobbyOwner(true);
+
                 if(loggedIn) {
                     Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
                     startActivity(i);
@@ -156,6 +165,16 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.nav_messaging) {
             Intent i = new Intent(MainActivity.this, GroupsListActivity.class);
+            startActivity(i);
+        }
+
+        if (id == R.id.nav_friends) {
+            Intent i = new Intent(MainActivity.this, FriendsScreen.class);
+            startActivity(i);
+        }
+
+        if (id == R.id.nav_notes) {
+            Intent i = new Intent(MainActivity.this, GameNotes.class);
             startActivity(i);
         }
 

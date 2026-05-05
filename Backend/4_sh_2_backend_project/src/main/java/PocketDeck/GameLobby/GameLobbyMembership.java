@@ -9,44 +9,44 @@ public class GameLobbyMembership {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(nullable = false)
     private User gameLobbyMember;
 
     @Enumerated(EnumType.STRING)
-    private GameLobbyPlayerRole playerRole;
+    private GameLobbyMembershipRole memberRole;
 
     @ManyToOne
     @JoinColumn (nullable = false)
     private GameLobby gameLobby;
 
-    public long getId () {
-        return id;
-    }
+    private Boolean isReady;
 
-    public User getGameLobbyMember() {
-        return gameLobbyMember;
-    }
-
-    public void setGameLobbyMember(User gameLobbyMember) {
+    public GameLobbyMembership (User gameLobbyMember, GameLobby gameLobby, GameLobbyMembershipRole memberRole) {
         this.gameLobbyMember = gameLobbyMember;
-    }
-
-    public GameLobbyPlayerRole getPlayerRole() {
-        return playerRole;
-    }
-
-    public void setPlayerRole(GameLobbyPlayerRole playerRole) {
-        this.playerRole = playerRole;
-    }
-
-    public GameLobby getGameLobby() {
-        return gameLobby;
-    }
-
-    public void setGameLobby(GameLobby gameLobby) {
         this.gameLobby = gameLobby;
+        this.memberRole = memberRole;
+        this.isReady = false;
     }
+
+    public GameLobbyMembership() {}
+
+
+    // =============================== Getters and Setters for each field ================================== //
+
+    public int getId() { return this.id; }
+
+    public User getGameLobbyMember() { return this.gameLobbyMember; }
+    public void setGameLobbyMember(User gameLobbyMember) { this.gameLobbyMember = gameLobbyMember; }
+
+    public GameLobby getGameLobby() { return this.gameLobby; }
+    public void setGameLobby(GameLobby gameLobby) { this.gameLobby = gameLobby; }
+
+    public GameLobbyMembershipRole getMemberRole() { return this.memberRole; }
+    public void setMemberRole(GameLobbyMembershipRole memberRole) { this.memberRole = memberRole; }
+
+    public boolean getIsReady() { return this.isReady; }
+    public void setIsReady(boolean isReady) { this.isReady = isReady; }
 }

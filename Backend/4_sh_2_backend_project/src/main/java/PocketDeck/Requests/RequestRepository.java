@@ -11,5 +11,18 @@ public interface RequestRepository extends JpaRepository<Request, Integer>{
     @Transactional
     void deleteById(int id);
 
-    List<Request> findByRequestedIdAndRequesterId(int requestedId, int requesterId);
+
+    Request findByRequestedIdAndRequesterId (int requestedId, int requesterId);
+
+    Request findByRequestedIdAndRequesterIdAndStatus (int requestedId, int requesterId, RequestStatus status);
+
+    Request findByRequestedIdOrRequesterId(int requestedId, int requesterId);
+
+    // returns a list of all requests by requester for that game specific lobby
+    List<Request> findByRequesterIdAndGameLobbyId(int requesterId, int gameLobbyId);
+
+    List<Request> findByRequestedIdAndGameLobbyId(int requestedId, int gameLobbyId);
+
+    List<Request> findByGameLobbyId(int gameLobbyId);
+>>>>>>> main
 }

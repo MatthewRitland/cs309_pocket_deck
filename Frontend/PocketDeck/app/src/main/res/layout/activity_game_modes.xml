@@ -112,7 +112,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Coming Soon"
+                android:text="Garbage"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -120,7 +120,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Coming iSoon"
+                android:text="Play Garbage mode"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -148,7 +148,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Coming Soon"
+                android:text="Solitaire"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -156,7 +156,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Coming Soon"
+                android:text="Play Solitaire mode"
                 android:textSize="16sp" />
         </LinearLayout>
 

@@ -140,4 +140,25 @@ public class UserUtilities {
         return preferences.getString("selectedGame", "Blackjack");
     }
 
+    public void setSelectedGameID(int gameId) {
+        preferences.edit().putInt("selectedGameId", gameId).apply();
+    }
+
+    public int getSelectedGameId() {return preferences.getInt("selectedGameId", -1); }
+
+    public void setLobbyOwner(boolean isOwner) {
+        preferences.edit().putBoolean("isLobbyOwner", isOwner).apply();
+    }
+
+    public boolean isLobbyOwner() {
+        return preferences.getBoolean("isLobbyOwner", false);
+    }
+
+    public void setSelectedLobbyId(int lobbyId) {
+        preferences.edit().putInt("selectedLobbyId", lobbyId).apply();
+    }
+
+    public int getSelectedLobbyId() {
+        return preferences.getInt("selectedLobbyId", -1);
+    }
 }

@@ -1,0 +1,308 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GameLobbyController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">PocketDeck.GameLobby</a>
+</div>
+
+<h1>Coverage Summary for Class: GameLobbyController (PocketDeck.GameLobby)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GameLobbyController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (4/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    45%
+  </span>
+  <span class="absValue">
+    (18/40)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    61.8%
+  </span>
+  <span class="absValue">
+    (47/76)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package PocketDeck.GameLobby;
+&nbsp;
+&nbsp;import PocketDeck.CardGames.CardGame;
+&nbsp;import PocketDeck.CardGames.CardGameRepository;
+&nbsp;import PocketDeck.Requests.Request;
+&nbsp;import PocketDeck.Requests.RequestRepository;
+&nbsp;import PocketDeck.Users.User;
+&nbsp;import PocketDeck.Users.UserRepository;
+&nbsp;import jakarta.validation.OverridesAttribute;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.server.ResponseStatusException;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class GameLobbyController {</b>
+&nbsp;    @Autowired
+&nbsp;    UserRepository userRepo;
+&nbsp;    @Autowired
+&nbsp;    CardGameRepository cardGameRepo;
+&nbsp;    @Autowired
+&nbsp;    GameLobbyRepository gameLobbyRepo;
+&nbsp;    @Autowired
+&nbsp;    GameLobbyMembershipRepository gameLobbyMembershipRepo;
+&nbsp;    @Autowired
+&nbsp;    RequestRepository requestRepo;
+&nbsp;
+&nbsp;
+&nbsp;    // create a new game lobby
+&nbsp;    @PostMapping(path = &quot;/gameLobbies/create/{userId}/{cardGameId}&quot;)
+&nbsp;    public GameLobby createGameLobby(@PathVariable int userId, @PathVariable int cardGameId) {
+<b class="fc">&nbsp;        User gameLobbyOwner = userRepo.findById(userId);</b>
+<b class="fc">&nbsp;        CardGame cardGame = cardGameRepo.findById(cardGameId);</b>
+&nbsp;
+<b class="pc">&nbsp;        if (gameLobbyOwner == null || cardGame == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;User or CardGame not found&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // make sure user is not already in another lobby
+<b class="fc">&nbsp;        GameLobbyMembership existingMember = gameLobbyMembershipRepo.findByGameLobbyMemberId(userId);</b>
+<b class="fc">&nbsp;        if (existingMember != null) {</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;User must leave their current lobby!&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        GameLobby newLobby = new GameLobby();</b>
+<b class="fc">&nbsp;        newLobby.setCardGame(cardGame);</b>
+<b class="fc">&nbsp;        gameLobbyRepo.save(newLobby);</b>
+&nbsp;
+&nbsp;        // set this user as the owner of this newly created party
+<b class="fc">&nbsp;        GameLobbyMembership ownerMembership = new GameLobbyMembership(gameLobbyOwner, newLobby, GameLobbyMembershipRole.OWNER_MEMBER);</b>
+<b class="fc">&nbsp;        gameLobbyMembershipRepo.save(ownerMembership);</b>
+&nbsp;
+<b class="fc">&nbsp;        return newLobby;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // return a list of all game lobbies
+&nbsp;    @GetMapping (path = &quot;/gameLobbies&quot;)
+<b class="nc">&nbsp;    public List&lt;GameLobby&gt; getGameLobbies() { return gameLobbyRepo.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // return a list of all members in a game lobby
+&nbsp;    @GetMapping (path = &quot;/gameLobbies/{gameLobbyId}/members&quot;)
+&nbsp;    public List&lt;GameLobbyMembership&gt; getGameLobbyMembers(@PathVariable int gameLobbyId) {
+<b class="nc">&nbsp;        if (gameLobbyRepo.findById(gameLobbyId) == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Game lobby does not exist&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return gameLobbyMembershipRepo.findByGameLobbyId(gameLobbyId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // changes a lobby from public and private
+&nbsp;    @PutMapping (path = &quot;/gameLobbies/{gameLobbyId}/publicity/{userId}&quot;)
+&nbsp;    public GameLobby flipGameLobbyPublicity(@PathVariable int gameLobbyId, @PathVariable int userId) {
+<b class="nc">&nbsp;        GameLobbyMembership membership = gameLobbyMembershipRepo.findByGameLobbyMemberId(userId);</b>
+<b class="nc">&nbsp;        if (membership == null || membership.getGameLobby().getId() != gameLobbyId) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;User is not a member of this lobby&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (membership.getMemberRole() != GameLobbyMembershipRole.OWNER_MEMBER) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;Only the lobby owner can change the lobby publicity&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        GameLobby gameLobby = membership.getGameLobby();</b>
+<b class="nc">&nbsp;        gameLobby.setIsInviteOnly(!(gameLobby.getIsInviteOnly())); // flip the publicity of the lobby</b>
+<b class="nc">&nbsp;        gameLobbyRepo.save(gameLobby);</b>
+<b class="nc">&nbsp;        GameLobbySocket.broadcastToLobby(membership.getGameLobby().getId(), &quot;{\&quot;type\&quot;:\&quot;LOBBY_UPDATE\&quot;, \&quot;lobbyId\&quot;:&quot; + membership.getGameLobby().getId() + &quot;}&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        return gameLobby;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // changes a member&#39;s readiness status
+&nbsp;    @PutMapping(&quot;/gameLobbies/ready/{userId}&quot;)
+&nbsp;    public GameLobbyMembership flipReadyStatus(@PathVariable int userId) {
+<b class="nc">&nbsp;        GameLobbyMembership membership = gameLobbyMembershipRepo.findByGameLobbyMemberId(userId);</b>
+<b class="nc">&nbsp;        if (membership == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;User is not in a lobby&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        membership.setIsReady(!(membership.getIsReady())); // flip the readiness of the member</b>
+<b class="nc">&nbsp;        gameLobbyMembershipRepo.save(membership);</b>
+&nbsp;
+<b class="nc">&nbsp;        GameLobbySocket.broadcastToLobby(membership.getGameLobby().getId(), &quot;{\&quot;type\&quot;:\&quot;LOBBY_UPDATE\&quot;, \&quot;lobbyId\&quot;:&quot; + membership.getGameLobby().getId() + &quot;}&quot;);</b>
+<b class="nc">&nbsp;        return membership;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // update the cardgame used for the game lobby
+&nbsp;    @PutMapping (path = &quot;/gameLobbies/{gameLobbyId}/cardGame/{cardGameId}/{userId}&quot;)
+&nbsp;    public GameLobby switchGameLobbyCardGame(@PathVariable int gameLobbyId, @PathVariable int cardGameId, @PathVariable int userId) {
+<b class="fc">&nbsp;        GameLobbyMembership membership = gameLobbyMembershipRepo.findByGameLobbyMemberId(userId);</b>
+<b class="pc">&nbsp;        if (membership == null || membership.getGameLobby().getId() != gameLobbyId) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;User is not a member of this lobby&quot;);</b>
+&nbsp;        }
+<b class="pc">&nbsp;        if (membership.getMemberRole() != GameLobbyMembershipRole.OWNER_MEMBER) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;Only the lobby owner can change the lobby game mode&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        CardGame newCardGame = cardGameRepo.findById(cardGameId);</b>
+<b class="pc">&nbsp;        if (newCardGame == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;The game does not exist&quot;);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        GameLobby gameLobby = membership.getGameLobby();</b>
+<b class="fc">&nbsp;        gameLobby.setCardGame(newCardGame); // flip the publicity of the lobby</b>
+&nbsp;
+<b class="fc">&nbsp;        gameLobbyRepo.save(gameLobby);</b>
+<b class="fc">&nbsp;        GameLobbySocket.broadcastToLobby(membership.getGameLobby().getId(), &quot;{\&quot;type\&quot;:\&quot;LOBBY_UPDATE\&quot;, \&quot;lobbyId\&quot;:&quot; + membership.getGameLobby().getId() + &quot;}&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        return gameLobby;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // remove a user from a lobby (and a user should only be able to be a member of one lobby at a time)
+&nbsp;    @DeleteMapping(path = &quot;/gameLobbies/leave/{userId}&quot;)
+&nbsp;    public String leaveLobby(@PathVariable int userId) {
+<b class="fc">&nbsp;        GameLobbyMembership membership = gameLobbyMembershipRepo.findByGameLobbyMemberId(userId);</b>
+<b class="pc">&nbsp;        if (membership == null) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;User is not a member of a lobby&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // since a member can only be a user of ONE lobby at a time, delete all of their &quot;sent&quot; requests
+&nbsp;        // if they aren&#39;t in that lobby anymore
+<b class="fc">&nbsp;        List&lt;Request&gt; sentRequests = requestRepo.findByRequesterIdAndGameLobbyId(</b>
+<b class="fc">&nbsp;                membership.getGameLobbyMember().getId(),</b>
+<b class="fc">&nbsp;                membership.getGameLobby().getId());</b>
+&nbsp;
+<b class="pc">&nbsp;        for (Request foundSentRequest : sentRequests) {</b>
+<b class="nc">&nbsp;            requestRepo.deleteById(foundSentRequest.getId());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // delete requests received by member (that were accepted)
+<b class="fc">&nbsp;        List&lt;Request&gt; receivedRequests = requestRepo.findByRequestedIdAndGameLobbyId(userId, membership.getGameLobby().getId());</b>
+<b class="pc">&nbsp;        for (Request foundReceivedRequest : receivedRequests) {</b>
+<b class="nc">&nbsp;            requestRepo.deleteById(foundReceivedRequest.getId());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // if there is only 1 member left, then delete the game lobby AND its requests
+<b class="fc">&nbsp;        if (gameLobbyMembershipRepo.countByGameLobbyId(membership.getGameLobby().getId()) &lt;= 1) {</b>
+&nbsp;
+&nbsp;            // delete ALL requests left for that game lobby
+<b class="fc">&nbsp;            List&lt;Request&gt; allLobbyRequests = requestRepo.findByGameLobbyId(membership.getGameLobby().getId());</b>
+<b class="pc">&nbsp;            for (Request leftoverRequest : allLobbyRequests) {</b>
+<b class="nc">&nbsp;                requestRepo.deleteById(leftoverRequest.getId());</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            gameLobbyMembershipRepo.deleteByGameLobbyMemberId(userId);</b>
+<b class="fc">&nbsp;            gameLobbyRepo.deleteById(membership.getGameLobby().getId());</b>
+<b class="fc">&nbsp;            return &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // if this member was the owner and there&#39;s more members, need to assign another member as the owner
+<b class="pc">&nbsp;        if (membership.getMemberRole() == GameLobbyMembershipRole.OWNER_MEMBER) {</b>
+<b class="fc">&nbsp;            List&lt;GameLobbyMembership&gt; memberships = gameLobbyMembershipRepo.</b>
+<b class="fc">&nbsp;                    findByGameLobbyId(membership.getGameLobby().getId());</b>
+&nbsp;
+<b class="pc">&nbsp;            for(GameLobbyMembership foundMembership : memberships) {</b>
+<b class="fc">&nbsp;                if (foundMembership.getGameLobbyMember().getId() == (membership.getGameLobbyMember().getId())) {</b>
+&nbsp;                    continue;
+&nbsp;                }
+<b class="fc">&nbsp;                foundMembership.setMemberRole(GameLobbyMembershipRole.OWNER_MEMBER);</b>
+<b class="fc">&nbsp;                gameLobbyMembershipRepo.save(foundMembership);</b>
+&nbsp;                break;
+&nbsp;            }
+&nbsp;        }
+<b class="fc">&nbsp;        gameLobbyMembershipRepo.deleteByGameLobbyMemberId(userId);</b>
+<b class="fc">&nbsp;        GameLobbySocket.broadcastToLobby(membership.getGameLobby().getId(), &quot;{\&quot;type\&quot;:\&quot;LOBBY_UPDATE\&quot;, \&quot;lobbyId\&quot;:&quot; + membership.getGameLobby().getId() + &quot;}&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        return &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-05-01 21:00</div>
+</div>
+</body>
+</html>

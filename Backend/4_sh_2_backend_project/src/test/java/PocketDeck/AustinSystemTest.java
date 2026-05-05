@@ -38,6 +38,8 @@ public class AustinSystemTest {
     @LocalServerPort
     int port;
 
+    int id = 0;
+
     @Before
     public void setUp() {
         RestAssured.port = port;
@@ -66,6 +68,7 @@ public class AustinSystemTest {
             assertEquals("test1", userObj.getString("username"));
             assertEquals("blackjack", gameObj.getString("gameName"));
             assertEquals("This is a test", returnObj.getString("text"));
+            id = returnObj.getInt("id");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -74,12 +77,25 @@ public class AustinSystemTest {
 
     @Test
     public void updateGameNoteTest () {
+        Response response1 = RestAssured.given().
+                header("Content-Type", "application/json").
+                header("charset","utf-8").
+                body("This is a test but again").
+                when().
+                post("/gameNotes/1/2");
+        try {
+            JSONObject createdNoteJSON = new JSONObject(response1.getBody().asString());
+            id = createdNoteJSON.getInt("id");
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
         Response response = RestAssured.given().
                 header("Content-Type", "application/json").
                 header("charset","utf-8").
                 body("This is a test but again").
                 when().
-                put("/gameNotes/11");
+                put("/gameNotes/" + id);
 
         int statusCode = response.getStatusCode();
         assertEquals(200, statusCode);
@@ -121,5 +137,22 @@ public class AustinSystemTest {
         int statusCode = response.getStatusCode();
         assertEquals(404, statusCode);
 
+    }
+
+    @After
+    public void cleanUp () {
+        if (id != 0) {
+            try {
+                if (noteRepo.existsById(id)) {
+                    noteRepo.deleteById(id);
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Test cleanUp() failed for noteId " + id + ": " + e.getMessage());
+            }
+            finally {
+                id = 0;
+            }
+        }
     }
 }

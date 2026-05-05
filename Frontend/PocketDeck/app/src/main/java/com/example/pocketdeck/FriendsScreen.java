@@ -65,6 +65,8 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
                     FriendsUtilities.getInstance().fetchFriendRequests(userUtils.getSavedId(),FriendsScreen.this);
                 } else {
                     tabIndex = 2;
+                    FriendsUtilities.getInstance().fetchAcceptedFriends(userUtils.getSavedId(),FriendsScreen.this);
+                    Requester.getInstance(FriendsScreen.this).FetchLastRequests(userUtils.getSavedId(),FriendsScreen.this);
                 }
 
                 //setFriendsView();
@@ -129,6 +131,7 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
     }
 
     private void setRequestView() {
+        Log.d("FriendsScreen", "RequestsView");
         Requester requester = Requester.getInstance(this);
         RequestsListAdapter adapter = new RequestsListAdapter(requester.getRequestList());
         friendsView.setLayoutManager(new LinearLayoutManager(this));

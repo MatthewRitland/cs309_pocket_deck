@@ -5,7 +5,9 @@ import org.json.JSONObject;
 public class RequestObject {
     private long requestId;
     private long requesterId;
+    private String requesterName;
     private long receiverId;
+    private String receiverName;
     private String requestStatus;
     private GameLobby lobbyObject;
 
@@ -17,7 +19,9 @@ public class RequestObject {
             JSONObject requesterUser = requestJson.getJSONObject("requester");
             JSONObject receiverUser = requestJson.getJSONObject("requested");
             requesterId = requesterUser.getLong("id");
+            requesterName = requesterUser.getString("username");
             receiverId = receiverUser.getLong("id");
+            receiverName = receiverUser.getString("username");
 
             JSONObject lobbyJson = requestJson.getJSONObject("gameLobby");
             lobbyObject = new GameLobby(lobbyJson);
@@ -33,8 +37,11 @@ public class RequestObject {
 
     public long getRequestId() { return requestId; }
 
+    public String getRequesterName() { return requesterName; }
+
     public long getRequesterId() { return requesterId; }
     public long getReceiverId() { return receiverId; }
+    public String getReceiverName() { return receiverName; }
 
     public GameLobby getLobby() { return lobbyObject; }
 }

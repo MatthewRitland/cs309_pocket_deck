@@ -3,8 +3,16 @@ package com.example.pocketdeck;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -14,6 +22,7 @@ import java.util.Map;
 
 public class Requester {
     private static final String URL_WS_REQUESTS = "ws://coms-3090-025.class.las.iastate.edu:8080/request/";
+    private static final String URL_REQUESTS_RECEIVED = "http://coms-3090-025.class.las.iastate.edu:8080/request/requested/";
     private WebsocketListener listener;
     private static Requester activeRequester;
     private WebSocketClient webSocketClient;
@@ -35,7 +44,43 @@ public class Requester {
             activeRequester = new Requester(c);
         }
 
+        activeRequester.FetchLastRequests(userUtils.getSavedId(),c);
         return activeRequester;
+    }
+
+    public void FetchLastRequests(long filterUserId, Context c) {
+        JsonArrayRequest requestUrl = new JsonArrayRequest(
+                Request.Method.GET,
+                URL_REQUESTS_RECEIVED+filterUserId,
+                null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        parseRequestsArray(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+        VolleyCommand.getInstance(c).addToRequestQueue(requestUrl);
+    }
+
+    private void parseRequestsArray(JSONArray requestsJson) {
+        List<RequestObject> requestsTemp = new ArrayList<RequestObject>();
+        try {
+            for (int i = 0; i < requestsJson.length(); i++) {
+                JSONObject requestJson = requestsJson.getJSONObject(i);
+                RequestObject requestObject = new RequestObject(requestJson);
+                requestsTemp.add(requestObject);
+            }
+        } catch (Exception e) {
+
+        }
+        requestList = requestsTemp;
     }
 
     public void setListener(WebsocketListener newListener) {
@@ -66,6 +111,7 @@ public class Requester {
                 @Override
                 public void onMessage(String message) {
                     Log.d("Requester-WS", "Message: " + message);
+                    onMessageSelf(message);
                     if (listener != null) {
                         listener.onWebSocketMessage(message);
                     }
@@ -95,6 +141,10 @@ public class Requester {
         }
     }
 
+    private void onMessageSelf(String message) {
+
+    }
+
     public void closeSocket() {
         webSocketClient.close();
     }
@@ -119,9 +169,11 @@ public class Requester {
             JSONObject messageObject = new JSONObject();
             messageObject.put("action", action);
             messageObject.put("targetUsername", requesterName);
+            sendMessage(messageObject.toString());
         } catch (Exception e) {
             Log.d("Requester", "Error occurred acting on request");
         }
+
     }
 
     private void sendMessage(String message) {

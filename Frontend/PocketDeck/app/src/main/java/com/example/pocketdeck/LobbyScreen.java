@@ -69,7 +69,9 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
         /* Initialize UI elements */
         initReadyButton();
         leaveButton.setOnClickListener(v -> { leaveLobby(); });
-        inviteButton.setOnClickListener( v -> {Log.d("LobbyScreen", "Unfinished");});
+        inviteButton.setOnClickListener( v -> {
+
+        });
         publicButton.setOnClickListener( v -> { changeLobbyVisibility(); });
 
         /* Get if creating new lobby */

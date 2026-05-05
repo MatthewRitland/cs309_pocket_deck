@@ -26,5 +26,4 @@ public interface RequestRepository extends JpaRepository<Request, Integer>{
     List<Request> findByRequestedIdAndGameLobbyId(int requestedId, int gameLobbyId);
 
     List<Request> findByGameLobbyId(int gameLobbyId);
->>>>>>> main
 }

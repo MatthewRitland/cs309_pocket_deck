@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -28,8 +29,9 @@ import java.util.List;
 
 public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
 
-    private Button inviteButton, readyButton, leaveButton;
+    private Button inviteButton, readyButton, leaveButton, publicButton;
     private RecyclerView activeUserList;
+    private TextView lobbyLabel;
 
     static final String URL_SERVER = "http://coms-3090-025.class.las.iastate.edu:8080";
 
@@ -39,7 +41,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
 
     private boolean isHost, allReadied, localUserReady;
     private UserUtilities userUtils;
-
+    private long currentLobbyId;
     private GameLobby currentLobby;
 
     @Override
@@ -54,13 +56,21 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
         inviteButton = findViewById(R.id.lobby_inviteButton);
         readyButton = findViewById(R.id.lobby_readyButton);
         leaveButton = findViewById(R.id.lobby_leaveButton);
+        publicButton = findViewById(R.id.lobby_publicToggle);
+        lobbyLabel = findViewById(R.id.lobby_gameTitle);
         activeUserList = findViewById(R.id.lobby_joinedUsersList);
         activeUserList.setLayoutManager(new LinearLayoutManager(this));
+
+        if (userUtils.getSelectedGameId() <= 0) {
+            userUtils.setSelectedGameID(1);
+            userUtils.setSelectedGame("Poker");
+        }
 
         /* Initialize UI elements */
         initReadyButton();
         leaveButton.setOnClickListener(v -> { leaveLobby(); });
         inviteButton.setOnClickListener( v -> {Log.d("LobbyScreen", "Unfinished");});
+        publicButton.setOnClickListener( v -> { changeLobbyVisibility(); });
 
         /* Get if creating new lobby */
         Bundle extraData = getIntent().getExtras();
@@ -69,6 +79,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
             createNewLobby();
         } else {
             // get lobby-id
+            publicButton.setVisibility(View.INVISIBLE);
             long lobbyId = extraData.getLong("id");
             connectToLobby(lobbyId);
         }
@@ -86,7 +97,6 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
                     public void onResponse(JSONObject response) {
                         GameLobby lobby = new GameLobby(response);
                         Log.d("LobbyScreen", Long.toString(lobby.getLobbyId()));
-                        currentLobby = lobby;
                         connectToLobby(lobby.getLobbyId());
                     }
                 },
@@ -101,7 +111,31 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
         VolleyCommand.getInstance(this).addToRequestQueue(createRequest);
     }
 
+    private void changeLobbyVisibility() {
+        if (!isHost) return;
+        String lobbyVisPath = URL_SERVER + "/gameLobbies/" + currentLobbyId + "/publicity/" + userUtils.getSavedId();
+        JsonObjectRequest changeVisiblityRequest = new JsonObjectRequest(
+                Request.Method.PUT,
+                lobbyVisPath,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+        VolleyCommand.getInstance(this).addToRequestQueue(changeVisiblityRequest);
+    }
+
     private void connectToLobby(long lobbyId) {
+        currentLobbyId = lobbyId;
         String webSocketAddress = URL_LOBBY_WEBSOCKET + Long.toString(lobbyId) + "/" + userUtils.getSavedUsername();
         Log.d("LobbyScreen", "WebSocket path = " + webSocketAddress);
         WebsocketManager.getInstance().setWebSocketListener(this);
@@ -133,7 +167,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     /* Ready Button */
 
     private void updateMembers() {
-        String membersURL = URL_SERVER + "/gameLobbies/" + currentLobby.getLobbyId() + "/members";
+        String membersURL = URL_SERVER + "/gameLobbies/" + currentLobbyId + "/members";
         JsonArrayRequest membersRequest = new JsonArrayRequest(
                 Request.Method.GET,
                 membersURL,
@@ -157,11 +191,31 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
                 LobbyUser nextUser = new LobbyUser(membersArray.getJSONObject(i));
                 users.add(nextUser);
                 if (!nextUser.isReady()) allReady = false;
+                JSONObject lobbyObject = membersArray.getJSONObject(i).getJSONObject("gameLobby");
+                currentLobby = new GameLobby(lobbyObject);
                 Log.d("LobbyScreen", nextUser.toString());
             }
             if (allReady) allUsersReady();
             else userUnreadied();
             activeUserList.setAdapter(new LobbyListAdapter(users));
+            String gameName = "None";
+            switch (currentLobby.getGameMode()) {
+                case 1:
+                    gameName = "Poker";
+                    break;
+                case 2:
+                    gameName = "Blackjack";
+                    break;
+                case 3:
+                    gameName = "Garbage";
+                    break;
+                case 4:
+                    gameName = "Solitare";
+                    break;
+            }
+            lobbyLabel.setText(gameName);
+            publicButton.setText(currentLobby.isInviteOnly()? "Make Private":"Make Public");
+
         } catch (Exception e) {
             // TODO: Handle
         }
@@ -171,12 +225,18 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
         if (!isHost) return;
         allReadied = true;
         readyButton.setText("Begin");
+        readyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestStartGame();
+            }
+        });
     }
 
     private void userUnreadied() {
         if(!allReadied) return;
         allReadied = false;
-        updateReadyBtnDisplay();
+        initReadyButton();
     }
 
     private void initReadyButton() {
@@ -221,6 +281,35 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
         VolleyCommand.getInstance(this).addToRequestQueue(readyRequest);
     }
 
+    public void requestStartGame() {
+        if (!isHost) return;
+        String beginGameUrl = URL_SERVER + "/gameLobbies/" + currentLobbyId + "/start/" + userUtils.getSavedId();
+        JsonObjectRequest beginRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                beginGameUrl,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(LobbyScreen.this, "Couldn't start game", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+        VolleyCommand.getInstance(this).addToRequestQueue(beginRequest);
+    }
+
+    private void startGame() {
+        /* AREA FOR CONNECTING CODE!!! */
+        Intent i = new Intent(LobbyScreen.this, GamePlayScreen.class);
+        startActivity(i);
+    }
+
     @Override
     public void onWebSocketOpen(ServerHandshake handshakedata) {
         updateMembers();
@@ -229,7 +318,17 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     @Override
     public void onWebSocketMessage(String message) {
         /* Send HTTP get request for users and ready status */
-        updateMembers();
+        try {
+            JSONObject messageJson = new JSONObject(message);
+            String messageType = messageJson.getString("type");
+            if (messageType.equals("LOBBY_UPDATE")) {
+                updateMembers();
+            } else if (messageType.equals("GAME_START")){
+                startGame();
+            }
+        } catch (Exception e) {
+            
+        }
     }
 
     @Override

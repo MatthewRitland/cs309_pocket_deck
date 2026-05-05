@@ -49,17 +49,18 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
     private UserUtilities userUtilities;
     private TextView otherPlayersText;
     private int mySeat = -1;
+    private boolean isLobbyOwner = false;
 
 
     private String websocketUrlBuilder() {
         String username = userUtilities.getSavedUsername();
-        String selectedGameName = userUtilities.getSelectedGame().toLowerCase();
-
         if(username == null || username.isEmpty() || "ERR_INVALID_REQUEST".equals(username)){
             username = "guest";
         }
 
-        return "ws://coms-3090-025.class.las.iastate.edu:8080/game/" + username + "/" + selectedGameName;
+        int gameLobbyID = userUtilities.getSelectedLobbyId();
+
+        return "ws://coms-3090-025.class.las.iastate.edu:8080/game/" + gameLobbyID + "/" + username;
     }
 
     @Override
@@ -74,6 +75,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         });
 
         userUtilities = new UserUtilities(GamePlayScreen.this);
+        isLobbyOwner = userUtilities.isLobbyOwner();
         statusText = findViewById(R.id.statusText);
         centerText = findViewById(R.id.centerText);
         leaveButton = findViewById(R.id.leaveButton);
@@ -165,7 +167,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         });
 
         //Get the selected game mode from pref and make the game message to send to backend
-
+        /*
         try {
             String username = userUtilities.getSavedUsername();
             JSONObject object = new JSONObject();
@@ -176,6 +178,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         } catch (Exception e) {
             e.printStackTrace();
         }
+        */
     }
 
     //Receive the message from backend
@@ -229,7 +232,7 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             String gamePhase = object.optString("gamePhase", "lobby");
 
             //so you only see the start button before the game starts
-            if ("lobby".equals(gamePhase)) {
+            if ("lobby".equals(gamePhase) && isLobbyOwner) {
                 startGameButton.setVisibility(View.VISIBLE);
             } else {
                 startGameButton.setVisibility(View.GONE);

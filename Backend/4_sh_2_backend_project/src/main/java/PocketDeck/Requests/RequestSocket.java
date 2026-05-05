@@ -167,20 +167,22 @@ public class RequestSocket {
                                 }
                                 gameLobbyRepo.deleteById(previousGameLobby.getId());
                             }
-                            else if (wasOwner) {
-                                List<GameLobbyMembership> previousGameLobbyMemberships = gameLobbyMembershipRepo.findByGameLobbyId(previousGameLobbyId);
-                                for (GameLobbyMembership foundMembership : previousGameLobbyMemberships) {
-                                    if (foundMembership.getGameLobbyMember().getId() == requested.getId()) {
-                                        continue;
+                            else {
+                                if (wasOwner) {
+                                    List<GameLobbyMembership> previousGameLobbyMemberships = gameLobbyMembershipRepo.findByGameLobbyId(previousGameLobbyId);
+                                    for (GameLobbyMembership foundMembership : previousGameLobbyMemberships) {
+                                        if (foundMembership.getGameLobbyMember().getId() == requested.getId()) {
+                                            continue;
+                                        }
+                                        foundMembership.setMemberRole(GameLobbyMembershipRole.OWNER_MEMBER);
+                                        gameLobbyMembershipRepo.save(foundMembership);
+                                        break;
                                     }
-                                    foundMembership.setMemberRole(GameLobbyMembershipRole.OWNER_MEMBER);
-                                    gameLobbyMembershipRepo.save(foundMembership);
-                                    // notify previous lobby members (use this in frontend to update their screens)
-                                    GameLobbySocket.broadcastToLobby(previousGameLobbyId, "{\"type\":\"LOBBY_UPDATE\", \"lobbyId\":" + request.getGameLobby().getId() + "}");
-                                    break;
                                 }
-
+                                // notify previous lobby members (use this in frontend to update their screens)
+                                GameLobbySocket.broadcastToLobby(previousGameLobbyId, "{\"type\":\"LOBBY_UPDATE\", \"lobbyId\":" + previousGameLobbyId + "}");
                             }
+
                         }
 
 

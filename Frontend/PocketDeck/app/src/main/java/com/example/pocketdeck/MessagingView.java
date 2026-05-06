@@ -105,7 +105,7 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
                     newMessage.put("action", "SEND");
                     newMessage.put("messageContent", messageText.trim());
                     newMessage.put("groupChatId", messageGroupId);
-
+                    Log.d("Msg-View", "Sending message");
                     MessagingWebSocketManager.getInstance().sendMessage(newMessage.toString());
                 } catch (Exception e) {
                     Log.d("Msg-View", "Failed to send message");
@@ -161,7 +161,9 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
     }
 
     @Override
-    public void onWebSocketClose(int code, String reason, boolean remote) { }
+    public void onWebSocketClose(int code, String reason, boolean remote) {
+
+    }
 
     @Override
     public void onWebSocketError(Exception ex) { }

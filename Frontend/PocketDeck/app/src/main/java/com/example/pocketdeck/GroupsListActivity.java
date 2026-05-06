@@ -29,7 +29,7 @@ public class GroupsListActivity extends AppCompatActivity implements WebsocketLi
 
     /* HTTP paths */
     static final String URL_GROUP_FETCH = "http://coms-3090-025.class.las.iastate.edu:8080/user/groupChats/";
-    static final String URL_MESSAGING_WEBSOCKET = "http://coms-3090-025.class.las.iastate.edu:8080/chat/";
+    static final String URL_MESSAGING_WEBSOCKET = "ws://coms-3090-025.class.las.iastate.edu:8080/chat/";
     /* Page elements */
     private RecyclerView groupView;
     private EditText groupNameInput;

@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/messagerUsername"
@@ -10,7 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:text="Username"
-        android:textColor="@color/black"
+        android:textColor="@color/cardinal"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <TextView
@@ -21,6 +23,7 @@
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
         android:maxLength="250"
-        android:text="@string/lorem_ipsum" />
+        android:text="@string/lorem_ipsum"
+        android:textSize="16sp" />
 
 </LinearLayout>

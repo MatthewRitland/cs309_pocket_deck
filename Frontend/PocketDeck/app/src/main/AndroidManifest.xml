@@ -18,6 +18,9 @@
             android:name=".GameNotes"
             android:exported="false" />
         <activity
+            android:name=".LobbyScreen"
+            android:exported="false" />
+        <activity
             android:name=".MessagingView"
             android:exported="false" />
         <activity
@@ -46,6 +49,10 @@
             android:name=".GroupsListActivity"
             android:exported="true"
             android:label="GroupsListActivity" />
+        <activity
+            android:name=".FriendsScreen"
+            android:exported="false"
+            android:label="FriendsScreen" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

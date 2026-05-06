@@ -25,9 +25,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/GroupListView"
             android:layout_width="match_parent"
-            android:layout_height="571dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:scrollbars="vertical" >
+            android:layout_weight="1"
+            android:scrollbars="vertical">
 
         </androidx.recyclerview.widget.RecyclerView>
 

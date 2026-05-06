@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,7 +29,7 @@ public class GroupsListActivity extends AppCompatActivity implements WebsocketLi
 
     /* HTTP paths */
     static final String URL_GROUP_FETCH = "http://coms-3090-025.class.las.iastate.edu:8080/user/groupChats/";
-    static final String URL_MESSAGING_WEBSOCKET = "http://coms-3090-025.class.las.iastate.edu:8080/chat/";
+    static final String URL_MESSAGING_WEBSOCKET = "ws://coms-3090-025.class.las.iastate.edu:8080/chat/";
     /* Page elements */
     private RecyclerView groupView;
     private EditText groupNameInput;
@@ -40,8 +41,8 @@ public class GroupsListActivity extends AppCompatActivity implements WebsocketLi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userUtils = new UserUtilities(this);
-
         setContentView(R.layout.activity_message_groups);
+        EdgeToEdge.enable(this);
         MessagingWebSocketManager.getInstance().connectWebSocket(URL_MESSAGING_WEBSOCKET + userUtils.getSavedUsername());
         MessagingWebSocketManager.getInstance().setListener(this);
         /* Get Page Elements */
@@ -146,7 +147,7 @@ public class GroupsListActivity extends AppCompatActivity implements WebsocketLi
 
         try {
             JSONObject newMessage = new JSONObject();
-            newMessage.put("action","CREATE_GROUPCHAT");
+            newMessage.put("messageAction","CREATE_GROUPCHAT");
             newMessage.put("messageContent", groupName);
 
             Log.d("Msg-View", newMessage.toString());

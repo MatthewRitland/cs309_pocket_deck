@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,6 +36,7 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_messaging);
+        EdgeToEdge.enable(this);
         messageView = findViewById(R.id.MessagesView);
         groupNameLabel = findViewById(R.id.MessagingGroupName);
         messageTextbox = findViewById(R.id.messageEntryBox);
@@ -61,7 +63,7 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
         MessagingWebSocketManager.getInstance().setListener(this);
         try {
             JSONObject jsonMessage = new JSONObject();
-            jsonMessage.put("action", "GET_CHAT_HISTORY");
+            jsonMessage.put("messageAction", "GET_CHAT_HISTORY");
             jsonMessage.put("groupChatId", messageGroupId);
 
             Log.d("Msg-View", jsonMessage.toString());
@@ -100,10 +102,10 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
 
                 try {
                     JSONObject newMessage = new JSONObject();
-                    newMessage.put("action", "SEND");
+                    newMessage.put("messageAction", "SEND");
                     newMessage.put("messageContent", messageText.trim());
                     newMessage.put("groupChatId", messageGroupId);
-
+                    Log.d("Msg-View", "Sending message");
                     MessagingWebSocketManager.getInstance().sendMessage(newMessage.toString());
                 } catch (Exception e) {
                     Log.d("Msg-View", "Failed to send message");
@@ -133,6 +135,7 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
 
     @Override
     public void onWebSocketMessage(String message) {
+        Log.d("MessageView","Message received - " + message);
         // Run on UI
         runOnUiThread(() -> {
 
@@ -151,13 +154,16 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
 
                 Message newMessage = new Message(username, messageContents);
                 addMessage(newMessage);
+                Log.d("MessageView","Added message - " + newMessage.getMessage());
             }
 
         });
     }
 
     @Override
-    public void onWebSocketClose(int code, String reason, boolean remote) { }
+    public void onWebSocketClose(int code, String reason, boolean remote) {
+
+    }
 
     @Override
     public void onWebSocketError(Exception ex) { }

@@ -58,7 +58,12 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             username = "guest";
         }
 
-        int gameLobbyID = userUtilities.getSelectedLobbyId();
+        //int gameLobbyID = userUtilities.getSelectedLobbyId();
+        long gameLobbyID = 40;
+        Bundle extraBundle = getIntent().getExtras();
+        if (extraBundle != null) {
+            gameLobbyID = extraBundle.getLong("lobbyId");
+        }
 
         return "ws://coms-3090-025.class.las.iastate.edu:8080/game/" + gameLobbyID + "/" + username;
     }
@@ -97,8 +102,9 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
         leaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(GamePlayScreen.this, MainActivity.class);
-                startActivity(i);
+                LobbyScreen.leaveLobbyStatic(GamePlayScreen.this);
+                //Intent i = new Intent(GamePlayScreen.this, MainActivity.class);
+                //startActivity(i);
             }
         });
 
@@ -134,8 +140,9 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             @Override
             public void onClick(View view) {
                 if("Leave".contentEquals(moveButton3.getText())) {
-                    Intent i = new Intent(GamePlayScreen.this, MainActivity.class);
-                    startActivity(i);
+                    LobbyScreen.leaveLobbyStatic(GamePlayScreen.this);
+                    //Intent i = new Intent(GamePlayScreen.this, MainActivity.class);
+                    //startActivity(i);
                 } else {
                     updateMove(moveButton3.getText().toString().toLowerCase());
                 }

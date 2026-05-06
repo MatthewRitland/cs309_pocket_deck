@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,11 +32,13 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
     private Button addFriendButton;
 
     private boolean inReceivedView = false;
+    private int tabIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstancesState) {
         super.onCreate(savedInstancesState);
         setContentView(R.layout.activity_friends);
+        EdgeToEdge.enable(this);
 
         userUtils = new UserUtilities(FriendsScreen.this);
 
@@ -55,11 +58,15 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
                 Log.d("FriendsScreen", "Tab selected");
                 // TODO: REPLACE LATER!!!
                 if (tab.getText().toString().equals("Friends")) {
-                    inReceivedView = false;
+                    tabIndex = 0;
                     FriendsUtilities.getInstance().fetchAcceptedFriends(userUtils.getSavedId(),FriendsScreen.this);
-                } else {
-                    inReceivedView = true;
+                } else if (tab.getText().toString().equals("Requests")) {
+                    tabIndex = 1;
                     FriendsUtilities.getInstance().fetchFriendRequests(userUtils.getSavedId(),FriendsScreen.this);
+                } else {
+                    tabIndex = 2;
+                    FriendsUtilities.getInstance().fetchAcceptedFriends(userUtils.getSavedId(),FriendsScreen.this);
+                    Requester.getInstance(FriendsScreen.this).FetchLastRequests();
                 }
 
                 //setFriendsView();
@@ -107,14 +114,27 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
         // Request view
         List<FriendObject> sendFriends;
         addFriendButton.setVisibility(View.VISIBLE);
-        if (inReceivedView) {
+        if (tabIndex == 1) {
             addFriendButton.setVisibility(View.INVISIBLE);
             sendFriends = FriendsUtilities.getInstance().getRequests();
-        } else {
+        } else if (tabIndex == 0){
             sendFriends = FriendsUtilities.getInstance().getFriends();
+        } else {
+            // REQUEST VIEW
+            addFriendButton.setVisibility(View.INVISIBLE);
+            setRequestView();
+            return;
         }
 
-        FriendsListAdapter adapter = new FriendsListAdapter(sendFriends, inReceivedView, this);
+        FriendsListAdapter adapter = new FriendsListAdapter(sendFriends, tabIndex, this);
+        friendsView.setLayoutManager(new LinearLayoutManager(this));
+        friendsView.setAdapter(adapter);
+    }
+
+    private void setRequestView() {
+        Log.d("FriendsScreen", "RequestsView");
+        Requester requester = Requester.getInstance(this);
+        RequestsListAdapter adapter = new RequestsListAdapter(requester.getRequestList());
         friendsView.setLayoutManager(new LinearLayoutManager(this));
         friendsView.setAdapter(adapter);
     }

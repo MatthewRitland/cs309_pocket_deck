@@ -26,15 +26,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|right"
+            android:backgroundTint="@color/cardinal"
             android:gravity="center"
             android:text="Actions" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/MessagesView"
             android:layout_width="match_parent"
-            android:layout_height="483dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout_margin="10dp">
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_weight="1">
 
         </androidx.recyclerview.widget.RecyclerView>
 

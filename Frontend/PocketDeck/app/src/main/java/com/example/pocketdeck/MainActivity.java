@@ -124,7 +124,8 @@ public class MainActivity extends AppCompatActivity {
                 userUtilities.setLobbyOwner(true);
                  */
                 if(loggedIn) {
-                    Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
+                    //Intent i = new Intent(MainActivity.this, GamePlayScreen.class);
+                    Intent i = new Intent(MainActivity.this, LobbyScreen.class);
                     startActivity(i);
                 } else {
                     Intent i = new Intent(MainActivity.this, LoginActivity.class);

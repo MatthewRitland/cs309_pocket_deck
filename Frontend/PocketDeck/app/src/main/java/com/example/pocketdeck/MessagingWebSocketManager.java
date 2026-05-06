@@ -59,8 +59,9 @@ public class MessagingWebSocketManager {
     }
 
     public void sendMessage(String message) {
-        Log.d("WbSktManager", message);
+        //Log.d("WbSktManager", message);
         if (webSocketClient != null && webSocketClient.isOpen()) {
+            Log.d("WbSktManager", message);
             webSocketClient.send(message);
         }
     }
@@ -95,6 +96,7 @@ public class MessagingWebSocketManager {
         @Override
         public void onClose(int code, String reason, boolean remote) {
             // On closing the connection
+            Log.d("WbSktManager", "Issue : " + code + " Reason: " + reason);
             if (currentListener != null) currentListener.onWebSocketClose(code, reason, remote);
         }
 

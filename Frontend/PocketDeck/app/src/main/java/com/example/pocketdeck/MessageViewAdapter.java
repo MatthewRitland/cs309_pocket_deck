@@ -1,5 +1,6 @@
 package com.example.pocketdeck;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,14 @@ public class MessageViewAdapter extends RecyclerView.Adapter<MessageViewAdapter.
     public void onBindViewHolder(@NonNull MessageHolder holder, int position) {
         Message message = messageList.get(position);
         holder.usernameText.setText(message.getUsername());
+        UserUtilities userUtils = new UserUtilities(holder.itemView.getContext());
+        if (message.getUsername().equals(userUtils.getSavedUsername())) {
+            holder.usernameText.setGravity(Gravity.LEFT );
+            holder.messageText.setGravity(Gravity.LEFT);
+        } else {
+            holder.usernameText.setGravity(Gravity.RIGHT );
+            holder.messageText.setGravity(Gravity.RIGHT );
+        }
         holder.messageText.setText(message.getMessage());
     }
 

@@ -121,6 +121,7 @@ public class FriendsScreen extends AppCompatActivity implements FriendsUtilities
             sendFriends = FriendsUtilities.getInstance().getFriends();
         } else {
             // REQUEST VIEW
+            addFriendButton.setVisibility(View.INVISIBLE);
             setRequestView();
             return;
         }

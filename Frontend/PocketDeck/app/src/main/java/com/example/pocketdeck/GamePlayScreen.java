@@ -58,7 +58,12 @@ public class GamePlayScreen extends AppCompatActivity implements WebsocketListen
             username = "guest";
         }
 
-        int gameLobbyID = userUtilities.getSelectedLobbyId();
+        //int gameLobbyID = userUtilities.getSelectedLobbyId();
+        long gameLobbyID = 40;
+        Bundle extraBundle = getIntent().getExtras();
+        if (extraBundle != null) {
+            gameLobbyID = extraBundle.getLong("lobbyId");
+        }
 
         return "ws://coms-3090-025.class.las.iastate.edu:8080/game/" + gameLobbyID + "/" + username;
     }

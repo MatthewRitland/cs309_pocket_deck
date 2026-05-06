@@ -32,7 +32,7 @@ import java.util.List;
 
 public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
 
-    private Button inviteButton, readyButton, leaveButton, publicButton;
+    private Button inviteButton, readyButton, leaveButton;
     private RecyclerView activeUserList;
     private TextView lobbyLabel;
 
@@ -60,7 +60,6 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
         inviteButton = findViewById(R.id.lobby_inviteButton);
         readyButton = findViewById(R.id.lobby_readyButton);
         leaveButton = findViewById(R.id.lobby_leaveButton);
-        publicButton = findViewById(R.id.lobby_publicToggle);
         lobbyLabel = findViewById(R.id.lobby_gameTitle);
         activeUserList = findViewById(R.id.lobby_joinedUsersList);
         activeUserList.setLayoutManager(new LinearLayoutManager(this));
@@ -93,7 +92,6 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
 
             builder.show();
         });
-        publicButton.setOnClickListener( v -> { changeLobbyVisibility(); });
 
         /* Get if creating new lobby */
         Bundle extraData = getIntent().getExtras();
@@ -102,7 +100,6 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
             createNewLobby();
         } else {
             // get lobby-id
-            publicButton.setVisibility(View.INVISIBLE);
             long lobbyId = extraData.getLong("id");
             connectToLobby(lobbyId);
         }
@@ -237,7 +234,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
                     break;
             }
             lobbyLabel.setText(gameName);
-            publicButton.setText(currentLobby.isInviteOnly()? "Make Private":"Make Public");
+            //publicButton.setText(currentLobby.isInviteOnly()? "Make Private":"Make Public");
 
         } catch (Exception e) {
             // TODO: Handle
@@ -330,6 +327,7 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     private void startGame() {
         /* AREA FOR CONNECTING CODE!!! */
         Intent i = new Intent(LobbyScreen.this, GamePlayScreen.class);
+        i.putExtra("lobbyId", currentLobbyId);
         startActivity(i);
     }
 

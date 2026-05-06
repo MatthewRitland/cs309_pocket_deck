@@ -26,19 +26,11 @@
                 android:shadowDx="0"
                 android:shadowDy="6"
                 android:shadowRadius="12"
-                android:text="GMode"
+                android:text="Game Mode"
                 android:textAlignment="center"
                 android:textColor="@color/cardinal"
                 android:textSize="60sp"
                 android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/lobby_publicToggle"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="0"
-                android:backgroundTint="@color/cardinal"
-                android:text="Private" />
 
         </LinearLayout>
 

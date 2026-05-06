@@ -63,7 +63,7 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
         MessagingWebSocketManager.getInstance().setListener(this);
         try {
             JSONObject jsonMessage = new JSONObject();
-            jsonMessage.put("action", "GET_CHAT_HISTORY");
+            jsonMessage.put("messageAction", "GET_CHAT_HISTORY");
             jsonMessage.put("groupChatId", messageGroupId);
 
             Log.d("Msg-View", jsonMessage.toString());
@@ -102,7 +102,7 @@ public class MessagingView extends AppCompatActivity implements WebsocketListene
 
                 try {
                     JSONObject newMessage = new JSONObject();
-                    newMessage.put("action", "SEND");
+                    newMessage.put("messageAction", "SEND");
                     newMessage.put("messageContent", messageText.trim());
                     newMessage.put("groupChatId", messageGroupId);
                     Log.d("Msg-View", "Sending message");

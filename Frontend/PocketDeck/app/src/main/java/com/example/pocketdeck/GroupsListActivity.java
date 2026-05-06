@@ -147,7 +147,7 @@ public class GroupsListActivity extends AppCompatActivity implements WebsocketLi
 
         try {
             JSONObject newMessage = new JSONObject();
-            newMessage.put("action","CREATE_GROUPCHAT");
+            newMessage.put("messageAction","CREATE_GROUPCHAT");
             newMessage.put("messageContent", groupName);
 
             Log.d("Msg-View", newMessage.toString());

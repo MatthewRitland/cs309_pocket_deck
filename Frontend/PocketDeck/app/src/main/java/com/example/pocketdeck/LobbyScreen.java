@@ -1,5 +1,6 @@
 package com.example.pocketdeck;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -123,8 +124,12 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(LobbyScreen.this, "Failed to create lobby, " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
-                        leaveLobby();
+                        if (error.networkResponse.statusCode == 400) {
+                            restartLobbyProcess();
+                        } else {
+                            Toast.makeText(LobbyScreen.this, "Failed to create lobby, " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
+                            leaveLobby();
+                        }
                     }
                 }
         );
@@ -165,19 +170,45 @@ public class LobbyScreen extends AppCompatActivity implements WebsocketListener{
     public void leaveLobby() {
         WebsocketManager.getInstance().disconnectWebSocket();
         WebsocketManager.getInstance().removeWebSocketListener();
+        leaveLobbyStatic(this);
+    }
 
+    public static void leaveLobbyStatic(Context c) {
+        UserUtilities userUtils = new UserUtilities(c);
         String leaveURL = URL_LOBBY_LEAVE + userUtils.getSavedId();
         JsonObjectRequest leaveRequest = new JsonObjectRequest(
                 Request.Method.DELETE,
                 leaveURL,
                 null,
                 response -> {
-                    Intent newScreen = new Intent(LobbyScreen.this, MainActivity.class);
-                    startActivity(newScreen);
+                    Intent newScreen = new Intent(c, MainActivity.class);
+                    c.startActivity(newScreen);
                 },
                 error -> {
-                    Toast.makeText(LobbyScreen.this, "Failed to leave", Toast.LENGTH_SHORT).show();
-                    Intent newScreen = new Intent(LobbyScreen.this, MainActivity.class);
+                    Toast.makeText(c, "Failed to leave", Toast.LENGTH_SHORT).show();
+                    Intent newScreen = new Intent(c, MainActivity.class);
+                    c.startActivity(newScreen);
+                }
+        );
+        VolleyCommand.getInstance(c).addToRequestQueue(leaveRequest);
+    }
+
+    public void restartLobbyProcess() {
+        String leaveURL = URL_LOBBY_LEAVE + userUtils.getSavedId();
+        JsonObjectRequest leaveRequest = new JsonObjectRequest(
+                Request.Method.DELETE,
+                leaveURL,
+                null,
+                response -> {
+                    if (currentLobbyId != 0) {
+                        connectToLobby(currentLobbyId);
+                    } else {
+                        createNewLobby();
+                    }
+                },
+                error -> {
+                    Toast.makeText(this, "Failed to leave", Toast.LENGTH_SHORT).show();
+                    Intent newScreen = new Intent(this, MainActivity.class);
                     startActivity(newScreen);
                 }
         );

@@ -34,10 +34,6 @@ public class GameHistory {
     private long minutes;
     private long seconds;
 
-    // TODO
-    // should probably have some variable called "game mode" to see the game mode. Should this be done here or
-    // on in CardGames? (Such as an enumeration?)
-
     // called when a game is created, can only initialize the user and time started, must update after game completes
     public GameHistory(User user, CardGame cardGame) {
 

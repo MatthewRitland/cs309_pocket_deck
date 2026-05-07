@@ -56,26 +56,26 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    16.7%
+    100%
   </span>
   <span class="absValue">
-    (1/6)
+    (6/6)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    62.5%
   </span>
   <span class="absValue">
-    (0/16)
+    (10/16)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    3.2%
+    80.6%
   </span>
   <span class="absValue">
-    (1/31)
+    (25/31)
   </span>
 </td>
 </tr>
@@ -91,6 +91,13 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;import java.util.List;
 &nbsp;
+&nbsp;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.Parameter;
+&nbsp;import io.swagger.v3.oas.annotations.media.Content;
+&nbsp;import io.swagger.v3.oas.annotations.media.Schema;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
 &nbsp;import PocketDeck.CardGames.CardGameRepository;
 &nbsp;import PocketDeck.Users.UserRepository;
 &nbsp;import org.springframework.beans.factory.annotation.Autowired;
@@ -110,62 +117,108 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    @Autowired
 &nbsp;    UserRepository userRepo;
 &nbsp;
+&nbsp;    @Operation(summary = &quot;Gets all notes based on a user and a game&quot;, description = &quot;Retrieves a list of GameNotes based on a user id and a game id from the dataase&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved a list of GameNotes&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = GameNote.class))
+&nbsp;                    }),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;could not find user or game&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
 &nbsp;    @GetMapping(&quot;/gameNotes/{userId}/{gameId}&quot;)
-&nbsp;    public List&lt;GameNote&gt; getAllNotesForUserAndGame (@PathVariable int userId, @PathVariable int gameId) {
-<b class="nc">&nbsp;        if (!userRepo.existsById(userId)) {</b>
+&nbsp;    public List&lt;GameNote&gt; getAllNotesForUserAndGame (@Parameter (description = &quot;id of a user&quot;)@PathVariable int userId, @Parameter(description = &quot;id of a game&quot;)@PathVariable int gameId) {
+<b class="pc">&nbsp;        if (!userRepo.existsById(userId)) {</b>
 <b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;could not find user&quot;);</b>
 &nbsp;        }
-<b class="nc">&nbsp;        if (!cardGameRepo.existsById(gameId)) {</b>
+<b class="pc">&nbsp;        if (!cardGameRepo.existsById(gameId)) {</b>
 <b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;could not find game&quot;);</b>
 &nbsp;        }
-<b class="nc">&nbsp;        return gameNoteRepo.findByUserIdAndGameId(userId, gameId);</b>
+<b class="fc">&nbsp;        return gameNoteRepo.findByUserIdAndGameId(userId, gameId);</b>
 &nbsp;    }
 &nbsp;
+&nbsp;    @Operation(summary = &quot;Gets a list of notes based on an user&quot;, description = &quot;Retrieves a list of GameNotes from the database based on an user id&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved a list of GameNotes&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = GameNote.class))
+&nbsp;                    }),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;could not find user&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
 &nbsp;    @GetMapping(&quot;/gameNotes/{userId}&quot;)
-&nbsp;    public List&lt;GameNote&gt; getAllNotesForUser (@PathVariable int userId) {
-<b class="nc">&nbsp;        if (!userRepo.existsById(userId)) {</b>
+&nbsp;    public List&lt;GameNote&gt; getAllNotesForUser (@Parameter(description = &quot;id of user&quot;)@PathVariable int userId) {
+<b class="pc">&nbsp;        if (!userRepo.existsById(userId)) {</b>
 <b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;could not find user&quot;);</b>
 &nbsp;        }
-<b class="nc">&nbsp;        return gameNoteRepo.findByUserId(userId);</b>
+<b class="fc">&nbsp;        return gameNoteRepo.findByUserId(userId);</b>
 &nbsp;    }
 &nbsp;
+&nbsp;    @Operation(summary = &quot;Creates a game note for a user for a game&quot;, description = &quot;Creates and stores a user&#39;s game note for a specific game into the database&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully created GameNote and stored it&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = GameNote.class))
+&nbsp;                    }),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;could not find user or game&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
 &nbsp;    @PostMapping(&quot;/gameNotes/{userId}/{gameId}&quot;)
-&nbsp;    public GameNote createGameNote (@PathVariable int userId, @RequestBody String note, @PathVariable int gameId) {
-<b class="nc">&nbsp;        if (!userRepo.existsById(userId)) {</b>
+&nbsp;    public GameNote createGameNote (@Parameter(description = &quot;id of user&quot;)@PathVariable int userId, @Parameter(description = &quot;text to create note with&quot;)@RequestBody String note, @Parameter(description = &quot;id of game&quot;)@PathVariable int gameId) {
+<b class="pc">&nbsp;        if (!userRepo.existsById(userId)) {</b>
 <b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;could not find user&quot;);</b>
 &nbsp;        }
-<b class="nc">&nbsp;        if (!cardGameRepo.existsById(gameId)) {</b>
-<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;could not find game&quot;);</b>
+<b class="fc">&nbsp;        if (!cardGameRepo.existsById(gameId)) {</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;could not find game&quot;);</b>
 &nbsp;        }
-<b class="nc">&nbsp;        GameNote sticky = new GameNote();</b>
-<b class="nc">&nbsp;        sticky.setUser(userRepo.findById(userId));</b>
-<b class="nc">&nbsp;        sticky.setGame(cardGameRepo.findById(gameId));</b>
-<b class="nc">&nbsp;        sticky.setText(note);</b>
-<b class="nc">&nbsp;        gameNoteRepo.save(sticky);</b>
-<b class="nc">&nbsp;        return sticky;</b>
+<b class="fc">&nbsp;        GameNote sticky = new GameNote();</b>
+<b class="fc">&nbsp;        sticky.setUser(userRepo.findById(userId));</b>
+<b class="fc">&nbsp;        sticky.setGame(cardGameRepo.findById(gameId));</b>
+<b class="fc">&nbsp;        sticky.setText(note);</b>
+<b class="fc">&nbsp;        gameNoteRepo.save(sticky);</b>
+<b class="fc">&nbsp;        return sticky;</b>
 &nbsp;    }
 &nbsp;
+&nbsp;    @Operation(summary = &quot;Updates a user&#39;s game note&quot;, description = &quot;finds a user&#39;s game note from the database and updates it.&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully updated the GameNote&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = GameNote.class))
+&nbsp;                    }),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;could not find game note&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
 &nbsp;    @PutMapping (&quot;/gameNotes/{id}&quot;)
-&nbsp;    public GameNote updateGameNote (@PathVariable int id, @RequestBody String text) {
-<b class="nc">&nbsp;        if (!gameNoteRepo.existsById(id)) {</b>
-<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;could not find note&quot;);</b>
+&nbsp;    public GameNote updateGameNote (@Parameter(description = &quot;id of game note&quot;)@PathVariable int id, @Parameter(description = &quot;text used to update text of game note&quot;)@RequestBody String text) {
+<b class="fc">&nbsp;        if (!gameNoteRepo.existsById(id)) {</b>
+<b class="fc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;could not find note&quot;);</b>
 &nbsp;        }
-<b class="nc">&nbsp;        GameNote note = gameNoteRepo.findById(id);</b>
-<b class="nc">&nbsp;        note.setText(text);</b>
-<b class="nc">&nbsp;        gameNoteRepo.save(note);</b>
-<b class="nc">&nbsp;        return note;</b>
+<b class="fc">&nbsp;        GameNote note = gameNoteRepo.findById(id);</b>
+<b class="fc">&nbsp;        note.setText(text);</b>
+<b class="fc">&nbsp;        gameNoteRepo.save(note);</b>
+<b class="fc">&nbsp;        return note;</b>
 &nbsp;    }
-&nbsp;
+&nbsp;    @Operation(summary = &quot;Deletes a user&#39;s game note&quot;, description = &quot;Finds a game note from the database and deletes it.&quot;)
+&nbsp;    @ApiResponses(value =  {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully deleted the game note&quot;,
+&nbsp;                    content = { @Content(mediaType = &quot;application/json&quot;,
+&nbsp;                            schema = @Schema(implementation = GameNote.class))
+&nbsp;                    }),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;could not find game note&quot;,
+&nbsp;                    content = @Content),
+&nbsp;            @ApiResponse(responseCode = &quot;500&quot;, description = &quot;game note was not deleted&quot;,
+&nbsp;                    content = @Content),
+&nbsp;    })
 &nbsp;    @DeleteMapping (&quot;/gameNotes/{id}&quot;)
-&nbsp;    public String deleteGameNote (@PathVariable int id) {
-<b class="nc">&nbsp;        if (!gameNoteRepo.existsById(id)) {</b>
+&nbsp;    public String deleteGameNote (@Parameter(description = &quot;id of game note&quot;)@PathVariable int id) {
+<b class="pc">&nbsp;        if (!gameNoteRepo.existsById(id)) {</b>
 <b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;could not find note&quot;);</b>
 &nbsp;        }
-<b class="nc">&nbsp;        gameNoteRepo.deleteById(id);</b>
-<b class="nc">&nbsp;        if (gameNoteRepo.existsById(id)) {</b>
+<b class="fc">&nbsp;        gameNoteRepo.deleteById(id);</b>
+<b class="pc">&nbsp;        if (gameNoteRepo.existsById(id)) {</b>
 <b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, &quot;note was not deleted&quot;);</b>
 &nbsp;        }
-<b class="nc">&nbsp;        return &quot;{\&quot;message\&quot;:\&quot;note was successfully deleted\&quot;}&quot;;</b>
+<b class="fc">&nbsp;        return &quot;{\&quot;message\&quot;:\&quot;note was successfully deleted\&quot;}&quot;;</b>
 &nbsp;    }
 &nbsp;}
 </code>
@@ -191,7 +244,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 10:46</div>
+    <div style="float:right;">generated on 2026-05-06 23:57</div>
 </div>
 </body>
 </html>

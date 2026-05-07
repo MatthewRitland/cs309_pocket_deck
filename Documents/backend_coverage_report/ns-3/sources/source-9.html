@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > GroupChatRepository</title>
+  <title>Coverage Report > GroupChatMembershipRepository</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">PocketDeck.Chat</a>
 </div>
 
-<h1>Coverage Summary for Class: GroupChatRepository (PocketDeck.Chat)</h1>
+<h1>Coverage Summary for Class: GroupChatMembershipRepository (PocketDeck.Chat)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">GroupChatRepository</td>
+  <td class="name">GroupChatMembershipRepository</td>
 </tr>
 
 </table>
@@ -42,11 +42,22 @@ Current scope:     <a href="../../index.html">all classes</a>
 <code class="sourceCode" id="sourceCode">&nbsp;package PocketDeck.Chat;
 &nbsp;
 &nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
 &nbsp;
-&nbsp;// stores the chatrooms themselves
-&nbsp;public interface GroupChatRepository extends JpaRepository&lt;GroupChat, Long&gt; {
-&nbsp;    //@Transactional - Already included from Spring Boot
-&nbsp;    //void deleteById(GroupChatId);
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;// &quot;table&quot; storing the GroupChatMembership, Long since id key is Long datatype
+&nbsp;// saves the grouping of members in group chats
+&nbsp;public interface GroupChatMembershipRepository extends JpaRepository&lt;GroupChatMembership, Long&gt; {
+&nbsp;    // finds and returns a list of all groupChatMemberships that belong to a group chat
+&nbsp;    List&lt;GroupChatMembership&gt; findByGroupChatId(Long groupChatId);
+&nbsp;
+&nbsp;    // finds and returns a list of all groupChatMemberships a user belongs to
+&nbsp;    List&lt;GroupChatMembership&gt; findByUserId(int UserId);
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    void deleteByGroupChatIdAndUserId(Long groupChatId, int UserId); // used to remove a user from a group chat
+&nbsp;
 &nbsp;}
 </code>
 </pre>
@@ -71,7 +82,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 10:46</div>
+    <div style="float:right;">generated on 2026-05-06 23:57</div>
 </div>
 </body>
 </html>

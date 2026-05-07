@@ -56,26 +56,26 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    50%
+    55.6%
   </span>
   <span class="absValue">
-    (4/8)
+    (5/9)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    45%
+    36%
   </span>
   <span class="absValue">
-    (18/40)
+    (18/50)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    61.8%
+    55.2%
   </span>
   <span class="absValue">
-    (47/76)
+    (48/87)
   </span>
 </td>
 </tr>
@@ -145,9 +145,35 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;
+&nbsp;    @PostMapping(path = &quot;/gameLobbies/{gameLobbyId}/start/{userId}&quot;)
+&nbsp;    public String startGame (@PathVariable int gameLobbyId, @PathVariable int userId) {
+<b class="nc">&nbsp;        GameLobbyMembership membership = gameLobbyMembershipRepo.findByGameLobbyMemberId(userId);</b>
+&nbsp;
+<b class="nc">&nbsp;        if(membership == null || membership.getGameLobby().getId() != gameLobbyId) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;User is not a member of this lobby&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if(membership.getMemberRole() != GameLobbyMembershipRole.OWNER_MEMBER) {</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, &quot;Only the lobby owner can start the game&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        List&lt;GameLobbyMembership&gt; memberships = gameLobbyMembershipRepo.findByGameLobbyId(gameLobbyId);</b>
+<b class="nc">&nbsp;        for (GameLobbyMembership foundMembership : memberships ) {</b>
+<b class="nc">&nbsp;            if (foundMembership.getIsReady()) continue;</b>
+<b class="nc">&nbsp;            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;All members must be ready to start the game&quot;);</b>
+&nbsp;
+&nbsp;        }
+&nbsp;
+&nbsp;        // can be used by frontend to know when to switch screens. Route all players to game screen
+&nbsp;        // DOESN&#39;T ACUTALLY START THE GAME. That is done in &quot;Game&quot; class. This is just useful for changing the screen
+&nbsp;        // to the blackjack screen.
+<b class="nc">&nbsp;        GameLobbySocket.broadcastToLobby(gameLobbyId, &quot;{\&quot;type\&quot;:\&quot;GAME_START\&quot;, \&quot;lobbyId\&quot;:&quot; + gameLobbyId + &quot;}&quot;);</b>
+<b class="nc">&nbsp;        return &quot;{\&quot;message\&quot;:\&quot;Game has started\&quot;}&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
 &nbsp;    // return a list of all game lobbies
 &nbsp;    @GetMapping (path = &quot;/gameLobbies&quot;)
-<b class="nc">&nbsp;    public List&lt;GameLobby&gt; getGameLobbies() { return gameLobbyRepo.findAll();</b>
+<b class="fc">&nbsp;    public List&lt;GameLobby&gt; getGameLobbies() { return gameLobbyRepo.findAll();</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    // return a list of all members in a game lobby
@@ -302,7 +328,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 10:46</div>
+    <div style="float:right;">generated on 2026-05-06 23:57</div>
 </div>
 </body>
 </html>

@@ -48,34 +48,34 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">Game</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/1)
+    (1/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    89.7%
   </span>
   <span class="absValue">
-    (0/29)
+    (26/29)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    52.5%
   </span>
   <span class="absValue">
-    (0/40)
+    (21/40)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    77.2%
   </span>
   <span class="absValue">
-    (0/79)
+    (61/79)
   </span>
 </td>
 </tr>
@@ -96,7 +96,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;
 &nbsp;abstract public class Game {
-<b class="nc">&nbsp;    private static Card[] deck = {new Card (Suit.CLUBS, Value.ACE), new Card (Suit.CLUBS, Value.TWO), new Card (Suit.CLUBS, Value.THREE), new Card (Suit.CLUBS, Value.FOUR), new Card (Suit.CLUBS, Value.FIVE), new Card (Suit.CLUBS, Value.SIX), new Card (Suit.CLUBS, Value.SEVEN), new Card (Suit.CLUBS, Value.EIGHT), new Card (Suit.CLUBS, Value.NINE), new Card (Suit.CLUBS, Value.TEN), new Card (Suit.CLUBS, Value.JACK), new Card (Suit.CLUBS, Value.QUEEN), new Card (Suit.CLUBS, Value.KING), new Card (Suit.SPADES, Value.ACE), new Card (Suit.SPADES, Value.TWO), new Card (Suit.SPADES, Value.THREE), new Card (Suit.SPADES, Value.FOUR), new Card (Suit.SPADES, Value.FIVE), new Card (Suit.SPADES, Value.SIX), new Card (Suit.SPADES, Value.SEVEN), new Card (Suit.SPADES, Value.EIGHT), new Card (Suit.SPADES, Value.NINE), new Card (Suit.SPADES, Value.TEN), new Card (Suit.SPADES, Value.JACK), new Card (Suit.SPADES, Value.QUEEN), new Card (Suit.SPADES, Value.KING), new Card (Suit.DIAMONDS, Value.ACE), new Card (Suit.DIAMONDS, Value.TWO), new Card (Suit.DIAMONDS, Value.THREE), new Card (Suit.DIAMONDS, Value.FOUR), new Card (Suit.DIAMONDS, Value.FIVE), new Card (Suit.DIAMONDS, Value.SIX), new Card (Suit.DIAMONDS, Value.SEVEN), new Card (Suit.DIAMONDS, Value.EIGHT), new Card (Suit.DIAMONDS, Value.NINE), new Card (Suit.DIAMONDS, Value.TEN), new Card (Suit.DIAMONDS, Value.JACK), new Card (Suit.DIAMONDS, Value.QUEEN), new Card (Suit.DIAMONDS, Value.KING), new Card (Suit.HEARTS, Value.ACE), new Card (Suit.HEARTS, Value.TWO), new Card (Suit.HEARTS, Value.THREE), new Card (Suit.HEARTS, Value.FOUR), new Card (Suit.HEARTS, Value.FIVE), new Card (Suit.HEARTS, Value.SIX), new Card (Suit.HEARTS, Value.SEVEN), new Card (Suit.HEARTS, Value.EIGHT), new Card (Suit.HEARTS, Value.NINE), new Card (Suit.HEARTS, Value.TEN), new Card (Suit.HEARTS, Value.JACK), new Card (Suit.HEARTS, Value.QUEEN), new Card (Suit.HEARTS, Value.KING)};</b>
+<b class="fc">&nbsp;    private static Card[] deck = {new Card (Suit.CLUBS, Value.ACE), new Card (Suit.CLUBS, Value.TWO), new Card (Suit.CLUBS, Value.THREE), new Card (Suit.CLUBS, Value.FOUR), new Card (Suit.CLUBS, Value.FIVE), new Card (Suit.CLUBS, Value.SIX), new Card (Suit.CLUBS, Value.SEVEN), new Card (Suit.CLUBS, Value.EIGHT), new Card (Suit.CLUBS, Value.NINE), new Card (Suit.CLUBS, Value.TEN), new Card (Suit.CLUBS, Value.JACK), new Card (Suit.CLUBS, Value.QUEEN), new Card (Suit.CLUBS, Value.KING), new Card (Suit.SPADES, Value.ACE), new Card (Suit.SPADES, Value.TWO), new Card (Suit.SPADES, Value.THREE), new Card (Suit.SPADES, Value.FOUR), new Card (Suit.SPADES, Value.FIVE), new Card (Suit.SPADES, Value.SIX), new Card (Suit.SPADES, Value.SEVEN), new Card (Suit.SPADES, Value.EIGHT), new Card (Suit.SPADES, Value.NINE), new Card (Suit.SPADES, Value.TEN), new Card (Suit.SPADES, Value.JACK), new Card (Suit.SPADES, Value.QUEEN), new Card (Suit.SPADES, Value.KING), new Card (Suit.DIAMONDS, Value.ACE), new Card (Suit.DIAMONDS, Value.TWO), new Card (Suit.DIAMONDS, Value.THREE), new Card (Suit.DIAMONDS, Value.FOUR), new Card (Suit.DIAMONDS, Value.FIVE), new Card (Suit.DIAMONDS, Value.SIX), new Card (Suit.DIAMONDS, Value.SEVEN), new Card (Suit.DIAMONDS, Value.EIGHT), new Card (Suit.DIAMONDS, Value.NINE), new Card (Suit.DIAMONDS, Value.TEN), new Card (Suit.DIAMONDS, Value.JACK), new Card (Suit.DIAMONDS, Value.QUEEN), new Card (Suit.DIAMONDS, Value.KING), new Card (Suit.HEARTS, Value.ACE), new Card (Suit.HEARTS, Value.TWO), new Card (Suit.HEARTS, Value.THREE), new Card (Suit.HEARTS, Value.FOUR), new Card (Suit.HEARTS, Value.FIVE), new Card (Suit.HEARTS, Value.SIX), new Card (Suit.HEARTS, Value.SEVEN), new Card (Suit.HEARTS, Value.EIGHT), new Card (Suit.HEARTS, Value.NINE), new Card (Suit.HEARTS, Value.TEN), new Card (Suit.HEARTS, Value.JACK), new Card (Suit.HEARTS, Value.QUEEN), new Card (Suit.HEARTS, Value.KING)};</b>
 &nbsp;    private CardGame gameRules;
 &nbsp;    private User[] players;
 &nbsp;    private User currentPlayer;
@@ -108,109 +108,109 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 <b class="nc">&nbsp;    public Game () {}</b>
 &nbsp;
-<b class="nc">&nbsp;    public Game (CardGame gameRules, User[] players, int handLimit) {</b>
-<b class="nc">&nbsp;        this.gameRules = gameRules;</b>
-<b class="nc">&nbsp;        this.players = players;</b>
-<b class="nc">&nbsp;        this.handLimit = handLimit;</b>
-<b class="nc">&nbsp;        currentPlayer = players[0];</b>
-<b class="nc">&nbsp;        playerHands = new Card[players.length][handLimit];</b>
-<b class="nc">&nbsp;        turn = 0;</b>
-<b class="nc">&nbsp;        winners = new Result[players.length];</b>
+<b class="fc">&nbsp;    public Game (CardGame gameRules, User[] players, int handLimit) {</b>
+<b class="fc">&nbsp;        this.gameRules = gameRules;</b>
+<b class="fc">&nbsp;        this.players = players;</b>
+<b class="fc">&nbsp;        this.handLimit = handLimit;</b>
+<b class="fc">&nbsp;        currentPlayer = players[0];</b>
+<b class="fc">&nbsp;        playerHands = new Card[players.length][handLimit];</b>
+<b class="fc">&nbsp;        turn = 0;</b>
+<b class="fc">&nbsp;        winners = new Result[players.length];</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public User[] getPlayers () {
-<b class="nc">&nbsp;        return players;</b>
+<b class="fc">&nbsp;        return players;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void setPlayers (User[] players) {
-<b class="nc">&nbsp;        this.players = players;</b>
+<b class="fc">&nbsp;        this.players = players;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public CardGame getGameRules () {
-<b class="nc">&nbsp;        return gameRules;</b>
+<b class="fc">&nbsp;        return gameRules;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void setGameRules (CardGame gameRules) {
-<b class="nc">&nbsp;        this.gameRules = gameRules;</b>
+<b class="fc">&nbsp;        this.gameRules = gameRules;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public int getHandLimit () {
-<b class="nc">&nbsp;        return handLimit;</b>
+<b class="fc">&nbsp;        return handLimit;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void setHandLimit (int handLimit) {
-<b class="nc">&nbsp;        this.handLimit = handLimit;</b>
+<b class="fc">&nbsp;        this.handLimit = handLimit;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Actions[] getPossibleActions () {
-<b class="nc">&nbsp;        return possibleActions;</b>
+<b class="fc">&nbsp;        return possibleActions;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void setPossibleActions (Actions[] actions) {
-<b class="nc">&nbsp;        this.possibleActions = actions;</b>
+<b class="fc">&nbsp;        this.possibleActions = actions;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public User getCurrentPlayer () {
-<b class="nc">&nbsp;        return currentPlayer;</b>
+<b class="fc">&nbsp;        return currentPlayer;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void setCurrentPlayer () {
-<b class="nc">&nbsp;        currentPlayer = players[0];</b>
+<b class="fc">&nbsp;        currentPlayer = players[0];</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Card[] getDeck () {
-<b class="nc">&nbsp;        return deck;</b>
+<b class="fc">&nbsp;        return deck;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Card[][] getPlayerHands () {
-<b class="nc">&nbsp;        return playerHands;</b>
+<b class="fc">&nbsp;        return playerHands;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void setPlayerHands () {
-<b class="nc">&nbsp;        playerHands = new Card[players.length][handLimit];</b>
+<b class="fc">&nbsp;        playerHands = new Card[players.length][handLimit];</b>
 &nbsp;    }
 &nbsp;
-<b class="nc">&nbsp;    public int getTurn () { return turn; }</b>
+<b class="fc">&nbsp;    public int getTurn () { return turn; }</b>
 &nbsp;
 <b class="nc">&nbsp;    protected void setTurn (int turn) { this.turn = turn; }</b>
 &nbsp;
-<b class="nc">&nbsp;    public Result[] getWinners () { return winners; }</b>
+<b class="fc">&nbsp;    public Result[] getWinners () { return winners; }</b>
 &nbsp;
 &nbsp;    public void setWinner (int index, Result result) {
-<b class="nc">&nbsp;        winners[index] = result;</b>
+<b class="fc">&nbsp;        winners[index] = result;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Card[] getCurrentPlayerHand () {
-<b class="nc">&nbsp;        if (findCurrentPlayer() == -1) {</b>
+<b class="pc">&nbsp;        if (findCurrentPlayer() == -1) {</b>
 <b class="nc">&nbsp;            return null;</b>
 &nbsp;        }
-<b class="nc">&nbsp;        return playerHands[findCurrentPlayer()];</b>
+<b class="fc">&nbsp;        return playerHands[findCurrentPlayer()];</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Card[] getPlayerHand (User player) {
-<b class="nc">&nbsp;        if (findPlayer(player) == -1) {</b>
+<b class="pc">&nbsp;        if (findPlayer(player) == -1) {</b>
 <b class="nc">&nbsp;            return null;</b>
 &nbsp;        }
-<b class="nc">&nbsp;        return playerHands[findPlayer(player)];</b>
+<b class="fc">&nbsp;        return playerHands[findPlayer(player)];</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Card getCard (User player, int handPlacement) {
-<b class="nc">&nbsp;        int playerLocation = findPlayer(player);</b>
-<b class="nc">&nbsp;        if (playerLocation == -1) {</b>
+<b class="fc">&nbsp;        int playerLocation = findPlayer(player);</b>
+<b class="pc">&nbsp;        if (playerLocation == -1) {</b>
 <b class="nc">&nbsp;            return null;</b>
 &nbsp;        }
-<b class="nc">&nbsp;        if (handPlacement &lt; 0 || handPlacement &gt;= handLimit) {</b>
+<b class="pc">&nbsp;        if (handPlacement &lt; 0 || handPlacement &gt;= handLimit) {</b>
 <b class="nc">&nbsp;            return null;</b>
 &nbsp;        }
-<b class="nc">&nbsp;        return playerHands[playerLocation][handPlacement];</b>
+<b class="fc">&nbsp;        return playerHands[playerLocation][handPlacement];</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public int getCardLocation (User player, Card card) {
-<b class="nc">&nbsp;        Card[] playerHand = getPlayerHand(player);</b>
-<b class="nc">&nbsp;        int cardLocation = 0;</b>
-<b class="nc">&nbsp;        for (cardLocation = 0; cardLocation &lt; playerHand.length; cardLocation++) {</b>
-<b class="nc">&nbsp;            if (card.isEqual(playerHand[cardLocation])) {</b>
-<b class="nc">&nbsp;                return cardLocation;</b>
+<b class="fc">&nbsp;        Card[] playerHand = getPlayerHand(player);</b>
+<b class="fc">&nbsp;        int cardLocation = 0;</b>
+<b class="pc">&nbsp;        for (cardLocation = 0; cardLocation &lt; playerHand.length; cardLocation++) {</b>
+<b class="fc">&nbsp;            if (card.equals(playerHand[cardLocation])) {</b>
+<b class="fc">&nbsp;                return cardLocation;</b>
 &nbsp;            }
 &nbsp;        }
 <b class="nc">&nbsp;        return -1;</b>
@@ -218,9 +218,9 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    public int findPlayer (User player) {
 &nbsp;        int current;
-<b class="nc">&nbsp;        for (current = 0; current &lt; players.length; current++) {</b>
-<b class="nc">&nbsp;            if (player.isEqual(players[current])) {</b>
-<b class="nc">&nbsp;                return current;</b>
+<b class="pc">&nbsp;        for (current = 0; current &lt; players.length; current++) {</b>
+<b class="pc">&nbsp;            if (player.isEqual(players[current])) {</b>
+<b class="fc">&nbsp;                return current;</b>
 &nbsp;            }
 &nbsp;        }
 <b class="nc">&nbsp;        return -1;</b>
@@ -228,47 +228,47 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    public int findCurrentPlayer () {
 &nbsp;        int current;
-<b class="nc">&nbsp;        for (current = 0; current &lt; players.length; current++) {</b>
-<b class="nc">&nbsp;            if (currentPlayer.isEqual(players[current])) {</b>
-<b class="nc">&nbsp;                return current;</b>
+<b class="pc">&nbsp;        for (current = 0; current &lt; players.length; current++) {</b>
+<b class="pc">&nbsp;            if (currentPlayer.isEqual(players[current])) {</b>
+<b class="fc">&nbsp;                return current;</b>
 &nbsp;            }
 &nbsp;        }
 <b class="nc">&nbsp;        return -1;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void nextPlayer () {
-<b class="nc">&nbsp;        int current = findCurrentPlayer();</b>
-<b class="nc">&nbsp;        if (current == players.length - 1) {</b>
-<b class="nc">&nbsp;            current = 0;</b>
+<b class="fc">&nbsp;        int current = findCurrentPlayer();</b>
+<b class="pc">&nbsp;        if (current == players.length - 1) {</b>
+<b class="fc">&nbsp;            current = 0;</b>
 &nbsp;        }
 &nbsp;        else {
 <b class="nc">&nbsp;            current += 1;</b>
 &nbsp;        }
-<b class="nc">&nbsp;        currentPlayer = players[current];</b>
+<b class="fc">&nbsp;        currentPlayer = players[current];</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Card draw () {
-<b class="nc">&nbsp;        if (findCurrentPlayer() == -1) {</b>
+<b class="pc">&nbsp;        if (findCurrentPlayer() == -1) {</b>
 <b class="nc">&nbsp;            return null;</b>
 &nbsp;        }
-<b class="nc">&nbsp;        Card[] currentHand = playerHands[findCurrentPlayer()];</b>
-<b class="nc">&nbsp;        int cardCount = 0;</b>
+<b class="fc">&nbsp;        Card[] currentHand = playerHands[findCurrentPlayer()];</b>
+<b class="fc">&nbsp;        int cardCount = 0;</b>
 &nbsp;        Card currentCard;
-<b class="nc">&nbsp;        if (currentHand[cardCount] != null) {</b>
-<b class="nc">&nbsp;            currentCard = currentHand[cardCount];</b>
-<b class="nc">&nbsp;            while (currentCard != null &amp;&amp; cardCount &lt; currentHand.length) {</b>
-<b class="nc">&nbsp;                cardCount += 1;</b>
-<b class="nc">&nbsp;                if (cardCount &lt; currentHand.length) {</b>
-<b class="nc">&nbsp;                    currentCard = currentHand[cardCount];</b>
+<b class="fc">&nbsp;        if (currentHand[cardCount] != null) {</b>
+<b class="fc">&nbsp;            currentCard = currentHand[cardCount];</b>
+<b class="pc">&nbsp;            while (currentCard != null &amp;&amp; cardCount &lt; currentHand.length) {</b>
+<b class="fc">&nbsp;                cardCount += 1;</b>
+<b class="pc">&nbsp;                if (cardCount &lt; currentHand.length) {</b>
+<b class="fc">&nbsp;                    currentCard = currentHand[cardCount];</b>
 &nbsp;                }
 &nbsp;            }
 &nbsp;        }
-<b class="nc">&nbsp;        if (currentHand.length &lt;= cardCount) {</b>
+<b class="pc">&nbsp;        if (currentHand.length &lt;= cardCount) {</b>
 <b class="nc">&nbsp;            return null;</b>
 &nbsp;        }
-<b class="nc">&nbsp;        Random ran = new Random();</b>
-<b class="nc">&nbsp;        playerHands[findCurrentPlayer()][cardCount] = deck[ran.nextInt(52)];</b>
-<b class="nc">&nbsp;        return playerHands[findCurrentPlayer()][cardCount];</b>
+<b class="fc">&nbsp;        Random ran = new Random();</b>
+<b class="fc">&nbsp;        playerHands[findCurrentPlayer()][cardCount] = deck[ran.nextInt(52)];</b>
+<b class="fc">&nbsp;        return playerHands[findCurrentPlayer()][cardCount];</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    abstract public void takeTurn (Actions action);
@@ -310,7 +310,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 10:46</div>
+    <div style="float:right;">generated on 2026-05-06 23:57</div>
 </div>
 </body>
 </html>

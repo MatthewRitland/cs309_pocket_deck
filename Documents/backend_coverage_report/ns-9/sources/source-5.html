@@ -256,20 +256,22 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;                                }
 <b class="nc">&nbsp;                                gameLobbyRepo.deleteById(previousGameLobby.getId());</b>
 &nbsp;                            }
-<b class="nc">&nbsp;                            else if (wasOwner) {</b>
-<b class="nc">&nbsp;                                List&lt;GameLobbyMembership&gt; previousGameLobbyMemberships = gameLobbyMembershipRepo.findByGameLobbyId(previousGameLobbyId);</b>
-<b class="nc">&nbsp;                                for (GameLobbyMembership foundMembership : previousGameLobbyMemberships) {</b>
-<b class="nc">&nbsp;                                    if (foundMembership.getGameLobbyMember().getId() == requested.getId()) {</b>
-&nbsp;                                        continue;
+&nbsp;                            else {
+<b class="nc">&nbsp;                                if (wasOwner) {</b>
+<b class="nc">&nbsp;                                    List&lt;GameLobbyMembership&gt; previousGameLobbyMemberships = gameLobbyMembershipRepo.findByGameLobbyId(previousGameLobbyId);</b>
+<b class="nc">&nbsp;                                    for (GameLobbyMembership foundMembership : previousGameLobbyMemberships) {</b>
+<b class="nc">&nbsp;                                        if (foundMembership.getGameLobbyMember().getId() == requested.getId()) {</b>
+&nbsp;                                            continue;
+&nbsp;                                        }
+<b class="nc">&nbsp;                                        foundMembership.setMemberRole(GameLobbyMembershipRole.OWNER_MEMBER);</b>
+<b class="nc">&nbsp;                                        gameLobbyMembershipRepo.save(foundMembership);</b>
+&nbsp;                                        break;
 &nbsp;                                    }
-<b class="nc">&nbsp;                                    foundMembership.setMemberRole(GameLobbyMembershipRole.OWNER_MEMBER);</b>
-<b class="nc">&nbsp;                                    gameLobbyMembershipRepo.save(foundMembership);</b>
-&nbsp;                                    // notify previous lobby members (use this in frontend to update their screens)
-<b class="nc">&nbsp;                                    GameLobbySocket.broadcastToLobby(previousGameLobbyId, &quot;{\&quot;type\&quot;:\&quot;LOBBY_UPDATE\&quot;, \&quot;lobbyId\&quot;:&quot; + request.getGameLobby().getId() + &quot;}&quot;);</b>
-&nbsp;                                    break;
 &nbsp;                                }
-&nbsp;
+&nbsp;                                // notify previous lobby members (use this in frontend to update their screens)
+<b class="nc">&nbsp;                                GameLobbySocket.broadcastToLobby(previousGameLobbyId, &quot;{\&quot;type\&quot;:\&quot;LOBBY_UPDATE\&quot;, \&quot;lobbyId\&quot;:&quot; + previousGameLobbyId + &quot;}&quot;);</b>
 &nbsp;                            }
+&nbsp;
 &nbsp;                        }
 &nbsp;
 &nbsp;
@@ -355,7 +357,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 10:46</div>
+    <div style="float:right;">generated on 2026-05-06 23:57</div>
 </div>
 </body>
 </html>

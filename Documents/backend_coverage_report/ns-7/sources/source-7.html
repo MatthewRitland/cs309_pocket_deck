@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > GameLobbyRepository</title>
+  <title>Coverage Report > GameLobbyMembershipRepository</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">PocketDeck.GameLobby</a>
 </div>
 
-<h1>Coverage Summary for Class: GameLobbyRepository (PocketDeck.GameLobby)</h1>
+<h1>Coverage Summary for Class: GameLobbyMembershipRepository (PocketDeck.GameLobby)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">GameLobbyRepository</td>
+  <td class="name">GameLobbyMembershipRepository</td>
 </tr>
 
 </table>
@@ -44,14 +44,20 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import org.springframework.data.jpa.repository.JpaRepository;
 &nbsp;import org.springframework.transaction.annotation.Transactional;
 &nbsp;
-&nbsp;public interface GameLobbyRepository extends JpaRepository&lt;GameLobby, Integer&gt; {
-&nbsp;    GameLobby findById(int id);
+&nbsp;import java.util.List;
 &nbsp;
-&nbsp;    boolean existsById(int gameLobbyId);
+&nbsp;public interface GameLobbyMembershipRepository extends JpaRepository&lt;GameLobbyMembership, Integer&gt; {
+&nbsp;    GameLobbyMembership findById(int id);
 &nbsp;
+&nbsp;    GameLobbyMembership findByGameLobbyMemberId(int userId); // use to make sure that a member is in only ONE lobby at a time
+&nbsp;    int countByGameLobbyId(int id);
+&nbsp;
+&nbsp;    List&lt;GameLobbyMembership&gt; findByGameLobbyId(int gameLobbyId); // use to return a list of all members in a lobby
 &nbsp;    @Transactional
 &nbsp;    void deleteById(int id);
 &nbsp;
+&nbsp;    @Transactional
+&nbsp;    void deleteByGameLobbyMemberId(int id);
 &nbsp;}
 </code>
 </pre>
@@ -76,7 +82,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 10:46</div>
+    <div style="float:right;">generated on 2026-05-06 23:57</div>
 </div>
 </body>
 </html>

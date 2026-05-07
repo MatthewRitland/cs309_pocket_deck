@@ -179,7 +179,7 @@ public class RequestSystemTest {
             Response response = RestAssured.given().
                     header("Content-Type", "application/json").
                     header("charset","utf-8").
-                    body(request).
+                    body(request.toString()).
                     when().
                     post("/request");
             int statusCode = response.getStatusCode();

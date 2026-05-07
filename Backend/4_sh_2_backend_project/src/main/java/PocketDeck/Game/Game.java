@@ -120,7 +120,7 @@ abstract public class Game {
         Card[] playerHand = getPlayerHand(player);
         int cardLocation = 0;
         for (cardLocation = 0; cardLocation < playerHand.length; cardLocation++) {
-            if (card.isEqual(playerHand[cardLocation])) {
+            if (card.equals(playerHand[cardLocation])) {
                 return cardLocation;
             }
         }

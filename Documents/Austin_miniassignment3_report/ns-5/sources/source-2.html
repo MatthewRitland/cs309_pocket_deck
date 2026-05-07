@@ -48,34 +48,34 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">BlackJack</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/1)
+    (1/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    46.2%
   </span>
   <span class="absValue">
-    (0/12)
+    (6/13)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    14.2%
   </span>
   <span class="absValue">
-    (0/132)
+    (36/254)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    26.9%
   </span>
   <span class="absValue">
-    (0/170)
+    (66/245)
   </span>
 </td>
 </tr>
@@ -107,169 +107,171 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;    public BlackJack (CardGame gameRules, User[] players) {
-<b class="nc">&nbsp;        super (gameRules, players, 30);</b>
-<b class="nc">&nbsp;        scores = new int[players.length];</b>
-<b class="nc">&nbsp;        dealerHand = new Card[30];</b>
-<b class="nc">&nbsp;        stood = new boolean[players.length];</b>
-<b class="nc">&nbsp;        dealerScore = 0;</b>
-<b class="nc">&nbsp;        for (int i = 0; i &lt; players.length; i++) {</b>
-<b class="nc">&nbsp;            scores[i] = 0;</b>
-<b class="nc">&nbsp;            stood[i] = false;</b>
-<b class="nc">&nbsp;            draw();</b>
-<b class="nc">&nbsp;            draw();</b>
-<b class="nc">&nbsp;            scores[i] = cardValueConversion(getCard(getCurrentPlayer(), 0)) + cardValueConversion(getCard(getCurrentPlayer(), 1));</b>
-<b class="nc">&nbsp;            nextPlayer();</b>
+<b class="fc">&nbsp;        super (gameRules, players, 30);</b>
+<b class="fc">&nbsp;        scores = new int[players.length];</b>
+<b class="fc">&nbsp;        dealerHand = new Card[30];</b>
+<b class="fc">&nbsp;        stood = new boolean[players.length];</b>
+<b class="fc">&nbsp;        dealerScore = 0;</b>
+<b class="fc">&nbsp;        for (int i = 0; i &lt; players.length; i++) {</b>
+<b class="fc">&nbsp;            scores[i] = 0;</b>
+<b class="fc">&nbsp;            stood[i] = false;</b>
+<b class="fc">&nbsp;            draw();</b>
+<b class="fc">&nbsp;            draw();</b>
+<b class="fc">&nbsp;            scores[i] = cardValueConversion(getCard(getCurrentPlayer(), 0)) + cardValueConversion(getCard(getCurrentPlayer(), 1));</b>
+<b class="fc">&nbsp;            nextPlayer();</b>
 &nbsp;        }
-<b class="nc">&nbsp;        dealerTurn();</b>
-<b class="nc">&nbsp;        dealerTurn();</b>
-<b class="nc">&nbsp;        Actions[] actions = new Actions[2];</b>
-<b class="nc">&nbsp;        actions[0] = Actions.STAND;</b>
-<b class="nc">&nbsp;        actions[1] = Actions.HIT;</b>
-<b class="nc">&nbsp;        this.setPossibleActions(actions);</b>
+<b class="fc">&nbsp;        dealerTurn();</b>
+<b class="fc">&nbsp;        dealerTurn();</b>
+<b class="fc">&nbsp;        Actions[] actions = new Actions[2];</b>
+<b class="fc">&nbsp;        actions[0] = Actions.STAND;</b>
+<b class="fc">&nbsp;        actions[1] = Actions.HIT;</b>
+<b class="fc">&nbsp;        this.setPossibleActions(actions);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Card[] getDealerHand () {
-<b class="nc">&nbsp;        return dealerHand;</b>
+<b class="fc">&nbsp;        return dealerHand;</b>
 &nbsp;    }
 &nbsp;
 <b class="nc">&nbsp;    public boolean[] getStood () { return stood; }</b>
 &nbsp;
-<b class="nc">&nbsp;    public int getDealerScore () { return dealerScore; }</b>
+<b class="fc">&nbsp;    public int getDealerScore () { return dealerScore; }</b>
 &nbsp;
-&nbsp;    private int cardValueConversion (User player, Card card) {
+<b class="fc">&nbsp;    public int[] getScores () { return scores; }</b>
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    private int cardValueConversion (User player, Card card) {</b>
 <b class="nc">&nbsp;        Value value = card.getValue();</b>
 <b class="nc">&nbsp;        if (value.equals(Value.TWO)) {</b>
 <b class="nc">&nbsp;            return 2;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.THREE)) {</b>
 <b class="nc">&nbsp;            return 3;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.FOUR)) {</b>
 <b class="nc">&nbsp;            return 4;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.FIVE)) {</b>
 <b class="nc">&nbsp;            return 5;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.SIX)) {</b>
 <b class="nc">&nbsp;            return 6;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.SEVEN)) {</b>
 <b class="nc">&nbsp;            return 7;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.EIGHT)) {</b>
 <b class="nc">&nbsp;            return 8;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.NINE)) {</b>
 <b class="nc">&nbsp;            return 9;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.TEN)) {</b>
 <b class="nc">&nbsp;            return 10;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.JACK)) {</b>
 <b class="nc">&nbsp;            return 10;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.QUEEN)) {</b>
 <b class="nc">&nbsp;            return 10;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.KING)) {</b>
 <b class="nc">&nbsp;            return 10;</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        else if (value.equals(Value.ACE)) {</b>
 <b class="nc">&nbsp;            if (scores[findPlayer(player)] + 11 &gt; MAX_SCORE) {</b>
 <b class="nc">&nbsp;                return 1;</b>
-&nbsp;            }
+<b class="nc">&nbsp;            }</b>
 &nbsp;            else {
 <b class="nc">&nbsp;                return 11;</b>
-&nbsp;            }
+<b class="nc">&nbsp;            }</b>
 &nbsp;        }
 <b class="nc">&nbsp;        return 0;</b>
 &nbsp;    }
-&nbsp;
-&nbsp;    private int cardValueConversion (Card card) {
-<b class="nc">&nbsp;        Value value = card.getValue();</b>
-<b class="nc">&nbsp;        if (value.equals(Value.TWO)) {</b>
-<b class="nc">&nbsp;            return 2;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.THREE)) {</b>
-<b class="nc">&nbsp;            return 3;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.FOUR)) {</b>
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    private int cardValueConversion (Card card) {</b>
+<b class="fc">&nbsp;        Value value = card.getValue();</b>
+<b class="fc">&nbsp;        if (value.equals(Value.TWO)) {</b>
+<b class="pc">&nbsp;            return 2;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        else if (value.equals(Value.THREE)) {</b>
+<b class="pc">&nbsp;            return 3;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="pc">&nbsp;        else if (value.equals(Value.FOUR)) {</b>
 <b class="nc">&nbsp;            return 4;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.FIVE)) {</b>
-<b class="nc">&nbsp;            return 5;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.SIX)) {</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        else if (value.equals(Value.FIVE)) {</b>
+<b class="pc">&nbsp;            return 5;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="pc">&nbsp;        else if (value.equals(Value.SIX)) {</b>
 <b class="nc">&nbsp;            return 6;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.SEVEN)) {</b>
-<b class="nc">&nbsp;            return 7;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.EIGHT)) {</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        else if (value.equals(Value.SEVEN)) {</b>
+<b class="pc">&nbsp;            return 7;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="pc">&nbsp;        else if (value.equals(Value.EIGHT)) {</b>
 <b class="nc">&nbsp;            return 8;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.NINE)) {</b>
+<b class="nc">&nbsp;        }</b>
+<b class="pc">&nbsp;        else if (value.equals(Value.NINE)) {</b>
 <b class="nc">&nbsp;            return 9;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.TEN)) {</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        else if (value.equals(Value.TEN)) {</b>
+<b class="pc">&nbsp;            return 10;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="pc">&nbsp;        else if (value.equals(Value.JACK)) {</b>
 <b class="nc">&nbsp;            return 10;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.JACK)) {</b>
-<b class="nc">&nbsp;            return 10;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.QUEEN)) {</b>
-<b class="nc">&nbsp;            return 10;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.KING)) {</b>
-<b class="nc">&nbsp;            return 10;</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (value.equals(Value.ACE)) {</b>
-<b class="nc">&nbsp;            if (dealerScore + 11 &gt; MAX_SCORE) {</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        else if (value.equals(Value.QUEEN)) {</b>
+<b class="pc">&nbsp;            return 10;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        else if (value.equals(Value.KING)) {</b>
+<b class="pc">&nbsp;            return 10;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="pc">&nbsp;        else if (value.equals(Value.ACE)) {</b>
+<b class="pc">&nbsp;            if (dealerScore + 11 &gt; MAX_SCORE) {</b>
 <b class="nc">&nbsp;                return 1;</b>
-&nbsp;            }
+<b class="nc">&nbsp;            }</b>
 &nbsp;            else {
-<b class="nc">&nbsp;                return 11;</b>
-&nbsp;            }
+<b class="fc">&nbsp;                return 11;</b>
+<b class="nc">&nbsp;            }</b>
 &nbsp;        }
 <b class="nc">&nbsp;        return 0;</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    private void dealerTurn () {
-&nbsp;        Card currentCard;
-<b class="nc">&nbsp;        int cardCount = 0;</b>
-<b class="nc">&nbsp;        if (dealerHand.length &gt; 2) {</b>
-<b class="nc">&nbsp;            if (dealerScore &lt; 17) {</b>
-<b class="nc">&nbsp;                cardCount = 0;</b>
-<b class="nc">&nbsp;                currentCard = dealerHand[cardCount];</b>
-<b class="nc">&nbsp;                while (currentCard != null &amp;&amp; cardCount &lt; dealerHand.length) {</b>
-<b class="nc">&nbsp;                    cardCount += 1;</b>
-<b class="nc">&nbsp;                    if (cardCount &lt; dealerHand.length) {</b>
-<b class="nc">&nbsp;                        currentCard = dealerHand[cardCount];</b>
-&nbsp;                    }
+<b class="nc">&nbsp;    private void dealerTurn () {</b>
+<b class="nc">&nbsp;        Card currentCard;</b>
+<b class="pc">&nbsp;        int cardCount = 0;</b>
+<b class="pc">&nbsp;        if (dealerHand.length &gt; 2) {</b>
+<b class="pc">&nbsp;            if (dealerScore &lt; 17) {</b>
+<b class="pc">&nbsp;                cardCount = 0;</b>
+<b class="fc">&nbsp;                currentCard = dealerHand[cardCount];</b>
+<b class="pc">&nbsp;                while (currentCard != null &amp;&amp; cardCount &lt; dealerHand.length) {</b>
+<b class="fc">&nbsp;                    cardCount += 1;</b>
+<b class="pc">&nbsp;                    if (cardCount &lt; dealerHand.length) {</b>
+<b class="fc">&nbsp;                        currentCard = dealerHand[cardCount];</b>
+<b class="nc">&nbsp;                    }</b>
 &nbsp;                }
-<b class="nc">&nbsp;                if (dealerHand.length &lt;= cardCount) {</b>
-&nbsp;                    return;
-&nbsp;                }
-<b class="nc">&nbsp;                Random ran = new Random();</b>
-<b class="nc">&nbsp;                dealerHand[cardCount] = getDeck()[ran.nextInt(52)];</b>
-<b class="nc">&nbsp;                dealerScore = 0;</b>
-<b class="nc">&nbsp;                int aceCount = 0;</b>
-<b class="nc">&nbsp;                ArrayList&lt;Card&gt; aces = new ArrayList&lt;&gt;();</b>
-<b class="nc">&nbsp;                for (int i = 0; i &lt; cardCount + 1; i++) {</b>
-<b class="nc">&nbsp;                    if (!dealerHand[i].getValue().equals(Value.ACE)) {</b>
-<b class="nc">&nbsp;                        dealerScore += cardValueConversion(dealerHand[i]);</b>
-&nbsp;                    }
-&nbsp;                    else {
-<b class="nc">&nbsp;                        aceCount += 1;</b>
-<b class="nc">&nbsp;                        aces.add(dealerHand[i]);</b>
-&nbsp;                    }
-&nbsp;                }
-<b class="nc">&nbsp;                for (int i = 0; i &lt; aceCount; i++) {</b>
-<b class="nc">&nbsp;                    dealerScore += cardValueConversion(aces.get(i));</b>
+<b class="pc">&nbsp;                if (dealerHand.length &lt;= cardCount) {</b>
+<b class="nc">&nbsp;                    return;</b>
+<b class="nc">&nbsp;                }</b>
+<b class="fc">&nbsp;                Random ran = new Random();</b>
+<b class="fc">&nbsp;                dealerHand[cardCount] = getDeck()[ran.nextInt(52)];</b>
+<b class="fc">&nbsp;                dealerScore = 0;</b>
+<b class="pc">&nbsp;                int aceCount = 0;</b>
+<b class="pc">&nbsp;                ArrayList&lt;Card&gt; aces = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;                for (int i = 0; i &lt; cardCount + 1; i++) {</b>
+<b class="fc">&nbsp;                    if (!dealerHand[i].getValue().equals(Value.ACE)) {</b>
+<b class="fc">&nbsp;                        dealerScore += cardValueConversion(dealerHand[i]);</b>
+<b class="nc">&nbsp;                    }</b>
+<b class="nc">&nbsp;                    else {</b>
+<b class="fc">&nbsp;                        aceCount += 1;</b>
+<b class="fc">&nbsp;                        aces.add(dealerHand[i]);</b>
+<b class="nc">&nbsp;                    }</b>
+<b class="nc">&nbsp;                }</b>
+<b class="fc">&nbsp;                for (int i = 0; i &lt; aceCount; i++) {</b>
+<b class="fc">&nbsp;                    dealerScore += cardValueConversion(aces.get(i));</b>
 &nbsp;                }
 &nbsp;            }
-&nbsp;        }
-&nbsp;        else {
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        else {</b>
 <b class="nc">&nbsp;            if (dealerHand[cardCount] == null ) {</b>
 <b class="nc">&nbsp;                currentCard = dealerHand[cardCount];</b>
 <b class="nc">&nbsp;                while (currentCard != null &amp;&amp; cardCount &lt; dealerHand.length) {</b>
@@ -277,11 +279,11 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;                    if (cardCount &lt; dealerHand.length) {</b>
 <b class="nc">&nbsp;                        currentCard = dealerHand[cardCount];</b>
 &nbsp;                    }
-&nbsp;                }
+<b class="nc">&nbsp;                }</b>
 &nbsp;            }
 <b class="nc">&nbsp;            if (dealerHand.length &lt;= cardCount) {</b>
-&nbsp;                return;
-&nbsp;            }
+<b class="nc">&nbsp;                return;</b>
+<b class="nc">&nbsp;            }</b>
 <b class="nc">&nbsp;            Random ran = new Random();</b>
 <b class="nc">&nbsp;            dealerHand[cardCount] = getDeck()[ran.nextInt(52)];</b>
 <b class="nc">&nbsp;            dealerScore = 0;</b>
@@ -290,60 +292,60 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;            for (int i = 0; i &lt; cardCount + 1; i++) {</b>
 <b class="nc">&nbsp;                if (!dealerHand[i].getValue().equals(Value.ACE)) {</b>
 <b class="nc">&nbsp;                    dealerScore += cardValueConversion(dealerHand[i]);</b>
-&nbsp;                }
-&nbsp;                else {
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;                else {</b>
 <b class="nc">&nbsp;                    aceCount += 1;</b>
 <b class="nc">&nbsp;                    aces.add(dealerHand[i]);</b>
-&nbsp;                }
-&nbsp;            }
+<b class="nc">&nbsp;                }</b>
+<b class="nc">&nbsp;            }</b>
 <b class="nc">&nbsp;            for (int i = 0; i &lt; aceCount; i++) {</b>
 <b class="nc">&nbsp;                dealerScore += cardValueConversion(aces.get(i));</b>
 &nbsp;            }
 &nbsp;        }
 &nbsp;    }
-&nbsp;
-&nbsp;    public boolean isBusted (User player) {
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    public boolean isBusted (User player) {</b>
 <b class="nc">&nbsp;        if (scores[findPlayer(player)] &gt; MAX_SCORE) {</b>
 <b class="nc">&nbsp;            return true;</b>
 &nbsp;        }
 <b class="nc">&nbsp;        return false;</b>
 &nbsp;    }
-&nbsp;
-&nbsp;    public boolean checkGameProgress () {
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    public boolean checkGameProgress () {</b>
 <b class="nc">&nbsp;        for (int i = 0; i &lt; stood.length; i++) {</b>
 <b class="nc">&nbsp;            if (!stood[i]) {</b>
 <b class="nc">&nbsp;                return false;</b>
-&nbsp;            }
+<b class="nc">&nbsp;            }</b>
 &nbsp;        }
 <b class="nc">&nbsp;        return true;</b>
 &nbsp;    }
-&nbsp;
-&nbsp;    public void checkWinners () {
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    public void checkWinners () {</b>
 <b class="nc">&nbsp;        for (int i = 0; i &lt; getWinners().length; i++) {</b>
 <b class="nc">&nbsp;            if (dealerScore &gt; MAX_SCORE) {</b>
 <b class="nc">&nbsp;                setWinner(i, Result.WIN);</b>
-&nbsp;            }
+<b class="nc">&nbsp;            }</b>
 <b class="nc">&nbsp;            else if (scores[i] &gt; MAX_SCORE) {</b>
 <b class="nc">&nbsp;                setWinner(i, Result.LOSE);</b>
-&nbsp;            }
+<b class="nc">&nbsp;            }</b>
 <b class="nc">&nbsp;            else if (scores[i] == dealerScore) {</b>
 <b class="nc">&nbsp;                setWinner(i, Result.DRAW);</b>
-&nbsp;            }
+<b class="nc">&nbsp;            }</b>
 <b class="nc">&nbsp;            else if (scores[i] &gt; dealerScore) {</b>
 <b class="nc">&nbsp;                setWinner(i, Result.WIN);</b>
-&nbsp;            }
+<b class="nc">&nbsp;            }</b>
 <b class="nc">&nbsp;            else if (scores[i] &lt; dealerScore) {</b>
 <b class="nc">&nbsp;                setWinner(i, Result.LOSE);</b>
 &nbsp;            }
 &nbsp;        }
 &nbsp;    }
-&nbsp;
-&nbsp;    public void takeTurn (Actions action) {
+<b class="nc">&nbsp;</b>
+<b class="nc">&nbsp;    public void takeTurn (Actions action) {</b>
 <b class="nc">&nbsp;        int currentPlayerLocation = findCurrentPlayer();</b>
 <b class="nc">&nbsp;        if (!stood[currentPlayerLocation]) {</b>
 <b class="nc">&nbsp;            if (action.equals(Actions.STAND)) {</b>
 <b class="nc">&nbsp;                stood[currentPlayerLocation] = true;</b>
-&nbsp;            }
+<b class="nc">&nbsp;            }</b>
 <b class="nc">&nbsp;            else if (action.equals(Actions.HIT)) {</b>
 <b class="nc">&nbsp;                Card drawn = draw();</b>
 <b class="nc">&nbsp;                scores[currentPlayerLocation] = 0;</b>
@@ -354,32 +356,32 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;                for (int i = 0; i &lt; cardCount; i++) {</b>
 <b class="nc">&nbsp;                    if (!currentHand[i].getValue().equals(Value.ACE)) {</b>
 <b class="nc">&nbsp;                        scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), currentHand[i]);</b>
-&nbsp;                    }
-&nbsp;                    else {
+<b class="nc">&nbsp;                    }</b>
+<b class="nc">&nbsp;                    else {</b>
 <b class="nc">&nbsp;                        aceCount += 1;</b>
 <b class="nc">&nbsp;                        aces.add(currentHand[i]);</b>
-&nbsp;                    }
-&nbsp;                }
+<b class="nc">&nbsp;                    }</b>
+<b class="nc">&nbsp;                }</b>
 <b class="nc">&nbsp;                for (int i = 0; i &lt; aceCount; i++) {</b>
 <b class="nc">&nbsp;                        scores[currentPlayerLocation] += cardValueConversion(getCurrentPlayer(), aces.get(i));</b>
-&nbsp;                }
+<b class="nc">&nbsp;                }</b>
 <b class="nc">&nbsp;                if (scores[currentPlayerLocation] &gt; MAX_SCORE) {</b>
 <b class="nc">&nbsp;                    stood[currentPlayerLocation] = true;</b>
 &nbsp;                }
-&nbsp;            }
-&nbsp;        }
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        if (currentPlayerLocation == getPlayers().length - 1) {</b>
 <b class="nc">&nbsp;            dealerTurn();</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        if (currentPlayerLocation == getPlayers().length - 1) {</b>
 <b class="nc">&nbsp;            this.setTurn(this.getTurn() + 1);</b>
-&nbsp;        }
+<b class="nc">&nbsp;        }</b>
 <b class="nc">&nbsp;        if (!checkGameProgress()) {</b>
 <b class="nc">&nbsp;            nextPlayer();</b>
 <b class="nc">&nbsp;            while(stood[findCurrentPlayer()]) {</b>
 <b class="nc">&nbsp;                nextPlayer();</b>
 &nbsp;            }
-&nbsp;            return;
+<b class="nc">&nbsp;            return;</b>
 &nbsp;        }
 <b class="nc">&nbsp;        checkWinners();</b>
 &nbsp;    }
@@ -407,7 +409,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 21:00</div>
+    <div style="float:right;">generated on 2026-05-06 23:29</div>
 </div>
 </body>
 </html>

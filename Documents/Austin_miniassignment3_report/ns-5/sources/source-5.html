@@ -56,10 +56,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    45.5%
+    50%
   </span>
   <span class="absValue">
-    (5/11)
+    (7/14)
   </span>
 </td>
 <td class="coverageStat">
@@ -67,15 +67,15 @@ Current scope:     <a href="../../index.html">all classes</a>
     0%
   </span>
   <span class="absValue">
-    (0/58)
+    (0/78)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    5.8%
+    6.9%
   </span>
   <span class="absValue">
-    (8/139)
+    (11/160)
   </span>
 </td>
 </tr>
@@ -94,6 +94,9 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import java.time.LocalDateTime;
 &nbsp;import java.util.*;
 &nbsp;
+&nbsp;import PocketDeck.GameLobby.GameLobbyMembership;
+&nbsp;import PocketDeck.GameLobby.GameLobbyMembershipRepository;
+&nbsp;import PocketDeck.GameLobby.GameLobbyRepository;
 &nbsp;import jakarta.websocket.*;
 &nbsp;import jakarta.websocket.server.PathParam;
 &nbsp;import jakarta.websocket.server.ServerEndpoint;
@@ -115,7 +118,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import org.json.simple.JSONArray;
 &nbsp;
 &nbsp;@Controller
-&nbsp;@ServerEndpoint(value = &quot;/game/{username}/{game}&quot;)
+&nbsp;@ServerEndpoint(value = &quot;/game/{gameLobbyId}/{username}&quot;)
 <b class="fc">&nbsp;public class GameSocket {</b>
 &nbsp;
 &nbsp;    private static GameHistoryRepository gameHistoryRepository;
@@ -123,6 +126,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    private static UserRepository userRepo;
 &nbsp;
 &nbsp;    private static CardGameRepository cardGameRepository;
+&nbsp;
+&nbsp;    private static GameLobbyRepository gameLobbyRepo;
+&nbsp;
+&nbsp;    private static GameLobbyMembershipRepository gameLobbyMembershipRepo;
 &nbsp;
 &nbsp;    @Autowired
 &nbsp;    public void setGameHistoryRepository(GameHistoryRepository repo) {
@@ -139,74 +146,97 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;        cardGameRepository = repo;</b>
 &nbsp;    }
 &nbsp;
+&nbsp;    @Autowired
+<b class="fc">&nbsp;    public void setGameLobbyRepository(GameLobbyRepository repo) { gameLobbyRepo = repo; }</b>
+&nbsp;
+&nbsp;    @Autowired
+<b class="fc">&nbsp;    public void setGameLobbyMembershipRepository(GameLobbyMembershipRepository repo) { gameLobbyMembershipRepo = repo; }</b>
+&nbsp;
 <b class="fc">&nbsp;    private final Logger logger = LoggerFactory.getLogger(GameSocket.class);</b>
 <b class="fc">&nbsp;    private static Map&lt;Session, String&gt; sessionUsernameMap = new Hashtable&lt;&gt;();</b>
-<b class="fc">&nbsp;    private static ArrayList&lt;User&gt; users = new ArrayList&lt;&gt;();</b>
 <b class="fc">&nbsp;    private static Map&lt;String, Session&gt; usernameSessionMap = new Hashtable&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;    private static Map&lt;Integer, Game&gt; activeGames = new Hashtable&lt;&gt;();</b>
+<b class="fc">&nbsp;    private static Map&lt;Integer, List&lt;Session&gt;&gt; lobbySessions = new Hashtable&lt;&gt;();</b>
 &nbsp;    private GameHistory gameHistory;
-&nbsp;    private static Game cardGame;
-&nbsp;    private static boolean gameOver;
 &nbsp;
 &nbsp;    @OnOpen
-&nbsp;    public void onOpen(Session session, @PathParam(&quot;username&quot;) String username, @PathParam(&quot;game&quot;) String game) throws IOException {
+&nbsp;    public void onOpen(Session session, @PathParam(&quot;gameLobbyId&quot;) int gameLobbyId, @PathParam(&quot;username&quot;) String username) throws IOException {
 <b class="nc">&nbsp;        logger.info(&quot;Entered into open&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        User user = userRepo.findByUsername(username);</b>
+<b class="nc">&nbsp;        if(user == null) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;user does not exist, closing session...&quot;);</b>
+&nbsp;            session.close();
+&nbsp;            return;
+&nbsp;        }
+<b class="nc">&nbsp;        GameLobbyMembership membership = gameLobbyMembershipRepo.findByGameLobbyMemberId(user.getId());</b>
+<b class="nc">&nbsp;        if(membership == null || membership.getGameLobby().getId() != gameLobbyId) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;You are not a member of this lobby. Closing session...&quot;);</b>
+&nbsp;            session.close();
+&nbsp;            return;
+&nbsp;        }
+<b class="nc">&nbsp;        logger.info(&quot;Verified that this session belongs to game lobby&quot;);</b>
+&nbsp;
 <b class="nc">&nbsp;        sessionUsernameMap.put(session, username);</b>
 <b class="nc">&nbsp;        usernameSessionMap.put(username, session);</b>
 &nbsp;
-<b class="nc">&nbsp;        gameHistory = new GameHistory(userRepo.findByUsername(username), cardGameRepository.findByGameName(game));</b>
+&nbsp;        // if session list from lobbySessions doesn&#39;t exist, then initialize it
+<b class="nc">&nbsp;        if (!lobbySessions.containsKey(gameLobbyId)) {</b>
+<b class="nc">&nbsp;            lobbySessions.put(gameLobbyId, new ArrayList&lt;&gt;());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        lobbySessions.get(gameLobbyId).add(session);</b>
+&nbsp;
+<b class="nc">&nbsp;        String gameName = gameLobbyRepo.findById(gameLobbyId).getCardGame().getGameName();</b>
+<b class="nc">&nbsp;        gameHistory = new GameHistory(userRepo.findByUsername(username), cardGameRepository.findByGameName(gameName));</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @OnMessage
-&nbsp;    public void onMessage(Session session, String message, @PathParam(&quot;game&quot;) String game) throws IOException, ParseException {
+&nbsp;    public void onMessage(Session session, String message, @PathParam(&quot;gameLobbyId&quot;) int gameLobbyId) throws IOException, ParseException {
+&nbsp;        // *** As of 05/04, GOT RID OF join_game since that is handled by game lobby ***
 <b class="nc">&nbsp;        JSONObject json = (JSONObject) new JSONParser().parse(message);</b>
-<b class="nc">&nbsp;        if (json.get(&quot;messageType&quot;).equals(&quot;join_game&quot;)) {</b>
-<b class="nc">&nbsp;            logger.info(game);</b>
-<b class="nc">&nbsp;            if (cardGameRepository.findByGameName(game).getMaxPlayers() == users.size()) {</b>
-&nbsp;                try {
-<b class="nc">&nbsp;                    logger.info((String) json.get(&quot;username&quot;));</b>
-<b class="nc">&nbsp;                    JSONObject mes = new JSONObject();</b>
-<b class="nc">&nbsp;                    mes.put(&quot;messageType&quot;, &quot;message&quot;);</b>
-<b class="nc">&nbsp;                    mes.put(&quot;text&quot;, &quot;Game full&quot;);</b>
-<b class="nc">&nbsp;                    usernameSessionMap.get((String) json.get(&quot;username&quot;)).getBasicRemote().sendText((mes.toJSONString()));</b>
-&nbsp;                } catch (IOException e) {
-<b class="nc">&nbsp;                    logger.info(&quot;Exception: &quot; + e.getMessage().toString());</b>
-<b class="nc">&nbsp;                    e.printStackTrace();</b>
-&nbsp;                    return;
-&nbsp;                }
-&nbsp;            } else {
-<b class="nc">&nbsp;                users.add(userRepo.findByUsername((String) json.get(&quot;username&quot;)));</b>
+<b class="nc">&nbsp;        String gameName = gameLobbyRepo.findById(gameLobbyId).getCardGame().getGameName();</b>
+&nbsp;
+&nbsp;        // IMPORTANT: only OWNER_MEMBER from gameLobby should send this message exactly once
+&nbsp;        // (or technically you can just have MAXIMUM OF ONE member send th start_game message...)
+<b class="nc">&nbsp;        if (json.get(&quot;messageType&quot;).equals(&quot;start_game&quot;)) {</b>
+<b class="nc">&nbsp;            logger.info(gameName);</b>
+<b class="nc">&nbsp;            List&lt;GameLobbyMembership&gt; memberships = gameLobbyMembershipRepo.findByGameLobbyId(gameLobbyId);</b>
+<b class="nc">&nbsp;            User[] players = new User[memberships.size()];</b>
+<b class="nc">&nbsp;            for (int i = 0; i &lt; memberships.size(); i++) {</b>
+<b class="nc">&nbsp;                players[i] = memberships.get(i).getGameLobbyMember();</b>
 &nbsp;            }
-<b class="nc">&nbsp;        } else if (json.get(&quot;messageType&quot;).equals(&quot;start_game&quot;)) {</b>
-<b class="nc">&nbsp;            User[] players = new User[users.size()];</b>
-<b class="nc">&nbsp;            for (int i = 0; i &lt; players.length; i++) {</b>
-<b class="nc">&nbsp;                players[i] = users.get(i);</b>
-&nbsp;            }
-<b class="nc">&nbsp;            cardGame = new BlackJack(cardGameRepository.findByGameName(game), players);</b>
-<b class="nc">&nbsp;            gameOver = false;</b>
-<b class="nc">&nbsp;            for (int i = 0; i &lt; users.size(); i++) {</b>
-&nbsp;                try {
-<b class="nc">&nbsp;                    logger.info(users.get(i).getUsername());</b>
-<b class="nc">&nbsp;                    JSONObject output = makeOutput(game, users.get(i).getUsername());</b>
-<b class="nc">&nbsp;                    usernameSessionMap.get(users.get(i).getUsername()).getBasicRemote().sendText(output.toJSONString());</b>
-&nbsp;                } catch (IOException e) {
-<b class="nc">&nbsp;                    logger.info(&quot;Exception: &quot; + e.getMessage().toString());</b>
-<b class="nc">&nbsp;                    e.printStackTrace();</b>
-&nbsp;                }
-&nbsp;            }
-<b class="nc">&nbsp;        } else if (json.get(&quot;messageType&quot;).equals(&quot;action_made&quot;) &amp;&amp; !gameOver) {</b>
-<b class="nc">&nbsp;            if (sessionUsernameMap.get(session).equals(cardGame.getCurrentPlayer().getUsername())) {</b>
+&nbsp;
+<b class="nc">&nbsp;            Game newGame = new BlackJack(cardGameRepository.findByGameName(gameName), players);</b>
+<b class="nc">&nbsp;            activeGames.put(gameLobbyId, newGame);</b>
+<b class="nc">&nbsp;            broadcastGameState(gameLobbyId, gameName);</b>
+&nbsp;
+<b class="nc">&nbsp;        } else if (json.get(&quot;messageType&quot;).equals(&quot;action_made&quot;)) {</b>
+<b class="nc">&nbsp;            Game currentGame = activeGames.get(gameLobbyId);</b>
+<b class="nc">&nbsp;            if (currentGame == null || currentGame.checkGameProgress()) return;</b>
+<b class="nc">&nbsp;            if (sessionUsernameMap.get(session).equals(currentGame.getCurrentPlayer().getUsername())) {</b>
 <b class="nc">&nbsp;                if (json.get(&quot;move&quot;).equals(&quot;hit&quot;)) {</b>
-<b class="nc">&nbsp;                    cardGame.takeTurn(Actions.HIT);</b>
+<b class="nc">&nbsp;                    currentGame.takeTurn(Actions.HIT);</b>
 <b class="nc">&nbsp;                } else if (json.get(&quot;move&quot;).equals(&quot;stand&quot;)) {</b>
-<b class="nc">&nbsp;                    cardGame.takeTurn(Actions.STAND);</b>
+<b class="nc">&nbsp;                    currentGame.takeTurn(Actions.STAND);</b>
 &nbsp;                }
-<b class="nc">&nbsp;                for (int i = 0; i &lt; users.size(); i++) {</b>
+&nbsp;
+<b class="nc">&nbsp;                broadcastGameState(gameLobbyId, gameName);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // helper to broadcast the game state instead of looping through every player seperately in the old code
+&nbsp;    private void broadcastGameState(int gameLobbyId, String gameName) {
+<b class="nc">&nbsp;        List&lt;Session&gt; sessions = lobbySessions.get(gameLobbyId);</b>
+<b class="nc">&nbsp;        if (sessions != null) {</b>
+<b class="nc">&nbsp;            for (Session session : sessions) {</b>
+<b class="nc">&nbsp;                if (session.isOpen()) {</b>
 &nbsp;                    try {
-<b class="nc">&nbsp;                        logger.info(users.get(i).getUsername());</b>
-<b class="nc">&nbsp;                        JSONObject output = makeOutput(game, users.get(i).getUsername());</b>
-<b class="nc">&nbsp;                        usernameSessionMap.get(users.get(i).getUsername()).getBasicRemote().sendText(output.toJSONString());</b>
+<b class="nc">&nbsp;                        String username = sessionUsernameMap.get(session);</b>
+<b class="nc">&nbsp;                        JSONObject output = makeOutput(gameName, username, gameLobbyId);</b>
+<b class="nc">&nbsp;                        session.getBasicRemote().sendText(output.toJSONString());</b>
 &nbsp;                    } catch (IOException e) {
-<b class="nc">&nbsp;                        logger.info(&quot;Exception: &quot; + e.getMessage().toString());</b>
 <b class="nc">&nbsp;                        e.printStackTrace();</b>
 &nbsp;                    }
 &nbsp;                }
@@ -214,13 +244,16 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;        }
 &nbsp;    }
 &nbsp;
-&nbsp;    private JSONObject makeOutput (String game, String username) {
+&nbsp;    private JSONObject makeOutput (String game, String username, int gameLobbyId) {
+<b class="nc">&nbsp;        Game currentGame = activeGames.get(gameLobbyId);</b>
+<b class="nc">&nbsp;        User[] currentUsers = currentGame.getPlayers();</b>
+&nbsp;
 <b class="nc">&nbsp;        JSONObject output = new JSONObject();</b>
 <b class="nc">&nbsp;        output.put(&quot;messageType&quot;, &quot;game_state&quot;);</b>
 <b class="nc">&nbsp;        output.put(&quot;gameName&quot;, game);</b>
-<b class="nc">&nbsp;        output.put(&quot;status&quot;, &quot;Seat &quot; + cardGame.findCurrentPlayer() + &quot; turn&quot;);</b>
-<b class="nc">&nbsp;        if (cardGame.getClass().equals(BlackJack.class)) {</b>
-<b class="nc">&nbsp;            BlackJack temp = (BlackJack) cardGame;</b>
+<b class="nc">&nbsp;        output.put(&quot;status&quot;, &quot;Seat &quot; + currentGame.findCurrentPlayer() + &quot; turn&quot;);</b>
+<b class="nc">&nbsp;        if (currentGame.getClass().equals(BlackJack.class)) {</b>
+<b class="nc">&nbsp;            BlackJack temp = (BlackJack) currentGame;</b>
 <b class="nc">&nbsp;            JSONArray array = new JSONArray();</b>
 <b class="nc">&nbsp;            Card[] dealerHand = temp.getDealerHand();</b>
 &nbsp;            int cardCount;
@@ -229,7 +262,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;                    break;
 &nbsp;                }
 &nbsp;            }
-<b class="nc">&nbsp;            if (!cardGame.checkGameProgress()) {</b>
+<b class="nc">&nbsp;            if (!currentGame.checkGameProgress()) {</b>
 <b class="nc">&nbsp;                Card tempHand = new Card();</b>
 <b class="nc">&nbsp;                tempHand = dealerHand[0];</b>
 <b class="nc">&nbsp;                JSONObject card = new JSONObject();</b>
@@ -250,34 +283,36 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;                output.put(&quot;centerHidden&quot;, 0);</b>
 &nbsp;            }
 &nbsp;        }
-<b class="nc">&nbsp;        output.put(&quot;yourSeat&quot;, cardGame.findPlayer(userRepo.findByUsername(username)));</b>
-<b class="nc">&nbsp;        output.put(&quot;currentTurn&quot;, cardGame.getTurn());</b>
-<b class="nc">&nbsp;        if (cardGame.checkGameProgress()) {</b>
+<b class="nc">&nbsp;        output.put(&quot;yourSeat&quot;, currentGame.findPlayer(userRepo.findByUsername(username)));</b>
+<b class="nc">&nbsp;        output.put(&quot;currentTurn&quot;, currentGame.getTurn());</b>
+<b class="nc">&nbsp;        if (currentGame.checkGameProgress()) {</b>
 <b class="nc">&nbsp;            output.put(&quot;gamePhase&quot;, &quot;finished&quot;);</b>
-<b class="nc">&nbsp;            gameOver = true;</b>
 &nbsp;        } else {
 <b class="nc">&nbsp;            output.put(&quot;gamePhase&quot;, &quot;in progress&quot;);</b>
 &nbsp;        }
 <b class="nc">&nbsp;        JSONArray actionArray = new JSONArray();</b>
-<b class="nc">&nbsp;        Actions[] actions = cardGame.getPossibleActions();</b>
+<b class="nc">&nbsp;        Actions[] actions = currentGame.getPossibleActions();</b>
 <b class="nc">&nbsp;        for (int i = 0; i &lt; actions.length; i++) {</b>
 <b class="nc">&nbsp;            actionArray.add(actions[i].toString());</b>
 &nbsp;        }
 <b class="nc">&nbsp;        output.put(&quot;actions&quot;, actionArray);</b>
 <b class="nc">&nbsp;        JSONArray players = new JSONArray();</b>
-<b class="nc">&nbsp;        for (int i = 0; i &lt; users.size(); i++) {</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; currentUsers.length; i++) {</b>
 <b class="nc">&nbsp;            JSONObject player = new JSONObject();</b>
 <b class="nc">&nbsp;            player.put(&quot;seat&quot;, i);</b>
-<b class="nc">&nbsp;            player.put(&quot;username&quot;, cardGame.getPlayers()[i].getUsername());</b>
-<b class="nc">&nbsp;            if (cardGame.getClass().equals(BlackJack.class)) {</b>
-<b class="nc">&nbsp;                BlackJack temp = (BlackJack) cardGame;</b>
+<b class="nc">&nbsp;            player.put(&quot;username&quot;, currentUsers[i].getUsername());</b>
+<b class="nc">&nbsp;            if (currentGame.getClass().equals(BlackJack.class)) {</b>
+<b class="nc">&nbsp;                BlackJack temp = (BlackJack) currentGame;</b>
 <b class="nc">&nbsp;                player.put(&quot;stood&quot;, String.valueOf(temp.getStood()[i]));</b>
-<b class="nc">&nbsp;                player.put(&quot;busted&quot;, String.valueOf(temp.isBusted(cardGame.getPlayers()[i])));</b>
 &nbsp;            }
-<b class="nc">&nbsp;            if (cardGame.getPlayers()[i].getUsername().equals(username)) {</b>
+<b class="nc">&nbsp;            if (currentUsers[i].getUsername().equals(username)) {</b>
 <b class="nc">&nbsp;                JSONArray array = new JSONArray();</b>
-<b class="nc">&nbsp;                int cardCount = cardGame.getCardAmount(cardGame.getPlayers()[i]);</b>
-<b class="nc">&nbsp;                Card[] playerHand = cardGame.getPlayerHand(cardGame.getPlayers()[i]);</b>
+<b class="nc">&nbsp;                if (currentGame.getClass().equals(BlackJack.class)) {</b>
+<b class="nc">&nbsp;                    BlackJack temp = (BlackJack) currentGame;</b>
+<b class="nc">&nbsp;                    player.put(&quot;busted&quot;, String.valueOf(temp.isBusted(currentUsers[i])));</b>
+&nbsp;                }
+<b class="nc">&nbsp;                int cardCount = currentGame.getCardAmount(currentUsers[i]);</b>
+<b class="nc">&nbsp;                Card[] playerHand = currentGame.getPlayerHand(currentUsers[i]);</b>
 <b class="nc">&nbsp;                Card[] tempHand = new Card[cardCount];</b>
 <b class="nc">&nbsp;                for (int j = 0; j &lt; cardCount; j++) {</b>
 <b class="nc">&nbsp;                    tempHand[j] = playerHand[j];</b>
@@ -291,19 +326,21 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;                player.put(&quot;cards&quot;, array);</b>
 &nbsp;            } else {
 <b class="nc">&nbsp;                player.put(&quot;cards&quot;, &quot;[]&quot;);</b>
-<b class="nc">&nbsp;                player.put(&quot;hiddenCount&quot;, cardGame.getCardAmount(users.get(i)));</b>
+<b class="nc">&nbsp;                player.put(&quot;hiddenCount&quot;, currentGame.getCardAmount(currentUsers[i]));</b>
 &nbsp;            }
 <b class="nc">&nbsp;            players.add(player);</b>
 &nbsp;        }
 <b class="nc">&nbsp;        output.put(&quot;players&quot;, players);</b>
-<b class="nc">&nbsp;        if (cardGame.checkGameProgress()) {</b>
+<b class="nc">&nbsp;        if (currentGame.checkGameProgress()) {</b>
 <b class="nc">&nbsp;            JSONArray array = new JSONArray();</b>
-<b class="nc">&nbsp;            for (int j = 0; j &lt; cardGame.getPlayers().length; j++) {</b>
-<b class="nc">&nbsp;                array.add(cardGame.getWinners()[j].toString());</b>
+<b class="nc">&nbsp;            for (int j = 0; j &lt; currentUsers.length; j++) {</b>
+<b class="nc">&nbsp;                array.add(currentGame.getWinners()[j].toString());</b>
 &nbsp;            }
 <b class="nc">&nbsp;            output.put(&quot;winners&quot;, array);</b>
-<b class="nc">&nbsp;            if (cardGame.getClass().equals(BlackJack.class)) {</b>
-<b class="nc">&nbsp;                BlackJack temp = (BlackJack) cardGame;</b>
+&nbsp;
+&nbsp;            // may be useful for debug
+<b class="nc">&nbsp;            if (currentGame.getClass().equals(BlackJack.class)) {</b>
+<b class="nc">&nbsp;                BlackJack temp = (BlackJack) currentGame;</b>
 <b class="nc">&nbsp;                logger.info(String.valueOf(temp.getDealerScore()));</b>
 &nbsp;            }
 &nbsp;        }
@@ -311,28 +348,48 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    }
 &nbsp;
 &nbsp;    @OnClose
-&nbsp;    public void onClose(Session session) throws IOException {
+&nbsp;    public void onClose(Session session, @PathParam(&quot;gameLobbyId&quot;) int gameLobbyId) throws IOException {
 <b class="nc">&nbsp;        logger.info(&quot;Entered into Close&quot;);</b>
 <b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
-<b class="nc">&nbsp;        recordGame(session);</b>
+<b class="nc">&nbsp;        recordGame(session, gameLobbyId);</b>
 <b class="nc">&nbsp;        logger.info(username);</b>
 <b class="nc">&nbsp;        sessionUsernameMap.remove(session);</b>
 <b class="nc">&nbsp;        usernameSessionMap.remove(username);</b>
-<b class="nc">&nbsp;        logger.info(String.valueOf(users.remove(userRepo.findByUsername(username))));</b>
+&nbsp;
+<b class="nc">&nbsp;        if(lobbySessions.containsKey(gameLobbyId)) {</b>
+<b class="nc">&nbsp;            lobbySessions.get(gameLobbyId).remove(session);</b>
+&nbsp;
+<b class="nc">&nbsp;            if(lobbySessions.get(gameLobbyId).isEmpty()) {</b>
+<b class="nc">&nbsp;                lobbySessions.remove(gameLobbyId);</b>
+<b class="nc">&nbsp;                activeGames.remove(gameLobbyId);</b>
+<b class="nc">&nbsp;                logger.info(&quot;GameLobby with id &quot; + gameLobbyId + &quot; is now empty and deleted from GameSocket.&quot;);</b>
+&nbsp;            }
+&nbsp;        }
 &nbsp;    }
 &nbsp;
-&nbsp;    private void recordGame (Session session) {
+&nbsp;    private void recordGame (Session session, int gameLobbyId) {
+<b class="nc">&nbsp;        Game currentGame = activeGames.get(gameLobbyId);</b>
+&nbsp;        // if there was no game for some reason just return (maybe players left before anything happened)
+<b class="nc">&nbsp;        if(currentGame == null) return;</b>
+&nbsp;
 <b class="nc">&nbsp;        gameHistory.setTimeGameCompleted(LocalDateTime.now());</b>
-<b class="nc">&nbsp;        gameHistory.setTimeGameDuration(Duration.between(gameHistory.getTimeGameStarted(), gameHistory.getTimeGameCompleted()));</b>
-<b class="nc">&nbsp;        Result result = cardGame.getWinners()[cardGame.findPlayer(userRepo.findByUsername(sessionUsernameMap.get(session)))];</b>
-<b class="nc">&nbsp;        if (result.equals(Result.DRAW)) {</b>
-<b class="nc">&nbsp;            gameHistory.setGameResult(GameHistoryResult.DRAW);</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (result.equals(Result.LOSE)) {</b>
-<b class="nc">&nbsp;            gameHistory.setGameResult(GameHistoryResult.DEFEAT);</b>
-&nbsp;        }
-<b class="nc">&nbsp;        else if (result.equals(Result.WIN)) {</b>
-<b class="nc">&nbsp;            gameHistory.setGameResult(GameHistoryResult.VICTORY);</b>
+<b class="nc">&nbsp;        Duration duration = Duration.between(gameHistory.getTimeGameStarted(), gameHistory.getTimeGameCompleted());</b>
+<b class="nc">&nbsp;        gameHistory.setMinutes(duration.toMinutes());</b>
+<b class="nc">&nbsp;        gameHistory.setSeconds(duration.getSeconds() - (gameHistory.getMinutes() * 60));</b>
+&nbsp;
+<b class="nc">&nbsp;        int playerIdx = currentGame.findPlayer(userRepo.findByUsername(sessionUsernameMap.get(session)));</b>
+&nbsp;
+<b class="nc">&nbsp;        if (playerIdx != -1) {</b>
+<b class="nc">&nbsp;            Result result = currentGame.getWinners()[playerIdx];</b>
+<b class="nc">&nbsp;            if (result != null) {</b>
+<b class="nc">&nbsp;                if (result.equals(Result.DRAW)) {</b>
+<b class="nc">&nbsp;                    gameHistory.setGameResult(GameHistoryResult.DRAW);</b>
+<b class="nc">&nbsp;                } else if (result.equals(Result.LOSE)) {</b>
+<b class="nc">&nbsp;                    gameHistory.setGameResult(GameHistoryResult.DEFEAT);</b>
+<b class="nc">&nbsp;                } else if (result.equals(Result.WIN)) {</b>
+<b class="nc">&nbsp;                    gameHistory.setGameResult(GameHistoryResult.VICTORY);</b>
+&nbsp;                }
+&nbsp;            }
 &nbsp;        }
 <b class="nc">&nbsp;        gameHistoryRepository.save(gameHistory);</b>
 &nbsp;    }
@@ -369,7 +426,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 21:00</div>
+    <div style="float:right;">generated on 2026-05-06 23:29</div>
 </div>
 </body>
 </html>

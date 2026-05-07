@@ -41,43 +41,49 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">GameHistory</td>
 <td class="coverageStat">
   <span class="percent">
-    6.7%
+    88.2%
   </span>
   <span class="absValue">
-    (1/15)
+    (15/17)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    5.3%
+    90.5%
   </span>
   <span class="absValue">
-    (1/19)
+    (19/21)
   </span>
 </td>
 </tr>
   <tr>
-    <td class="name">GameHistory$HibernateInstantiator$kARiPr49</td>
+    <td class="name">GameHistory$HibernateInstantiator$gk78dUzj</td>
   </tr>
   <tr>
-    <td class="name">GameHistory$HibernateProxy$Uf4mzfq1</td>
+    <td class="name">GameHistory$HibernateInstantiator$kFgYp4m9</td>
+  </tr>
+  <tr>
+    <td class="name">GameHistory$HibernateProxy$RxhHkgQ0</td>
+  </tr>
+  <tr>
+    <td class="name">GameHistory$HibernateProxy$YF4zRCvU</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    6.7%
+    88.2%
   </span>
   <span class="absValue">
-    (1/15)
+    (15/17)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    5.3%
+    90.5%
   </span>
   <span class="absValue">
-    (1/19)
+    (19/21)
   </span>
 </td>
 </tr>
@@ -121,21 +127,18 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    private LocalDateTime timeGameStarted;
 &nbsp;    private LocalDateTime timeGameCompleted;
-&nbsp;    private Duration timeGameDuration;
-&nbsp;
-&nbsp;    // TODO
-&nbsp;    // should probably have some variable called &quot;game mode&quot; to see the game mode. Should this be done here or
-&nbsp;    // on in CardGames? (Such as an enumeration?)
+&nbsp;    private long minutes;
+&nbsp;    private long seconds;
 &nbsp;
 &nbsp;    // called when a game is created, can only initialize the user and time started, must update after game completes
-<b class="nc">&nbsp;    public GameHistory(User user, CardGame cardGame) {</b>
+<b class="fc">&nbsp;    public GameHistory(User user, CardGame cardGame) {</b>
 &nbsp;
-<b class="nc">&nbsp;        this.user = user;</b>
-<b class="nc">&nbsp;        this.cardGame = cardGame;</b>
-<b class="nc">&nbsp;        this.gameResult = GameHistoryResult.IN_PROGRESS;</b>
+<b class="fc">&nbsp;        this.user = user;</b>
+<b class="fc">&nbsp;        this.cardGame = cardGame;</b>
+<b class="fc">&nbsp;        this.gameResult = GameHistoryResult.IN_PROGRESS;</b>
 &nbsp;        //this.mode = mode;
 &nbsp;
-<b class="nc">&nbsp;        this.timeGameStarted = LocalDateTime.now();</b>
+<b class="fc">&nbsp;        this.timeGameStarted = LocalDateTime.now();</b>
 &nbsp;
 &nbsp;
 &nbsp;        // can&#39;t do these yet since this is called on creation of a game, BUT HERE TO REMEMBER TO UPDATE
@@ -154,30 +157,42 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    // =============================== Getters and Setters for each field ================================== //
 &nbsp;
-<b class="nc">&nbsp;    public int getId() { return this.id; }</b>
+<b class="fc">&nbsp;    public int getId() { return this.id; }</b>
 &nbsp;
 &nbsp;
-<b class="nc">&nbsp;    public User getUser() { return this.user; }</b>
-<b class="nc">&nbsp;    public void setUser(User user) { this.user = user; }</b>
+<b class="fc">&nbsp;    public User getUser() { return this.user; }</b>
+<b class="fc">&nbsp;    public void setUser(User user) { this.user = user; }</b>
 &nbsp;
-<b class="nc">&nbsp;    public CardGame getCardGame() { return this.cardGame; }</b>
-<b class="nc">&nbsp;    public void setCardGame(CardGame cardGame) { this.cardGame = cardGame; }</b>
+<b class="fc">&nbsp;    public CardGame getCardGame() { return this.cardGame; }</b>
+<b class="fc">&nbsp;    public void setCardGame(CardGame cardGame) { this.cardGame = cardGame; }</b>
 &nbsp;
 &nbsp;
-<b class="nc">&nbsp;    public LocalDateTime getTimeGameStarted() { return this.timeGameStarted; }</b>
+<b class="fc">&nbsp;    public LocalDateTime getTimeGameStarted() { return this.timeGameStarted; }</b>
 <b class="nc">&nbsp;    public void setTimeGameStarted(LocalDateTime timeGameStarted) { this.timeGameStarted = timeGameStarted; }</b>
 &nbsp;
 &nbsp;
-<b class="nc">&nbsp;    public LocalDateTime getTimeGameCompleted() { return this.timeGameCompleted; }</b>
+<b class="fc">&nbsp;    public LocalDateTime getTimeGameCompleted() { return this.timeGameCompleted; }</b>
 <b class="nc">&nbsp;    public void setTimeGameCompleted(LocalDateTime timeGameCompleted) { this.timeGameCompleted = timeGameCompleted; }</b>
 &nbsp;
 &nbsp;
-<b class="nc">&nbsp;    public Duration getTimeGameDuration() { return timeGameDuration; }</b>
-<b class="nc">&nbsp;    public void setTimeGameDuration(Duration timeGameDuration) { this.timeGameDuration = timeGameDuration; }</b>
+&nbsp;    public long getMinutes() {
+<b class="fc">&nbsp;        return minutes;</b>
+&nbsp;    }
 &nbsp;
+&nbsp;    public void setMinutes(long minutes) {
+<b class="fc">&nbsp;        this.minutes = minutes;</b>
+&nbsp;    }
 &nbsp;
-<b class="nc">&nbsp;    public GameHistoryResult getGameResult() { return this.gameResult; }</b>
-<b class="nc">&nbsp;    public void setGameResult(GameHistoryResult gameResult) { this.gameResult = gameResult; }</b>
+&nbsp;    public long getSeconds() {
+<b class="fc">&nbsp;        return seconds;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setSeconds(long seconds) {
+<b class="fc">&nbsp;        this.seconds = seconds;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public GameHistoryResult getGameResult() { return this.gameResult; }</b>
+<b class="fc">&nbsp;    public void setGameResult(GameHistoryResult gameResult) { this.gameResult = gameResult; }</b>
 &nbsp;
 &nbsp;
 &nbsp;}
@@ -206,7 +221,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 21:00</div>
+    <div style="float:right;">generated on 2026-05-06 23:29</div>
 </div>
 </body>
 </html>

@@ -56,26 +56,26 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (6/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
     14.3%
   </span>
   <span class="absValue">
-    (1/7)
+    (2/14)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    38.5%
   </span>
   <span class="absValue">
-    (0/14)
-  </span>
-</td>
-<td class="coverageStat">
-  <span class="percent">
-    4%
-  </span>
-  <span class="absValue">
-    (1/25)
+    (10/26)
   </span>
 </td>
 </tr>
@@ -116,7 +116,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    })
 &nbsp;    @GetMapping(&quot;/request&quot;)
 &nbsp;    List&lt;Request&gt; getAllRequests () {
-<b class="nc">&nbsp;        return requestRepo.findAll();</b>
+<b class="fc">&nbsp;        return requestRepo.findAll();</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @Operation(summary = &quot;finds one request&quot;, description = &quot;returns a list a Request from the database based on the requested and requester ids&quot;)
@@ -126,9 +126,9 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;                            schema = @Schema(implementation = Request.class))
 &nbsp;                    })
 &nbsp;    })
-&nbsp;    @GetMapping(&quot;/request/requested/{requestedId}/{requesterId}&quot;)
-&nbsp;    Request getRequestsByRequestedAndRequester (@Parameter(description = &quot;id of requested user&quot;)@PathVariable int requestedId, @Parameter(description = &quot;id of requester user&quot;)@PathVariable int requesterId) {
-<b class="nc">&nbsp;        return requestRepo.findByRequestedIdAndRequesterId(requestedId, requesterId);</b>
+&nbsp;    @GetMapping(&quot;/request/requested/{requestedId}/{requesterId}/{status}&quot;)
+&nbsp;    Request getRequestsByRequestedAndRequester (@Parameter(description = &quot;id of requested user&quot;)@PathVariable int requestedId, @Parameter(description = &quot;id of requester user&quot;)@PathVariable int requesterId, @Parameter(description = &quot;status of the friend request&quot;)@PathVariable RequestStatus status) {
+<b class="fc">&nbsp;        return requestRepo.findByRequestedIdAndRequesterId(requestedId, requesterId);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @Operation(summary = &quot;finds one request&quot;, description = &quot;returns a list a Request from the database based on the Request&#39;s id&quot;)
@@ -140,7 +140,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    })
 &nbsp;    @GetMapping(&quot;/request/{id}&quot;)
 &nbsp;    Request getRequestById (@Parameter(description = &quot;id of Request&quot;)@PathVariable int id) {
-<b class="nc">&nbsp;        return requestRepo.findById(id);</b>
+<b class="fc">&nbsp;        return requestRepo.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/request/requested/{id}&quot;)
+&nbsp;    List&lt;Request&gt; getRequestsByRequested (@PathVariable int id) {
+<b class="fc">&nbsp;        return requestRepo.findByRequestedId(id);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    @Operation(summary = &quot;creates a Request&quot;, description = &quot;creates a Request and stores it in the database&quot;)
@@ -193,15 +198,15 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    })
 &nbsp;    @DeleteMapping(&quot;request/{id}&quot;)
 &nbsp;    String deleteRequest (@Parameter(description = &quot;id of Request&quot;)@PathVariable int id) {
-<b class="nc">&nbsp;        Request toBeDeleted = requestRepo.findById(id);</b>
-<b class="nc">&nbsp;        if (toBeDeleted == null) {</b>
+<b class="fc">&nbsp;        Request toBeDeleted = requestRepo.findById(id);</b>
+<b class="pc">&nbsp;        if (toBeDeleted == null) {</b>
 <b class="nc">&nbsp;            return &quot;{\&quot;message\&quot;:\&quot;failure\&quot;}&quot;;</b>
 &nbsp;        }
-<b class="nc">&nbsp;        requestRepo.deleteById(id);</b>
-<b class="nc">&nbsp;        if (requestRepo.findById(id) != null) {</b>
+<b class="fc">&nbsp;        requestRepo.deleteById(id);</b>
+<b class="pc">&nbsp;        if (requestRepo.findById(id) != null) {</b>
 <b class="nc">&nbsp;            return &quot;{\&quot;message\&quot;:\&quot;failure\&quot;}&quot;;</b>
 &nbsp;        }
-<b class="nc">&nbsp;        return &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+<b class="fc">&nbsp;        return &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;}
@@ -228,7 +233,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 21:00</div>
+    <div style="float:right;">generated on 2026-05-06 23:29</div>
 </div>
 </body>
 </html>

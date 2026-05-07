@@ -47,6 +47,8 @@ public class BlackJack extends Game{
 
     public int getDealerScore () { return dealerScore; }
 
+    public int[] getScores () { return scores; }
+
     private int cardValueConversion (User player, Card card) {
         Value value = card.getValue();
         if (value.equals(Value.TWO)) {

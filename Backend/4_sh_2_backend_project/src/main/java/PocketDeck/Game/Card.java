@@ -38,7 +38,8 @@ public class Card {
         isFace = (value == Value.JACK) || (value == Value.QUEEN) || (value == Value.KING);
     }
 
-    public Boolean isEqual (Object obj) {
+    @Override
+    public boolean equals (Object obj) {
         if (obj.getClass() == this.getClass()) {
             Card temp = (Card)obj;
             if (temp.getSuit() == this.getSuit() && temp.getValue() == this.getValue()) {

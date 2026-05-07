@@ -48,34 +48,34 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">Card</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/1)
+    (1/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    90.9%
   </span>
   <span class="absValue">
-    (0/10)
+    (10/11)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    55.6%
   </span>
   <span class="absValue">
-    (0/12)
+    (10/18)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    81%
   </span>
   <span class="absValue">
-    (0/18)
+    (17/21)
   </span>
 </td>
 </tr>
@@ -94,50 +94,51 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    private Value value;
 &nbsp;    private Boolean isFace;
 &nbsp;
-<b class="nc">&nbsp;    public Card () {}</b>
+<b class="fc">&nbsp;    public Card () {}</b>
 &nbsp;
-<b class="nc">&nbsp;    public Card (Suit suit, Value value) {</b>
-<b class="nc">&nbsp;        this.suit = suit;</b>
-<b class="nc">&nbsp;        this.value = value;</b>
-<b class="nc">&nbsp;        isFaceCheck (value);</b>
+<b class="fc">&nbsp;    public Card (Suit suit, Value value) {</b>
+<b class="fc">&nbsp;        this.suit = suit;</b>
+<b class="fc">&nbsp;        this.value = value;</b>
+<b class="fc">&nbsp;        isFaceCheck (value);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Suit getSuit() {
-<b class="nc">&nbsp;        return suit;</b>
+<b class="fc">&nbsp;        return suit;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void setSuit(Suit suit) {
-<b class="nc">&nbsp;        this.suit = suit;</b>
+<b class="fc">&nbsp;        this.suit = suit;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Value getValue() {
-<b class="nc">&nbsp;        return value;</b>
+<b class="fc">&nbsp;        return value;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void setValue(Value value) {
-<b class="nc">&nbsp;        this.value = value;</b>
-<b class="nc">&nbsp;        isFaceCheck (value);</b>
+<b class="fc">&nbsp;        this.value = value;</b>
+<b class="fc">&nbsp;        isFaceCheck (value);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public Boolean getIsFace() {
-<b class="nc">&nbsp;        return isFace;</b>
+<b class="fc">&nbsp;        return isFace;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    public void isFaceCheck (Value value) {
-<b class="nc">&nbsp;        isFace = (value == Value.JACK) || (value == Value.QUEEN) || (value == Value.KING);</b>
+<b class="fc">&nbsp;        isFace = (value == Value.JACK) || (value == Value.QUEEN) || (value == Value.KING);</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    public Boolean isEqual (Object obj) {
-<b class="nc">&nbsp;        if (obj.getClass() == this.getClass()) {</b>
-<b class="nc">&nbsp;            Card temp = (Card)obj;</b>
-<b class="nc">&nbsp;            if (temp.getSuit() == this.getSuit() &amp;&amp; temp.getValue() == this.getValue()) {</b>
-<b class="nc">&nbsp;                return true;</b>
+&nbsp;    @Override
+<b class="nc">&nbsp;    public boolean equals (Object obj) {</b>
+<b class="pc">&nbsp;        if (obj.getClass() == this.getClass()) {</b>
+<b class="pc">&nbsp;            Card temp = (Card)obj;</b>
+<b class="pc">&nbsp;            if (temp.getSuit() == this.getSuit() &amp;&amp; temp.getValue() == this.getValue()) {</b>
+<b class="fc">&nbsp;                return true;</b>
 &nbsp;            }
-&nbsp;        }
-<b class="nc">&nbsp;        return false;</b>
+<b class="nc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return false;</b>
 &nbsp;    }
 &nbsp;
-&nbsp;    public String toString () {
+<b class="nc">&nbsp;    public String toString () {</b>
 <b class="nc">&nbsp;        return value + &quot; &quot; + suit;</b>
 &nbsp;    }
 &nbsp;}
@@ -164,7 +165,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2026-05-01 21:00</div>
+    <div style="float:right;">generated on 2026-05-06 23:29</div>
 </div>
 </body>
 </html>
